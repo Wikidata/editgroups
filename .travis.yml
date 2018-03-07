@@ -25,7 +25,6 @@ before_install:
 
 install:
   - pip install setuptools --upgrade
-  - pip install psycopg2 --quiet
   - pip install -r requirements.txt --upgrade
   - pip install coveralls
   - pip freeze
@@ -35,7 +34,7 @@ before_script:
   - mysql -u travis -e 'CREATE DATABASE editgroups;'
 
 script:
-  - coverage run --source=editgroups,sttore --omit=*/migrations/*,editgroups/settings/* manage.py test -v 2
+  - coverage run --source=editgroups,store --omit=*/migrations/*,editgroups/settings/* manage.py test -v 2
 
 after_success:
   - coveralls
