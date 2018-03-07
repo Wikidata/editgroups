@@ -1,4 +1,8 @@
 
+body {
+        font-family: sans-serif;
+}
+
 .mainBody {
         margin: 3em;
 }
@@ -7,3 +11,16 @@
         width: 26em;
 }
 
+.mw-plusminus-pos {
+        color: #006400;
+}
+
+.mw-plusminus-neg {
+        color: #8b0000;
+}
+
+span.comment {
+        font-style: italic;
+        unicode-bidi: -moz-isolate;
+        unicode-bidi: isolate;
+}

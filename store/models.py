@@ -1,4 +1,6 @@
 from django.db import models
+from django.db import transaction
+from django.db.utils import IntegrityError
 from django.urls import reverse
 from django_bulk_update.manager import BulkUpdateManager
 from collections import namedtuple
@@ -81,6 +83,10 @@ class Batch(models.Model):
         return '<Batch {}:{} by {}>'.format(self.tool.shortid, self.uid, self.user)
 
     @property
+    def nb_reverted(self):
+        return self.edits.filter(reverted=True).count()
+
+    @property
     def url(self):
         return reverse('batch-view', args=[self.tool.shortid, self.uid])
 
@@ -110,9 +116,15 @@ class Edit(models.Model):
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name='edits')
     reverted = models.BooleanField(default=False)
 
+    reverted_re = re.compile(r'^/\* undo:0\|\|(\d+)\|')
+
     @property
     def url(self):
         return 'https://www.wikidata.org/wiki/index.php?diff={}&oldid={}'.format(self.newrevid,self.oldrevid)
+
+    @property
+    def revert_url(self):
+        return 'https://www.wikidata.org/w/index.php?title={}&action=edit&undoafter={}&undo={}'.format(self.title, self.oldrevid, self.newrevid)
 
     def __str__(self):
         return '<Edit {} >'.format(self.url)
@@ -142,12 +154,12 @@ class Edit(models.Model):
             batch = batch,
             reverted = False)
 
-
     @classmethod
     def ingest_edits(cls, json_batch):
         # Map from (toolid, uid, user) to Batch object
         batches = {}
         model_edits = []
+        reverted_ids = []
 
         tools = Tool.objects.all()
 
@@ -156,7 +168,13 @@ class Edit(models.Model):
                 continue
             timestamp = datetime.fromtimestamp(edit_json['timestamp'], tz=UTC)
 
-            # Try to match the edit with a tool
+            # First, check if this is a revert
+            revert_match = cls.reverted_re.match(edit_json['comment'])
+            if revert_match:
+                reverted_ids.append(int(revert_match.group(1)))
+                continue
+
+            # Otherwise, try to match the edit with a tool
             match = None
             matching_tool = None
             for tool in tools:
@@ -190,12 +208,33 @@ class Edit(models.Model):
             # Create the edit object
             model_edits.append(Edit.from_json(edit_json, batch))
 
-        # Update all the batch objects
+        # Create all Edit objects update all the batch objects
         if batches:
+            # Create all the edit objects
+            try:
+                with transaction.atomic():
+                    Edit.objects.bulk_create(model_edits)
+            except IntegrityError as e:
+                # Oops! Some of them existed already!
+                # Let's add them one by one instead.
+                for edit in model_edits:
+                    try:
+                        existing_edit = Edit.objects.get(id=edit.id)
+                        # this edit was already seen: we need to remove it
+                        # from the associated batch count
+                        batch_key = (edit.batch.tool.shortid, edit.batch.uid, edit.batch.user)
+                        batch = batches.get(batch_key)
+                        if batch:
+                            batch.nb_edits -= 1
+                    except Edit.DoesNotExist:
+                        edit.save()
+
             Batch.objects.bulk_update(list(batches.values()), update_fields=['ended', 'nb_edits'])
 
-            # Create all the edit objects
-            Edit.objects.bulk_create(model_edits)
+
+        # If we saw any "undo" edit, mark all matching edits as reverted
+        if reverted_ids:
+            Edit.objects.filter(newrevid__in=reverted_ids).update(reverted=True)
 
     @classmethod
     def ingest_jsonlines(cls, fname, batch_size=50):

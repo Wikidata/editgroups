@@ -40,6 +40,14 @@ class EditTest(TestCase):
         self.assertEquals(datetime(2018, 3, 6, 16, 41, 10, tzinfo=UTC), batch.ended)
         self.assertEquals(51, batch.nb_edits)
 
+    def test_ingest_twice(self):
+        Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
+        Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
+
+        self.assertEquals(1, Batch.objects.count())
+        batch = Batch.objects.get()
+        self.assertEquals(51, batch.nb_edits)
+
     def test_ingest_jsonlines_qs(self):
         Edit.ingest_jsonlines('store/testdata/one_qs_batch.json')
 
@@ -51,6 +59,14 @@ class EditTest(TestCase):
         self.assertEquals(datetime(2018, 3, 7, 16, 20, 12, tzinfo=UTC), batch.started)
         self.assertEquals(datetime(2018, 3, 7, 16, 20, 14, tzinfo=UTC), batch.ended)
         self.assertEquals(4, batch.nb_edits)
+
+    def test_reverts(self):
+        Edit.ingest_jsonlines('store/testdata/qs_batch_with_reverts.json')
+
+        self.assertEquals(1, Batch.objects.count())
+        batch = Batch.objects.get()
+        self.assertEquals(5, batch.nb_edits)
+        self.assertEqual(2, batch.nb_reverted)
 
     def test_str(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')

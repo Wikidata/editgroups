@@ -12,6 +12,7 @@ class ToolSerializer(serializers.ModelSerializer):
 
 class EditSerializer(serializers.ModelSerializer):
     url = serializers.CharField()
+    revert_url = serializers.CharField()
     class Meta:
         model = Edit
         fields = '__all__'
@@ -42,6 +43,7 @@ class BatchSerializer(serializers.ModelSerializer):
     edits = LimitedEditSerializer(many=True, read_only=True)
     tool = ToolSerializer()
     url = serializers.CharField()
+    nb_reverted = serializers.IntegerField()
 
     class Meta:
         model = Batch
