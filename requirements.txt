@@ -2,6 +2,6 @@ sseclient
 django>=2.0
 django-bulk-update
 django-cache-machine
-psycopg2
+mysqlclient
 django-rest-framework
 python-dateutil
