@@ -1,0 +1,50 @@
+from django.shortcuts import render
+
+from rest_framework import viewsets
+from rest_framework import generics
+
+from .models import Tool
+from .models import Edit
+from .models import Batch
+from .serializers import BatchSerializer, EditSerializer, ToolSerializer
+
+class BatchViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    API endpoint listing the latest batches
+    """
+    queryset = Batch.objects.all().order_by('-started')
+    serializer_class = BatchSerializer
+    template_name = 'store/batches.html'
+
+
+class EditViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Edit.objects.all().order_by('-timestamp')
+    serializer_class = EditSerializer
+
+class BatchView(generics.RetrieveAPIView):
+    serializer_class = BatchSerializer
+    template_name = 'store/batch.html'
+
+    def get_object(self):
+        batch_uid = self.kwargs.get('uid')
+        tool_code = self.kwargs.get('tool')
+        return Batch.objects.get(uid=batch_uid,tool__shortid=tool_code)
+
+class BatchesView(generics.ListAPIView):
+    serializer_class = BatchSerializer
+    queryset = Batch.objects.all().order_by('-started')
+    template_name = 'store/batches.html'
+
+class BatchEditsView(generics.ListAPIView):
+    serializer_class = EditSerializer
+    model = Edit
+    paginate_by = 50
+    template_name = 'store/edits.html'
+
+    def get_queryset(self):
+        batch_id = self.kwargs.get('id')
+        queryset = self.model.objects.filter(batch_id=batch_id).order_by('-timestamp')
+        return queryset

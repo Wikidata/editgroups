@@ -1,0 +1,8 @@
+{% load diffsize %}
+(<a href="{{ edit.url }}" class="mw-changeslist-diff" title="{{ edit.title }}">diff</a> | <a href="https://www.wikidata.org/w/index.php?title={{ edit.title }}&amp;action=history"
+class="mw-changeslist-history" title="{{ edit.title }}">hist</a>) <span class="mw-changeslist-separator">. .</span>  <span class="mw-title"><a href="{{ edit.uri }}" class="mw-changeslist-title"><span class="wb-itemlink"><span class="wb-itemlink-label"
+dir="ltr" lang="en">{{ edit.title }}</span></span></a></span>‎; <span class="mw-changeslist-date">{{ edit.timestamp }}</span> <span
+class="mw-changeslist-separator">. .</span> {{ edit|diffsize }}‎  <span class="mw-changeslist-separator">. .</span> ‎<a href="https://www.wikidata.org/wiki/User:{{ edit.user }}" class="mw-userlink"
+title="User:{{ edit.user }}"><bdi>{{ edit.user }}</bdi></a> <span class="mw-usertoollinks">(<a href="https://www.wikidata.org/wiki/User_talk:{{ edit.user }}" class="mw-usertoollinks-talk" title="User talk:{{ edit.user }}">talk</a> | <a
+href="https://www.wikidata.org/wiki/Special:Contributions/{{ edit.user }}"
+class="mw-usertoollinks-contribs" title="Special:Contributions/{{ edit.user }}">contribs</a>)</span>‎ <span class="comment">(‎{% autoescape off %}{{ edit.parsedcomment }}{% endautoescape %}

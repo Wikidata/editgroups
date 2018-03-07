@@ -1,0 +1,44 @@
+{% extends "editgroups/common.html" %}
+
+{% load parsetime %}
+
+{% block title %}
+{{ summary }}
+{% endblock %}
+
+{% block mainBody %}
+<div class="page-header">
+<h3>Edit group by <a href="https://www.wikidata.org/wiki/User:{{ user }}">{{ user }}</a>: {{ summary }} ({{ uid }})</h3>
+</div>
+<table class="table batch-details">
+        <tr>
+                <td>Tool</td>
+                <td><a href="{{ tool.url }}">{{ tool.name }}</a></td>
+        </tr>
+        <tr>
+                <td>Started</td>
+                <td>{{ started|parsetime }}</td>
+        </tr>
+        <tr>
+                <td>Ended</td>
+                <td>{{ ended|parsetime }}</td>
+        </tr>
+        <tr>
+                <td>Number of edits</td>
+                <td>{{ nb_edits }}</td>
+        </tr>
+</table>
+
+<h4>Latest edits</h4>
+        <ul>
+        {% for edit in edits %}
+        <li>
+                {% if not forloop.last %}
+                {% include "store/editline.html" %}
+                {% else %}
+                ...
+                {% endif %}
+        </li>
+        {% endfor %}
+        </ul>
+{% endblock %}

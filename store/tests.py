@@ -1,0 +1,75 @@
+
+from datetime import datetime
+from pytz import UTC
+
+from django.test import TestCase
+from django.urls import reverse
+from rest_framework.test import APITestCase
+
+from .models import Tool
+from .models import Edit
+from .models import Batch
+
+class ToolTest(TestCase):
+
+    def test_or(self):
+        tool = Tool.objects.get(shortid='OR')
+
+        self.assertEquals(('ca7d7cc', 'Pintoch', 'import Charity Navigator'),
+            tool.match("Pintoch",
+                "/* wbeditentity-update:0| */ import Charity Navigator ([[Wikidata:Edit groups/OR/ca7d7cc|discuss]])"))
+
+    def test_qs(self):
+        tool = Tool.objects.get(shortid='QS')
+
+        self.assertEquals(('2120', 'Pintoch', 'batch'),
+            tool.match("QuickStatementsBot",
+                "/* wbcreateclaim-create:1| */ [[Property:P3896]]: Data:Neighbourhoods/New York City.map, #quickstatements; [[:toollabs:quickstatements/#mode=batch&batch=2120|batch #2120]] by [[User:Pintoch|]]"))
+
+
+class EditTest(TestCase):
+    def test_ingest_jsonlines_or(self):
+        Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
+
+        self.assertEquals(1, Batch.objects.count())
+        batch = Batch.objects.get()
+        self.assertEquals('OR', batch.tool.shortid)
+        self.assertEquals('Pintoch', batch.user)
+        self.assertEquals('ca7d7cc', batch.uid)
+        self.assertEquals(datetime(2018, 3, 6, 16, 39, 37, tzinfo=UTC), batch.started)
+        self.assertEquals(datetime(2018, 3, 6, 16, 41, 10, tzinfo=UTC), batch.ended)
+        self.assertEquals(51, batch.nb_edits)
+
+    def test_ingest_jsonlines_qs(self):
+        Edit.ingest_jsonlines('store/testdata/one_qs_batch.json')
+
+        self.assertEquals(1, Batch.objects.count())
+        batch = Batch.objects.get()
+        self.assertEquals('QS', batch.tool.shortid)
+        self.assertEquals('Pintoch', batch.user)
+        self.assertEquals('2120', batch.uid)
+        self.assertEquals(datetime(2018, 3, 7, 16, 20, 12, tzinfo=UTC), batch.started)
+        self.assertEquals(datetime(2018, 3, 7, 16, 20, 14, tzinfo=UTC), batch.ended)
+        self.assertEquals(4, batch.nb_edits)
+
+    def test_str(self):
+        Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
+
+        edit = Edit.objects.all().order_by('timestamp')[0]
+        self.assertEquals('https://www.wikidata.org/wiki/index.php?diff=644512815&oldid=376870215', edit.url)
+        self.assertEquals('<Edit https://www.wikidata.org/wiki/index.php?diff=644512815&oldid=376870215 >', str(edit))
+
+class BatchEditsViewTest(APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
+        cls.batch = Batch.objects.get()
+
+    def pagination(self):
+        response = self.client.get(reverse('batch-edits', args=[self.batch.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.batch.edit_set.count(), response.data['count'])
+
+    @classmethod
+    def tearDownClass(cls):
+        Batch.objects.all().delete()
