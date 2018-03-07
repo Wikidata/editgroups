@@ -30,7 +30,7 @@ install:
 
 before_script:
   - mysql --version
-  - mysql -c "CREATE DATABASE editgroups;" -u travis
+  - mysql -u travis -e 'CREATE DATABASE editgroups;'
 
 script:
   - coverage run --source=editgroups,sttore --omit=*/migrations/*,editgroups/settings/* manage.py test -v 2
