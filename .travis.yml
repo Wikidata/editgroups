@@ -1,0 +1,41 @@
+
+language: python
+
+python:
+  - 3.5
+
+sudo: false
+
+addons:
+    postgresql: "9.4"
+
+services:
+  - postgresql
+  - redis
+
+virtualenv:
+  system_site_packages: true
+
+before_install:
+  - export DJANGO_SETTINGS_MODULE=editgroups.settings
+  - export PYTHONPATH=$HOME/builds/wetneb/editgroups
+  - export PIP_USE_MIRRORS=true
+  - cp editgroups/settings/secret_travis.py editgroups/settings/secret.py
+
+install:
+  - pip install setuptools --upgrade
+  - pip install psycopg2 --quiet
+  - pip install -r requirements.txt --upgrade
+  - pip install coveralls
+  - pip freeze
+
+before_script:
+  - psql --version
+  - psql -c "CREATE DATABASE editgroups;" -U postgres
+
+script:
+  - coverage run --source=editgroups,sttore --omit=*/migrations/*,editgroups/settings/* manage.py test -v 2
+
+after_success:
+  - coveralls
+
