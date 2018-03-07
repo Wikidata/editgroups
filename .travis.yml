@@ -9,7 +9,7 @@ sudo: false
 addons:
     apt:
        packages:
-       - default-libmysqlclient-dev
+       - libmysqlclient-dev
  
 services:
   - mysql
