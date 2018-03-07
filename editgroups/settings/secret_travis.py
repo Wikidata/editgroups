@@ -7,9 +7,9 @@ SECRET_KEY = '20oj&tj8uaruseitlrise,tries,uirsetur36746209etus7e'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'batchrevert',
-        'USER': 'postgres',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'editgroups',
+        'USER': 'travis',
         'PASSWORD': '',
         'HOST': 'localhost',
     }

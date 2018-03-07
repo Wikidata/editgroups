@@ -10,11 +10,10 @@ addons:
     postgresql: "9.4"
 
 services:
-  - postgresql
+  - mysql
   - redis
 
 virtualenv:
-  system_site_packages: true
 
 before_install:
   - export DJANGO_SETTINGS_MODULE=editgroups.settings
@@ -30,8 +29,8 @@ install:
   - pip freeze
 
 before_script:
-  - psql --version
-  - psql -c "CREATE DATABASE editgroups;" -U postgres
+  - mysql --version
+  - mysql -c "CREATE DATABASE editgroups;" -u travis
 
 script:
   - coverage run --source=editgroups,sttore --omit=*/migrations/*,editgroups/settings/* manage.py test -v 2
