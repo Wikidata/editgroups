@@ -21,7 +21,7 @@ class LimitedListSerializer(serializers.ListSerializer):
     """
     A serializer that only prints the most recent children objects
     """
-    limit = 10
+    limit = 11
     model_ordering = '-timestamp'
 
     def to_representation(self, data):
@@ -39,11 +39,23 @@ class LimitedEditSerializer(EditSerializer):
         fields = '__all__'
         list_serializer_class = LimitedListSerializer
 
-class BatchSerializer(serializers.ModelSerializer):
+class BatchSimpleSerializer(serializers.ModelSerializer):
+    tool = ToolSerializer()
+    url = serializers.CharField()
+
+    class Meta:
+        model = Batch
+        fields = '__all__'
+        depth = 1
+
+
+class BatchDetailSerializer(serializers.ModelSerializer):
     edits = LimitedEditSerializer(many=True, read_only=True)
     tool = ToolSerializer()
     url = serializers.CharField()
     nb_reverted = serializers.IntegerField()
+    nb_pages = serializers.IntegerField()
+    avg_diffsize = serializers.IntegerField()
 
     class Meta:
         model = Batch

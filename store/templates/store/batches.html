@@ -20,7 +20,7 @@ Wikidata edit groups
 {% for batch in results %}
         <tr>
                 <td><a href="{{ batch.url }}">{{ batch.uid }}</a></td>
-                <td><a href="https://www.wikidata.org/User:{{ batch.user }}">{{ batch.user }}</a></td>
+                <td><a href="https://www.wikidata.org/wiki/User:{{ batch.user }}">{{ batch.user }}</a></td>
                 <td><a href="{{ batch.url }}">{{ batch.summary }}</a></td>
                 <td>{{ batch.nb_edits }}</td>
                 <td>{{ batch.ended|parsetime }}</td>

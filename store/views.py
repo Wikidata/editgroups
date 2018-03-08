@@ -6,14 +6,14 @@ from rest_framework import generics
 from .models import Tool
 from .models import Edit
 from .models import Batch
-from .serializers import BatchSerializer, EditSerializer, ToolSerializer
+from .serializers import BatchSimpleSerializer, BatchDetailSerializer, EditSerializer, ToolSerializer
 
 class BatchViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint listing the latest batches
     """
     queryset = Batch.objects.all().order_by('-started')
-    serializer_class = BatchSerializer
+    serializer_class = BatchSimpleSerializer
     template_name = 'store/batches.html'
 
 
@@ -25,7 +25,7 @@ class EditViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = EditSerializer
 
 class BatchView(generics.RetrieveAPIView):
-    serializer_class = BatchSerializer
+    serializer_class = BatchDetailSerializer
     template_name = 'store/batch.html'
 
     def get_object(self):
@@ -34,7 +34,7 @@ class BatchView(generics.RetrieveAPIView):
         return Batch.objects.get(uid=batch_uid,tool__shortid=tool_code)
 
 class BatchesView(generics.ListAPIView):
-    serializer_class = BatchSerializer
+    serializer_class = BatchSimpleSerializer
     queryset = Batch.objects.all().order_by('-started')
     template_name = 'store/batches.html'
 

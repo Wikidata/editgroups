@@ -87,6 +87,14 @@ class Batch(models.Model):
         return self.edits.filter(reverted=True).count()
 
     @property
+    def nb_pages(self):
+        return self.edits.all().values('title').distinct().count()
+
+    @property
+    def avg_diffsize(self):
+        return self.edits.all().aggregate(avg_diff=models.Avg('newlength')-models.Avg('oldlength')).get('avg_diff')
+
+    @property
     def url(self):
         return reverse('batch-view', args=[self.tool.shortid, self.uid])
 

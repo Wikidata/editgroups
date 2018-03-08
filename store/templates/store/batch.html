@@ -1,6 +1,7 @@
 {% extends "editgroups/common.html" %}
 
 {% load parsetime %}
+{% load diffsize %}
 
 {% block title %}
 {{ summary }}
@@ -31,13 +32,21 @@
                 <td>Edits undone</td>
                 <td>{{ nb_reverted }}</td>
         </tr>
+        <tr>
+                <td>Number of entities touched</td>
+                <td>{{ nb_pages }}</td>
+        </tr>
+        <tr>
+                <td>Average size difference</td>
+                <td>{{ avg_diffsize|diffsize }}</td>
+        </tr>
 </table>
 
 <h4>Latest edits</h4>
         <ul>
         {% for edit in edits %}
         <li>
-                {% if not forloop.last %}
+                {% if not forloop.last or forloop.counter < 10 %}
                 {% include "store/editline.html" %}
                 {% else %}
                 ...
