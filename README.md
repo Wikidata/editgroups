@@ -7,5 +7,45 @@ Simple tool to track edit groups on Wikidata and revert them.
 
 
 Steps to deploy this on WMF Toolslab:
+
 * `become editgroups`
+* `mkdir -p www/python/src`
+
+Install the dependencies in the virtualenv:
+* `cd www/python`
+* `virtualenv venv --python /usr/bin/python3`
+* `source venv/bin/activate`
+* `git clone https://github.com/wetneb/editgroups.git src`
+* `pip install -r src/requirements.txt`
+
+Configure static files
+* `mkdir -p src/static`
+* `ln -s src/static .`
+* put the following content in `~/www/uwsgi.ini`:
+
+    [uwsgi]
+    check-static = /data/project/editgroups/www/python
+
+* run `./manage.py collectstatic`
+
+
+Create database:
 * `sql tools`
+* TODO
+
+Configure database access and other settings
+* `cd ~/www/python/src/editgroups/settings/`
+* `echo "from .prod import *" > __init__.py`
+* `cp secret_wmflabs.py secret.py`
+* edit `secret.py` with the user and password of the table (they can be found in `~/replica.my.cnf`
+
+Configure OAuth login
+* Request an OAuth client id at https://meta.wikimedia.org/wiki/Special:OAuthConsumerRegistration/propose
+* Put the tokens in `~/www/python/src/editgroups/settings/secret.py`
+
+Migrate the database
+* `./manage.py migrate`
+
+Run the webserver
+* `webservice --backend kubernetes python start`
+
