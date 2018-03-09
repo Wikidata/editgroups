@@ -3,18 +3,18 @@
 {% load parsetime %}
 
 {% block title %}
-Wikidata edit groups
+EditGroups
 {% endblock %}
 
 {% block mainBody %}
-<h1>Recent edit groups</h1>
+<h3>Recent edit groups</h3>
 <table class="table table-striped table-condensed">
         <tr>
                 <th>UID</th>
                 <th>User</th>
                 <th>Summary</th>
-                <th>Edits</th>
-                <th>Edits/min</th>
+                <th class="numeric-column">Edits/min</th>
+                <th class="numeric-column">Edits</th>
                 <th>Latest edit</th>
                 <th>Tool</th>
         </tr>
@@ -23,8 +23,8 @@ Wikidata edit groups
                 <td><a href="{{ batch.url }}">{{ batch.uid }}</a></td>
                 <td><a href="https://www.wikidata.org/wiki/User:{{ batch.user }}">{{ batch.user }}</a></td>
                 <td><a href="{{ batch.url }}">{{ batch.summary }}</a></td>
-                <td>{{ batch.nb_edits }}</td>
-                <td>{% autoescape off %}{{ batch.editing_speed }}{% endautoescape %}</td>
+                <td class="numeric-column">{{ batch.editing_speed }}</td>
+                <td class="numeric-column">{{ batch.nb_edits }}</td>
                 <td>{{ batch.ended|parsetime }}</td>
                 <td><a href="{{ batch.tool.url }}">{{ batch.tool.name }}</a></td>
         </tr>

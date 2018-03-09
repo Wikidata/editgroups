@@ -16,7 +16,8 @@ if __name__ == '__main__':
     print('Listening to Wikidata edits...')
     s = WikidataEditStream()
     for i, batch in enumerate(grouper(s.stream(), 50)):
-       print('batch %d' % i)
+       if i % 50 == 0:
+            print('batch %d' % i)
        sys.stdout.flush()
        Edit.ingest_edits(batch)
 

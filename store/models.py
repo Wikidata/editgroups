@@ -95,7 +95,7 @@ class Batch(models.Model):
         time_diff = (self.ended - self.started).seconds
         if time_diff <= 0:
             return '∞'
-        return '{:5.1f}'.format((self.nb_edits * 60.)/time_diff).replace(' ', '&nbsp;&nbsp;')
+        return '{:5.1f}'.format((self.nb_edits * 60.)/time_diff).strip()
 
     @property
     def nb_reverted(self):

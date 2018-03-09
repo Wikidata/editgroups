@@ -24,3 +24,7 @@ span.comment {
         unicode-bidi: -moz-isolate;
         unicode-bidi: isolate;
 }
+
+.numeric-column {
+        text-align: right;
+}
