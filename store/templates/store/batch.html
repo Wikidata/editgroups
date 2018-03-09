@@ -26,7 +26,7 @@
         </tr>
         <tr>
                 <td>Editing speed</td>
-                <td>{{ editing_speed }} edits/min</td>
+                <td>{% autoescape off %}{{ editing_speed }}{% endautoescape %} edits/min</td>
         </tr>
         <tr>
                 <td>Number of edits</td>
