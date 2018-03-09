@@ -19,6 +19,10 @@ try:
     from .secret import REDIS_PASSWORD
     from .secret import REDIS_PORT
     from .secret import SECRET_KEY
+    from .secret import SOCIAL_AUTH_MEDIAWIKI_KEY
+    from .secret import SOCIAL_AUTH_MEDIAWIKI_SECRET
+    from .secret import SOCIAL_AUTH_MEDIAWIKI_URL
+    from .secret import SOCIAL_AUTH_MEDIAWIKI_CALLBACK
 except ImportError as e:
     raise RuntimeError(
         'Secret file is missing, did you forget to add a secret.py in your settings folder?')
@@ -29,11 +33,8 @@ except ImportError as e:
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 TEMPLATE_DEBUG = True
-
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -45,19 +46,22 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social_django',
     'rest_framework',
     'store',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
+    'social_django.middleware.SocialAuthExceptionMiddleware',
+]
+
 
 ROOT_URLCONF = 'editgroups.urls'
 
@@ -82,6 +86,8 @@ TEMPLATES = [
                     "django.template.context_processors.static",
                     "django.template.context_processors.tz",
                     "django.template.context_processors.request",
+                    "social_django.context_processors.backends",
+                    "social_django.context_processors.login_redirect",
                 ),
                 'debug': True
             }
@@ -116,6 +122,13 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.mediawiki.MediaWiki',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+LOGIN_URL = 'list-batches'
+LOGIN_REDIRECT_URL = 'list-batches'
 
 
 # Internationalization
@@ -136,6 +149,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "../static")
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+

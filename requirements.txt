@@ -5,3 +5,4 @@ django-cache-machine
 mysqlclient
 django-rest-framework
 python-dateutil
+social-auth-app-django

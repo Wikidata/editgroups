@@ -14,6 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.shortcuts import redirect, reverse
+from django.contrib.auth import logout
 from django.urls import path, include
 from rest_framework import routers
 from store import views
@@ -23,6 +25,10 @@ router.register(r'edits', views.EditViewSet)
 router.register(r'batches', views.BatchViewSet)
 # router.register(r'batches/(?P<id>\d+)/edits/', views.BatchEditsView.as_view(), 'BatchEdits')
 
+def logout_view(request):
+    logout(request)
+    return redirect(reverse('list-batches'))    
+
 urlpatterns = [
     #path('', include(router.urls)),
     path('', views.BatchesView.as_view(), name='list-batches'),
@@ -30,4 +36,6 @@ urlpatterns = [
     path('batches/<int:id>/edits/', views.BatchEditsView.as_view(), name='batch-edits'),
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('oauth/', include('social_django.urls', namespace='social')),
+    path('logout/', logout_view, name='logout'),
 ]
