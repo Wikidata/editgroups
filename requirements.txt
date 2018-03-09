@@ -1,6 +1,7 @@
 sseclient
 django>=2.0
 django-bulk-update
+django-redis-cache
 django-cache-machine
 django-rest-framework
 python-dateutil

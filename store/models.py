@@ -3,6 +3,7 @@ from django.db import transaction
 from django.db.utils import IntegrityError
 from django.urls import reverse
 from django_bulk_update.manager import BulkUpdateManager
+from caching.base import CachingManager, CachingMixin
 from collections import namedtuple
 
 import re
@@ -13,10 +14,12 @@ from .utils import grouper
 
 MAX_CHARFIELD_LENGTH = 190
 
-class Tool(models.Model):
+class Tool(CachingMixin, models.Model):
     """
     A tool, making edits with some ids in the edit summaries
     """
+    objects = CachingManager()
+
     Match = namedtuple('Match', 'uid user summary')
 
     name = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
@@ -32,6 +35,9 @@ class Tool(models.Model):
     usergroupid = models.IntegerField(null=True)
 
     url = models.URLField()
+
+    def __str__(self):
+        return self.name
 
     def match(self, user, comment):
         """

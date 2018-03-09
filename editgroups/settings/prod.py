@@ -1,6 +1,6 @@
 from .common import *
 
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ['tools.wmflabs.org']
 
 # Static files (CSS, JavaScript, Images)
@@ -12,3 +12,13 @@ STATICFILES_DIRS = [
 ]
 
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': 'tools-redis:6379',
+        'OPTIONS': {
+            'DB': 2,
+        },
+    },
+}
