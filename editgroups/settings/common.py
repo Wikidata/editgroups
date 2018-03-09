@@ -19,6 +19,10 @@ try:
     from .secret import REDIS_PASSWORD
     from .secret import REDIS_PORT
     from .secret import SECRET_KEY
+    from .secret import SOCIAL_AUTH_MEDIAWIKI_KEY
+    from .secret import SOCIAL_AUTH_MEDIAWIKI_SECRET
+    from .secret import SOCIAL_AUTH_MEDIAWIKI_URL
+    from .secret import SOCIAL_AUTH_MEDIAWIKI_CALLBACK
 except ImportError as e:
     raise RuntimeError(
         'Secret file is missing, did you forget to add a secret.py in your settings folder?')
@@ -42,6 +46,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social_django',
     'rest_framework',
     'store',
 )
@@ -54,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 
@@ -80,6 +86,8 @@ TEMPLATES = [
                     "django.template.context_processors.static",
                     "django.template.context_processors.tz",
                     "django.template.context_processors.request",
+                    "social_django.context_processors.backends",
+                    "social_django.context_processors.login_redirect",
                 ),
                 'debug': True
             }
@@ -115,8 +123,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 AUTHENTICATION_BACKENDS = (
+    'social_core.backends.mediawiki.MediaWiki',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+LOGIN_URL = 'list-batches'
+LOGIN_REDIRECT_URL = 'list-batches'
 
 
 # Internationalization

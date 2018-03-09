@@ -34,11 +34,16 @@
                             <input type="text" class="form-control" placeholder="Search for an edit group">
                             </div>
                             <button type="submit" class="btn btn-default">Submit</button>
-                        </form>
+                        </form> -->
                         <ul class="nav navbar-nav navbar-right">
                             <li><a href="https://www.wikidata.org/wiki/Wikidata:Edit_groups">About</a></li>
-                            <li><a href="#">Login</a></li>
-                        </ul> -->
+                            {% if not user.is_authenticated %}
+                            <li><a href="{% url "social:begin" 'mediawiki' %}">Login</a></li>
+                            {% else %}
+                            <li><a href="#">{{ user }}</a></li>
+                            <li><a href="{% url "logout" %}">Logout</a></li>
+                            {% endif %}
+                        </ul>
                         </div>
                     </div>
                 </nav>
