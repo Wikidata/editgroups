@@ -6,7 +6,7 @@ class WikidataEditStream(object):
         self.url = 'https://stream.wikimedia.org/v2/stream/recentchange'
         self.wiki = 'wikidatawiki'
 
-    def streamEdits(self):
+    def stream(self):
         for event in EventSource(self.url):
             if event.event == 'message':
                 try:

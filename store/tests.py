@@ -1,5 +1,6 @@
 
 from datetime import datetime
+import unittest
 from pytz import UTC
 
 from django.test import TestCase
@@ -9,6 +10,7 @@ from rest_framework.test import APITestCase
 from .models import Tool
 from .models import Edit
 from .models import Batch
+from .stream import WikidataEditStream
 
 class ToolTest(TestCase):
 
@@ -96,3 +98,11 @@ class BatchEditsViewTest(APITestCase):
     @classmethod
     def tearDownClass(cls):
         Batch.objects.all().delete()
+
+class WikidataEditStreamTest(unittest.TestCase):
+    def test_stream(self):
+        s = WikidataEditStream()
+        for idx, edit in enumerate(s.stream()):
+            if idx > 10:
+                break
+            self.assertEquals('wikidatawiki', edit['wiki'])

@@ -15,6 +15,13 @@ DATABASES = {
     }
 }
 
+# OAuth for Wikidata
+SOCIAL_AUTH_MEDIAWIKI_KEY = 'FILL_THIS'
+SOCIAL_AUTH_MEDIAWIKI_SECRET = 'FILL_THIS'
+SOCIAL_AUTH_MEDIAWIKI_URL = 'https://www.wikidata.org/w/index.php'
+SOCIAL_AUTH_MEDIAWIKI_CALLBACK = 'https://tools.wmflabs.org/editgroups/oauth/complete/mediawiki/'
+
+
 # Redis (if you use it)
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
