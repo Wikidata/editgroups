@@ -26,12 +26,12 @@ class ToolTest(TestCase):
         self.assertEquals(('3990c0d', 'Pintoch', 'add EIN ids from Charity Navigator'),
              tool.match("Pintoch",
                 "/* wbsetclaim-create:2||1 */ [[Property:P1297]]: 88-0302673, add EIN ids from Charity Navigator ([[:toollabs:editgroups/b/OR/3990c0d|details]])"))
-        
+
 
     def test_qs(self):
         tool = Tool.objects.get(shortid='QS')
 
-        self.assertEquals(('2120', 'Pintoch', 'batch'),
+        self.assertEquals(('2120', 'Pintoch', '#quickstatements'),
             tool.match("QuickStatementsBot",
                 "/* wbcreateclaim-create:1| */ [[Property:P3896]]: Data:Neighbourhoods/New York City.map, #quickstatements; [[:toollabs:quickstatements/#mode=batch&batch=2120|batch #2120]] by [[User:Pintoch|]]"))
 

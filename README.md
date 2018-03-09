@@ -31,13 +31,14 @@ Configure static files
 
 Create database:
 * `sql tools`
-* TODO
+* `CREATE DATABASE s1234__editgroups;` where `s1234` is the SQL username of the tool
+* `\q`
 
 Configure database access and other settings
 * `cd ~/www/python/src/editgroups/settings/`
 * `echo "from .prod import *" > __init__.py`
 * `cp secret_wmflabs.py secret.py`
-* edit `secret.py` with the user and password of the table (they can be found in `~/replica.my.cnf`
+* edit `secret.py` with the user and password of the table (they can be found in `~/replica.my.cnf`). The name of the table is the one you used at creation above (`s1234__editgroups` where `s1234` is replaced by the username of the tool).
 
 Configure OAuth login
 * Request an OAuth client id at https://meta.wikimedia.org/wiki/Special:OAuthConsumerRegistration/propose

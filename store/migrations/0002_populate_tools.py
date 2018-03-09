@@ -19,10 +19,10 @@ def populate_tools(apps, schema_editor):
         ),
         Tool(
             name='QuickStatements',
-            shortid='QS',
+            shortid='QSv2',
             idregex='.*\[\[:toollabs:quickstatements/#mode=batch\&batch=(\d+)\|.*',
             idgroupid=1,
-            summaryregex='.*(batch).*',
+            summaryregex='.*(\#quickstatements).*',
             summarygroupid=1,
             userregex='.* by \[\[User:(.*)\|\]\]',
             usergroupid=1,
