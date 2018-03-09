@@ -48,6 +48,7 @@ class EditTest(TestCase):
         self.assertEquals(datetime(2018, 3, 6, 16, 39, 37, tzinfo=UTC), batch.started)
         self.assertEquals(datetime(2018, 3, 6, 16, 41, 10, tzinfo=UTC), batch.ended)
         self.assertEquals(51, batch.nb_edits)
+        self.assertEquals("32.9", batch.editing_speed)
 
     def test_ingest_twice(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')

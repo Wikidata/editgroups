@@ -91,6 +91,13 @@ class Batch(models.Model):
         return '<Batch {}:{} by {}>'.format(self.tool.shortid, self.uid, self.user)
 
     @property
+    def editing_speed(self):
+        time_diff = (self.ended - self.started).seconds
+        if time_diff <= 0:
+            return '∞'
+        return '{:5.1f}'.format((self.nb_edits * 60.)/time_diff)
+
+    @property
     def nb_reverted(self):
         return self.edits.filter(reverted=True).count()
 
