@@ -85,7 +85,7 @@ class Batch(models.Model):
     nb_edits = models.IntegerField()
 
     class Meta:
-        unique_together = (('user','tool','uid'))
+        unique_together = (('tool','uid','user'))
 
     def __str__(self):
         return '<Batch {}:{} by {}>'.format(self.tool.shortid, self.uid, self.user)
@@ -203,18 +203,26 @@ class Edit(models.Model):
                 continue
 
             # Try to find an existing batch for that edit
-            batch_key = (matching_tool.shortid, match.uid, match.user)
+            batch_key = (matching_tool.shortid, match.uid)
             batch = batches.get(batch_key)
 
+            created = False
             if not batch:
                 batch, created = Batch.objects.get_or_create(
-                    tool=tool, user=match.user, uid=match.uid,
+                    tool=tool, uid=match.uid,
                     defaults={
+                        'user': match.user,
                         'summary': match.summary,
                         'started': timestamp,
                         'ended': timestamp,
                         'nb_edits': 0,
                     })
+
+            # Check that the batch is owned by the right user
+            if batch.user != match.user:
+                if created:
+                    batch.delete()
+                continue
 
             batch.nb_edits += 1
             batch.ended = max(batch.ended, timestamp)
@@ -238,7 +246,7 @@ class Edit(models.Model):
                         existing_edit = Edit.objects.get(id=edit.id)
                         # this edit was already seen: we need to remove it
                         # from the associated batch count
-                        batch_key = (edit.batch.tool.shortid, edit.batch.uid, edit.batch.user)
+                        batch_key = (edit.batch.tool.shortid, edit.batch.uid)
                         batch = batches.get(batch_key)
                         if batch:
                             batch.nb_edits -= 1

@@ -29,7 +29,7 @@ class ToolTest(TestCase):
 
 
     def test_qs(self):
-        tool = Tool.objects.get(shortid='QS')
+        tool = Tool.objects.get(shortid='QSv2')
 
         self.assertEquals(('2120', 'Pintoch', '#quickstatements'),
             tool.match("QuickStatementsBot",
@@ -57,12 +57,24 @@ class EditTest(TestCase):
         batch = Batch.objects.get()
         self.assertEquals(51, batch.nb_edits)
 
+    def test_hijack(self):
+        """
+        Someone trying to reuse the token to artificially attribute
+        edits to a batch
+        """
+        Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
+        Edit.ingest_jsonlines('store/testdata/hijack.json')
+
+        self.assertEquals(1, Batch.objects.count())
+        batch = Batch.objects.get()
+        self.assertEquals(51, batch.nb_edits)
+
     def test_ingest_jsonlines_qs(self):
         Edit.ingest_jsonlines('store/testdata/one_qs_batch.json')
 
         self.assertEquals(1, Batch.objects.count())
         batch = Batch.objects.get()
-        self.assertEquals('QS', batch.tool.shortid)
+        self.assertEquals('QSv2', batch.tool.shortid)
         self.assertEquals('Pintoch', batch.user)
         self.assertEquals('2120', batch.uid)
         self.assertEquals(datetime(2018, 3, 7, 16, 20, 12, tzinfo=UTC), batch.started)
