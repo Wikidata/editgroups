@@ -66,7 +66,7 @@ class EditTest(TestCase):
         self.assertEquals(1, Batch.objects.count())
         batch = Batch.objects.get()
         self.assertEquals(5, batch.nb_edits)
-        self.assertEqual(2, batch.nb_reverted)
+        self.assertEquals(2, batch.nb_reverted)
 
     def test_str(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
@@ -80,6 +80,13 @@ class BatchEditsViewTest(APITestCase):
     def setUpClass(cls):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
         cls.batch = Batch.objects.get()
+
+    def test_nbpages(self):
+        self.assertEquals(51, self.batch.nb_pages)
+
+    def test_avg_diffsize(self):
+        self.assertTrue(2500 < self.batch.avg_diffsize)
+        self.assertTrue(self.batch.avg_diffsize < 3000)
 
     def pagination(self):
         response = self.client.get(reverse('batch-edits', args=[self.batch.id]))
