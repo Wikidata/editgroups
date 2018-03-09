@@ -92,10 +92,14 @@ class Batch(models.Model):
 
     @property
     def editing_speed(self):
-        time_diff = (self.ended - self.started).seconds
+        time_diff = self.duration
         if time_diff <= 0:
             return '∞'
         return '{:5.1f}'.format((self.nb_edits * 60.)/time_diff).strip()
+
+    @property
+    def duration(self):
+        return (self.ended - self.started).seconds
 
     @property
     def nb_reverted(self):

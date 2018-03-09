@@ -55,6 +55,7 @@ class BatchDetailSerializer(serializers.ModelSerializer):
     tool = ToolSerializer()
     url = serializers.CharField()
     editing_speed = serializers.CharField()
+    duration = serializers.IntegerField()
     nb_reverted = serializers.IntegerField()
     nb_pages = serializers.IntegerField()
     avg_diffsize = serializers.IntegerField()
