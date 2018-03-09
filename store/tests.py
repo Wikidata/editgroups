@@ -21,6 +21,13 @@ class ToolTest(TestCase):
             tool.match("Pintoch",
                 "/* wbeditentity-update:0| */ import Charity Navigator ([[Wikidata:Edit groups/OR/ca7d7cc|discuss]])"))
 
+    def test_or_setclaim(self):
+        tool = Tool.objects.get(shortid='OR')
+        self.assertEquals(('3990c0d', 'Pintoch', 'add EIN ids from Charity Navigator'),
+             tool.match("Pintoch",
+                "/* wbsetclaim-create:2||1 */ [[Property:P1297]]: 88-0302673, add EIN ids from Charity Navigator ([[:toollabs:editgroups/b/OR/3990c0d|details]])"))
+        
+
     def test_qs(self):
         tool = Tool.objects.get(shortid='QS')
 

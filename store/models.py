@@ -120,8 +120,8 @@ class Edit(models.Model):
     title = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
     namespace = models.IntegerField()
     uri = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
-    comment = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
-    parsedcomment = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
+    comment = models.TextField()
+    parsedcomment = models.TextField()
     bot = models.BooleanField()
     minor = models.BooleanField()
     changetype = models.CharField(max_length=32)
@@ -160,8 +160,8 @@ class Edit(models.Model):
             title = json_edit['title'][:MAX_CHARFIELD_LENGTH],
             namespace = json_edit['namespace'],
             uri = json_edit['meta']['uri'][:MAX_CHARFIELD_LENGTH],
-            comment = json_edit['comment'][:MAX_CHARFIELD_LENGTH],
-            parsedcomment = json_edit['parsedcomment'][:MAX_CHARFIELD_LENGTH],
+            comment = json_edit['comment'],
+            parsedcomment = json_edit['parsedcomment'],
             bot = json_edit['bot'],
             minor = json_edit['minor'],
             changetype = json_edit['type'],
