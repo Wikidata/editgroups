@@ -11,22 +11,24 @@ from pytz import UTC
 from datetime import datetime
 from .utils import grouper
 
+MAX_CHARFIELD_LENGTH = 190
+
 class Tool(models.Model):
     """
     A tool, making edits with some ids in the edit summaries
     """
     Match = namedtuple('Match', 'uid user summary')
 
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
     shortid = models.CharField(max_length=32)
 
-    idregex = models.CharField(max_length=512)
+    idregex = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
     idgroupid = models.IntegerField()
 
-    summaryregex = models.CharField(max_length=512)
+    summaryregex = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
     summarygroupid = models.IntegerField()
 
-    userregex = models.CharField(max_length=512, null=True)
+    userregex = models.CharField(max_length=MAX_CHARFIELD_LENGTH, null=True)
     usergroupid = models.IntegerField(null=True)
 
     url = models.URLField()
@@ -68,10 +70,10 @@ class Batch(models.Model):
     objects = BulkUpdateManager()
 
     tool = models.ForeignKey(Tool, on_delete=models.CASCADE)
-    user = models.CharField(max_length=512, db_index=True)
-    uid = models.CharField(max_length=128, db_index=True)
+    user = models.CharField(max_length=MAX_CHARFIELD_LENGTH, db_index=True)
+    uid = models.CharField(max_length=MAX_CHARFIELD_LENGTH, db_index=True)
 
-    summary = models.CharField(max_length=512)
+    summary = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
     started = models.DateTimeField()
     ended = models.DateTimeField()
     nb_edits = models.IntegerField()
@@ -109,15 +111,15 @@ class Edit(models.Model):
     oldlength = models.IntegerField()
     newlength = models.IntegerField()
     timestamp = models.DateTimeField()
-    title = models.CharField(max_length=256)
+    title = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
     namespace = models.IntegerField()
-    uri = models.CharField(max_length=512)
-    comment = models.CharField(max_length=500)
-    parsedcomment = models.CharField(max_length=1000)
+    uri = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
+    comment = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
+    parsedcomment = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
     bot = models.BooleanField()
     minor = models.BooleanField()
     changetype = models.CharField(max_length=32)
-    user = models.CharField(max_length=256)
+    user = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
     patrolled = models.BooleanField()
 
     # Inferred by us
@@ -149,15 +151,15 @@ class Edit(models.Model):
             oldlength = json_edit['length']['old'],
             newlength = json_edit['length']['new'],
             timestamp = datetime.fromtimestamp(json_edit['timestamp'], tz=UTC),
-            title = json_edit['title'][:256],
+            title = json_edit['title'][:MAX_CHARFIELD_LENGTH],
             namespace = json_edit['namespace'],
-            uri = json_edit['meta']['uri'][:512],
-            comment = json_edit['comment'][:500],
-            parsedcomment = json_edit['parsedcomment'][:1000],
+            uri = json_edit['meta']['uri'][:MAX_CHARFIELD_LENGTH],
+            comment = json_edit['comment'][:MAX_CHARFIELD_LENGTH],
+            parsedcomment = json_edit['parsedcomment'][:MAX_CHARFIELD_LENGTH],
             bot = json_edit['bot'],
             minor = json_edit['minor'],
             changetype = json_edit['type'],
-            user = json_edit['user'][:256],
+            user = json_edit['user'][:MAX_CHARFIELD_LENGTH],
             patrolled = json_edit['patrolled'],
             batch = batch,
             reverted = False)

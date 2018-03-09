@@ -154,3 +154,12 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
+# Taken from https://gist.github.com/DamianZaremba/e6d65a200f7c451db80939e7e9e4f2c8
+# Shrink specific columns down, so the key combination for the constraints
+# aren't larger than the max legnth, when not using innodb_large_prefix.
+# Length may require tweaking depending on application requirements
+SOCIAL_AUTH_UID_LENGTH = 190
+SOCIAL_AUTH_NONCE_SERVER_URL_LENGTH = 190
+SOCIAL_AUTH_ASSOCIATION_SERVER_URL_LENGTH = 190
+SOCIAL_AUTH_ASSOCIATION_HANDLE_LENGTH = 190
+SOCIAL_AUTH_EMAIL_LENGTH = 190

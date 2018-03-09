@@ -2,7 +2,7 @@ sseclient
 django>=2.0
 django-bulk-update
 django-cache-machine
-mysqlclient
 django-rest-framework
 python-dateutil
 social-auth-app-django
+pymysql
