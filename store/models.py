@@ -31,8 +31,8 @@ class Tool(CachingMixin, models.Model):
     summaryregex = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
     summarygroupid = models.IntegerField()
 
-    userregex = models.CharField(max_length=MAX_CHARFIELD_LENGTH, null=True)
-    usergroupid = models.IntegerField(null=True)
+    userregex = models.CharField(max_length=MAX_CHARFIELD_LENGTH, null=True, blank=True)
+    usergroupid = models.IntegerField(null=True, blank=True)
 
     url = models.URLField()
 
