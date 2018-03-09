@@ -42,7 +42,7 @@ class LimitedEditSerializer(EditSerializer):
 class BatchSimpleSerializer(serializers.ModelSerializer):
     tool = ToolSerializer()
     url = serializers.CharField()
-    editing_speed = serializers.FloatField()
+    editing_speed = serializers.CharField()
 
     class Meta:
         model = Batch
@@ -54,7 +54,7 @@ class BatchDetailSerializer(serializers.ModelSerializer):
     edits = LimitedEditSerializer(many=True, read_only=True)
     tool = ToolSerializer()
     url = serializers.CharField()
-    editing_speed = serializers.FloatField()
+    editing_speed = serializers.CharField()
     nb_reverted = serializers.IntegerField()
     nb_pages = serializers.IntegerField()
     avg_diffsize = serializers.IntegerField()
