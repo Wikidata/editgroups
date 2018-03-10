@@ -5,6 +5,7 @@ from django.urls import reverse
 from django_bulk_update.manager import BulkUpdateManager
 from caching.base import CachingManager, CachingMixin
 from collections import namedtuple
+from cached_property import cached_property
 
 import re
 import json
@@ -98,6 +99,13 @@ class Batch(models.Model):
         return '{:5.1f}'.format((self.nb_edits * 60.)/time_diff).strip()
 
     @property
+    def entities_speed(self):
+        time_diff = self.duration
+        if time_diff <= 0:
+            return '∞'
+        return '{:5.1f}'.format((self.nb_pages * 60.)/time_diff).strip()
+
+    @cached_property
     def duration(self):
         return (self.ended - self.started).seconds
 
@@ -105,9 +113,17 @@ class Batch(models.Model):
     def nb_reverted(self):
         return self.edits.filter(reverted=True).count()
 
-    @property
+    @cached_property
     def nb_pages(self):
         return self.edits.all().values('title').distinct().count()
+
+    @cached_property
+    def nb_new_pages(self):
+        return self.edits.all().filter(oldrevid=0).count()
+
+    @property
+    def nb_existing_pages(self):
+        return self.nb_pages - self.nb_new_pages
 
     @property
     def avg_diffsize(self):

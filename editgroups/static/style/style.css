@@ -8,7 +8,13 @@ body {
 }
 
 .batch-details {
-        width: 28em;
+        width: auto;
+        display: inline-block;
+        margin-right: 3em;
+}
+
+.batch-details th {
+        border-top: none !important;
 }
 
 .mw-plusminus-pos {
@@ -23,6 +29,10 @@ span.comment {
         font-style: italic;
         unicode-bidi: -moz-isolate;
         unicode-bidi: isolate;
+}
+
+.autocomment {
+        color: #72777d;
 }
 
 .numeric-column {

@@ -2,6 +2,7 @@
 
 {% load parsetime %}
 {% load diffsize %}
+{% load secondsduration %}
 
 {% block title %}
 {{ summary }}
@@ -12,6 +13,10 @@
 <h3>Edit group by <a href="https://www.wikidata.org/wiki/User:{{ user }}">{{ user }}</a>: {{ summary }} ({{ uid }})</h3>
 </div>
 <table class="table batch-details">
+        <tr>
+                <th>Execution</th>
+        </tr>
+        <tr>
         <tr>
                 <td>Tool</td>
                 <td><a href="{{ tool.url }}">{{ tool.name }}</a></td>
@@ -25,8 +30,13 @@
                 <td>{{ ended|parsetime }}</td>
         </tr>
         <tr>
-                <td>Editing speed</td>
-                <td>{% autoescape off %}{{ editing_speed }}{% endautoescape %} edits/min</td>
+                <td>Duration</td>
+                <td>{{ duration|secondsduration }}</td>
+        </tr>
+</table>
+<table class="table batch-details">
+        <tr>
+                <th>Edits</th>
         </tr>
         <tr>
                 <td>Number of edits</td>
@@ -37,12 +47,33 @@
                 <td>{{ nb_reverted }}</td>
         </tr>
         <tr>
-                <td>Number of entities touched</td>
+                <td>Average size difference</td>
+                <td>{{ avg_diffsize|diffsize }}</td>
+        </tr>
+        <tr>
+                <td>Speed</td>
+                <td>{{ editing_speed }} edits/min</td>
+        </tr>
+</table>
+<table class="table batch-details">
+        <tr>
+                <th>Entities</th>
+        </tr>
+        <tr>
+                <td>Existing entities edited</td>
+                <td>{{ nb_existing_pages }}</td>
+        </tr>
+        <tr>
+                <td>New entities created</td>
+                <td>{{ nb_new_pages }}</td>
+        </tr>
+        <tr>
+                <td>Total entities touched</td>
                 <td>{{ nb_pages }}</td>
         </tr>
         <tr>
-                <td>Average size difference</td>
-                <td>{{ avg_diffsize|diffsize }}</td>
+                <td>Speed</td>
+                <td>{{ entities_speed }} entities/min</td>
         </tr>
 </table>
 
