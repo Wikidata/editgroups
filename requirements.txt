@@ -10,3 +10,5 @@ pymysql
 html5lib
 cached-property
 requests-oauthlib
+celery
+requests-mock

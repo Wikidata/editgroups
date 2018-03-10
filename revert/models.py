@@ -1,9 +1,10 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
-from requests_oauthlib import OAuth1
 import json
 import random
+import requests
+from requests_oauthlib import OAuth1
 from cached_property import cached_property
 
 from store.models import Batch
@@ -44,8 +45,8 @@ class RevertTask(models.Model):
         """
         if self.cancel:
              raise ValueError('Task was canceled.')
-        socialauth = t.user.social_auth.get()
-        dct = json.loads(socialauth.extra_data)
+        socialauth = self.user.social_auth.get()
+        dct = socialauth.extra_data
         return dct['access_token']
 
     def revert_edit(self, edit):
@@ -56,7 +57,7 @@ class RevertTask(models.Model):
             settings.SOCIAL_AUTH_MEDIAWIKI_KEY,
             settings.SOCIAL_AUTH_MEDIAWIKI_SECRET,
             self.oauth_tokens['oauth_token'],
-            self.oauth_tokens['oauth_secret_token'])
+            self.oauth_tokens['oauth_token_secret'])
 
         # Get token
         r = requests.get('https://www.wikidata.org/w/api.php', params={
@@ -64,11 +65,14 @@ class RevertTask(models.Model):
         'meta':'tokens',
             'format': 'json',
         }, auth=auth)
+        print('#### GET TOKEN')
+        print(r.url)
+        print(r.text)
         r.raise_for_status()
         token = r.json()['query']['tokens']['csrftoken']
 
         # Undo the edit
-        r = requests.post('https://www.wikidata.org/w/api.php', data={
+        data = {
             'action':'edit',
             'title': edit.title,
             'undo': edit.newrevid,
@@ -76,7 +80,13 @@ class RevertTask(models.Model):
             'format': 'json',
             'token': token,
             'watchlist': 'nochange',
-        }, auth=auth)
+        }
+        r = requests.post('https://www.wikidata.org/w/api.php',
+                data=data, auth=auth)
+
+        print('#### UNDO EDIT')
+        print(data)
+        print(r.text)
         r.raise_for_status()
 
 

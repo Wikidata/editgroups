@@ -2,6 +2,10 @@ from django.test import TestCase
 from django.test import Client
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.conf import settings
+from requests_oauthlib import OAuth1
+from social_django.models import UserSocialAuth
+import requests_mock
 
 from store.models import Edit
 from store.models import Batch
@@ -13,13 +17,20 @@ class RevertTaskTest(TestCase):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
         cls.batch = Batch.objects.get()
         cls.client = Client()
-        cls.admin = User(username='admin', password='admin123')
-        cls.admin.save()
+        cls.mary = User(username='admin', password='admin123')
+        cls.mary.save()
+        mary_auth = UserSocialAuth(
+            user=cls.mary, provider='wikidata', uid='39834872',
+            extra_data= {"access_token":
+                {"oauth_token": "12345",
+                 "oauth_token_secret": "67890"},
+        "auth_time": 1520695332})
+        mary_auth.save()
         cls.john = User(username='john', password='jamesbond007')
         cls.john.save()
 
     def setUp(self):
-        self.client.force_login(self.admin)
+        self.client.force_login(self.mary)
 
     def test_revert_not_logged_in(self):
         self.client.logout()
@@ -42,7 +53,7 @@ class RevertTaskTest(TestCase):
         self.assertEquals(400, response.status_code)
 
     def test_revert_batch_already_being_reverted(self):
-        task = RevertTask(batch=self.batch, user=self.admin, comment="Already reverting")
+        task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
         task.save()
 
         batch = Batch.objects.get(id=self.batch.id)
@@ -66,7 +77,7 @@ class RevertTaskTest(TestCase):
         self.assertEquals(302, response.status_code)
 
     def test_revert_batch_previous_canceled(self):
-        task = RevertTask(batch=self.batch, user=self.admin, comment="Already reverting")
+        task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
         task.cancel = True
         task.save()
         response = self.client.post(
@@ -77,7 +88,7 @@ class RevertTaskTest(TestCase):
 
     def test_stop_not_logged_in(self):
         self.client.logout()
-        task = RevertTask(batch=self.batch, user=self.admin, comment="Already reverting")
+        task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
         task.save()
         response = self.client.post(
             reverse('stop-revert', args=[self.batch.tool.shortid, self.batch.uid]))
@@ -96,7 +107,7 @@ class RevertTaskTest(TestCase):
         self.assertEquals(403, response.status_code)
 
     def test_stop_task_already_complete(self):
-        task = RevertTask(batch=self.batch, user=self.admin, comment="Already reverting")
+        task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
         task.complete = True
         task.save()
         response = self.client.post(
@@ -104,7 +115,7 @@ class RevertTaskTest(TestCase):
         self.assertEquals(404, response.status_code)
 
     def test_stop_fine(self):
-        task = RevertTask(batch=self.batch, user=self.admin, comment="Already reverting")
+        task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
         task.save()
         response = self.client.post(
             reverse('stop-revert', args=[self.batch.tool.shortid, self.batch.uid]))
@@ -112,7 +123,42 @@ class RevertTaskTest(TestCase):
         task = RevertTask.objects.get(id=task.id)
         self.assertTrue(task.cancel)
 
+    def test_oauth_tokens(self):
+        task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
+        self.assertEquals({'oauth_token':'12345','oauth_token_secret':'67890'},
+            task.oauth_tokens)
+
+    def test_oauth_tokens_canceled(self):
+        task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
+        task.cancel = True
+        with self.assertRaises(ValueError):
+            self.assertEquals({'oauth_token':'12345','oauth_token_secret':'67890'},
+                task.oauth_tokens)
+
+    def test_summary(self):
+        task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
+        self.assertTrue(len(task.uid) > 5)
+        self.assertTrue(task.summary.startswith('Already reverting'))
+        self.assertTrue(task.uid in task.summary)
+
+    def test_revert_edit(self):
+        task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
+        edit = self.batch.edits.order_by('-timestamp')[0]
+        with requests_mock.mock() as m:
+            auth = OAuth1(settings.SOCIAL_AUTH_MEDIAWIKI_KEY,
+                        settings.SOCIAL_AUTH_MEDIAWIKI_SECRET,
+                        '12345', '67890')
+            m.get('https://www.wikidata.org/w/api.php?action=query&meta=tokens&format=json',
+                text='{"query":{"tokens":{"csrftoken":"abcd"}}}')
+            m.post('https://www.wikidata.org/w/api.php',
+                text='{"status":"success"}')
+
+            task.revert_edit(edit)
+
     @classmethod
     def tearDownClass(cls):
         pass
+
+
+
 
