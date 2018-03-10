@@ -1,11 +1,10 @@
 
-from celery import shared_task
+from editgroups.celery import app
 from .models import RevertTask
 from store.utils import grouper
 
 
-@shared_task(name='revert_batch')
-#@run_only_once('task', keys=['pk'], timeout=24*60*60)
+@app.task(name='revert_batch')
 def revert_batch(task_pk):
     task = RevertTask.objects.get(pk=task_pk)
     edits = task.batch.edits.filter(reverted=False).order_by('-timestamp')

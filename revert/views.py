@@ -64,7 +64,6 @@ class RevertTaskView(CreateAPIView):
         task.save()
 
         from .tasks import revert_batch
-        from django.conf import settings
         revert_batch.apply_async(args=[task.id])
 
         return redirect(form.batch.url)
