@@ -37,6 +37,14 @@ class ToolTest(TestCase):
             tool.match("QuickStatementsBot",
                 "/* wbcreateclaim-create:1| */ [[Property:P3896]]: Data:Neighbourhoods/New York City.map, #quickstatements; [[:toollabs:quickstatements/#mode=batch&batch=2120|batch #2120]] by [[User:Pintoch|]]"))
 
+    def test_eg(self):
+        tool = Tool.objects.get(shortid='EG')
+
+        self.assertEquals(None,
+            tool.match("Pintoch", "this was just dumb ([[:toollabs:editgroups/b/EG/c367abf|details]])"))
+        self.assertEquals(('c367abf', 'Pintoch', 'this was just dumb'),
+            tool.match("Pintoch", "/* undo:0||1234|Rageux */ this was just dumb ([[:toollabs:editgroups/b/EG/c367abf|details]])"))
+
 
 class EditTest(TestCase):
     def test_ingest_jsonlines_or(self):

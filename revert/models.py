@@ -30,9 +30,9 @@ class RevertTask(models.Model):
     def __str__(self):
         return 'reverting '+str(self.batch)
 
-    @property
-    def summary(self):
-        return (self.comment +
+    def summary(self, edit):
+        prefix = '/* undo:0||{}|{} */ '.format(edit.newrevid, edit.user)
+        return (prefix + self.comment +
                 ' ([[:toollabs:editgroups/b/EG/{}|details]])'.format(self.uid))
 
     @cached_property
@@ -76,7 +76,7 @@ class RevertTask(models.Model):
             'action':'edit',
             'title': edit.title,
             'undo': edit.newrevid,
-            'summary': self.summary,
+            'summary': self.summary(edit),
             'format': 'json',
             'token': token,
             'watchlist': 'nochange',

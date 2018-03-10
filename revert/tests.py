@@ -145,9 +145,12 @@ class RevertTaskTest(TestCase):
 
     def test_summary(self):
         task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
+        edit = self.batch.edits.all()[0]
         self.assertTrue(len(task.uid) > 5)
-        self.assertTrue(task.summary.startswith('Already reverting'))
-        self.assertTrue(task.uid in task.summary)
+        summary = task.summary(edit)
+        self.assertTrue(summary.startswith('/* undo'))
+        self.assertTrue("Already reverting" in summary)
+        self.assertTrue(task.uid in summary)
 
     def test_revert_edit(self):
         task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
@@ -157,9 +160,9 @@ class RevertTaskTest(TestCase):
                         settings.SOCIAL_AUTH_MEDIAWIKI_SECRET,
                         '12345', '67890')
             m.get('https://www.wikidata.org/w/api.php?action=query&meta=tokens&format=json',
-                text='{"query":{"tokens":{"csrftoken":"abcd"}}}')
+                text='{"batchcomplete":"","query":{"tokens":{"csrftoken":"abcd"}}}')
             m.post('https://www.wikidata.org/w/api.php',
-                text='{"status":"success"}')
+                text='{"edit":{"result":"Success","pageid":4246474,"title":"Q4115189","contentmodel":"wikibase-item","oldrevid":647380593,"newrevid":647388912,"newtimestamp":"2018-03-10T20:19:49Z"}}')
 
             task.revert_edit(edit)
 
