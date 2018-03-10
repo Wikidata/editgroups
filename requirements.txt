@@ -7,3 +7,4 @@ django-rest-framework
 python-dateutil
 social-auth-app-django
 pymysql
+html5lib

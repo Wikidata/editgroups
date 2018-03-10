@@ -2,8 +2,10 @@
 from datetime import datetime
 import unittest
 from pytz import UTC
+import html5lib
 
 from django.test import TestCase
+from django.test import Client
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
@@ -126,3 +128,33 @@ class WikidataEditStreamTest(unittest.TestCase):
             if idx > 10:
                 break
             self.assertEquals('wikidatawiki', edit['wiki'])
+
+
+class PagesTest(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.client = Client()
+        cls.parser = html5lib.HTMLParser(strict=True)
+        Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
+        cls.batch = Batch.objects.get()
+        Edit.ingest_jsonlines('store/testdata/one_qs_batch.json')
+
+    def get_page(self, url_name, **kwargs):
+        return self.client.get(reverse(url_name, kwargs or None))
+
+    def check_html(self, response):
+        self.assertEqual(200, response.status_code)
+        self.parser.parse(response.content)
+
+    def test_batches_list(self):
+        response = self.get_page('list-batches')
+        self.check_html(response)
+
+    def test_batch(self):
+        response = self.client.get(self.batch.url)
+        self.check_html(response)
+
+    @classmethod
+    def tearDownClass(cls):
+        Batch.objects.all().delete()
