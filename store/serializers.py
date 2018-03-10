@@ -3,6 +3,7 @@ from django import db
 from .models import Batch
 from .models import Edit
 from .models import Tool
+from revert.serializers import RevertTaskSerializer
 
 
 class ToolSerializer(serializers.ModelSerializer):
@@ -42,30 +43,37 @@ class LimitedEditSerializer(EditSerializer):
 class BatchSimpleSerializer(serializers.ModelSerializer):
     tool = ToolSerializer()
     url = serializers.CharField()
+    author = serializers.CharField(source='user')
     editing_speed = serializers.CharField()
 
     class Meta:
         model = Batch
-        fields = '__all__'
+        exclude = ('user',) # translated as 'author'
         depth = 1
 
 
 class BatchDetailSerializer(serializers.ModelSerializer):
-    edits = LimitedEditSerializer(many=True, read_only=True)
     tool = ToolSerializer()
     url = serializers.CharField()
+    author = serializers.CharField(source='user')
     editing_speed = serializers.CharField()
+
+    edits = LimitedEditSerializer(many=True, read_only=True)
     entities_speed = serializers.CharField()
     duration = serializers.IntegerField()
     nb_reverted = serializers.IntegerField()
+    nb_revertable_edits = serializers.IntegerField()
     nb_pages = serializers.IntegerField()
     nb_new_pages = serializers.IntegerField()
     nb_existing_pages = serializers.IntegerField()
     avg_diffsize = serializers.IntegerField()
+    can_be_reverted = serializers.BooleanField()
+
+    active_revert_task = RevertTaskSerializer()
 
     class Meta:
         model = Batch
-        fields = '__all__'
+        exclude = ('user',) # translated as 'author'
         depth = 1
 
 

@@ -1,6 +1,7 @@
 from django.db import models
 from django.db import transaction
 from django.db.utils import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django_bulk_update.manager import BulkUpdateManager
 from caching.base import CachingManager, CachingMixin
@@ -112,6 +113,26 @@ class Batch(models.Model):
     @property
     def nb_reverted(self):
         return self.edits.filter(reverted=True).count()
+
+    @cached_property
+    def revertable_edits(self):
+        return self.edits.filter(reverted=False, oldrevid__gt=0)
+
+    @cached_property
+    def active_revert_task(self):
+        try:
+            return self.revert_tasks.filter(cancel=False,complete=False).get()
+        except ObjectDoesNotExist:
+            return None
+
+    @property
+    def can_be_reverted(self):
+        return (self.nb_revertable_edits > 0 and
+            self.active_revert_task is None)
+
+    @cached_property
+    def nb_revertable_edits(self):
+        return self.revertable_edits.count()
 
     @cached_property
     def nb_pages(self):

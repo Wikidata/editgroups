@@ -8,55 +8,78 @@ from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView
+from rest_framework.generics import DestroyAPIView
 
 from store.models import Batch
+from store.serializers import BatchDetailSerializer
+from .models import RevertTask
 
 class CreateRevertTaskForm(forms.Form):
     """
     A form to create a revert task
     """
-    tool_shortid = forms.CharField(required=True, hidden=True)
-    batch_uid = forms.CharField(required=True, hidden=True)
-    comment = forms.CharField(required=True, max_length=150)
+    comment = forms.CharField(required=True, max_length=150, widget=forms.TextInput(attrs={'placeholder': 'describe why you are undoing this group'}))
+
+    def __init__(self, batch, *args, **kwargs):
+        super(CreateRevertTaskForm, self).__init__(*args, **kwargs)
+        self.batch = batch
 
     def clean(self):
-        try:
-            batch = Batch.objects.get(tool__shortid=self.cleaned_data['tool_shortid'],
-                                uid=self.cleaned_data['batch_uid'])
-            self.cleaned_data['batch'] = batch
-        except Batch.DoesNotExist:
-            raise ValidationError('Edit batch could not be found.', code='batch-not-found')
-
-        if batch.revert_tasks.filter(canceled=False).exists():
+        super(CreateRevertTaskForm, self).clean()
+        if self.batch.active_revert_task is not None:
             raise ValidationError('This batch is already being canceled.', code='batch-already-being-canceled')
 
+
 @login_required
-def initiate_revert_task(request, tool, uid):
+def initiate_revert_view(request, tool, uid):
+    batch = get_object_or_404(Batch, tool__shortid=tool, uid=uid)
+    form = CreateRevertTaskForm(batch, initial={
+        'tool_shortid':tool,
+        'batch_uid':uid,
+    })
+    return render(request, 'revert/initiate.html', {'form':form, 'batch':batch})
+
 
 class RevertTaskView(CreateAPIView):
     """
     The endpoint to start reverting a task
     """
     permission_classes = (IsAuthenticated,)
+    template_name = 'revert/initiate.html'
 
-    def get(self, request):
+    def create(self, request, tool, uid, format=None):
         batch = get_object_or_404(Batch, tool__shortid=tool, uid=uid)
-        form = CreateRevertTaskForm(initial={
-            'tool_shortid':tool,
-            'batch_uid':uid,
-         })
-         return render('revert/initiate.html', {'form':form, 'batch':batch})
-    
-    def create(self, request, format=None):
-        form = CreateRevertTaskForm(request.data)
-        if !form.is_valid():
-            return Response(status=400, form.errors())
+        form = CreateRevertTaskForm(batch, request.data)
+        if not form.is_valid():
+            print('form not valid')
+            return Response(status=400, data={'form':form, 'batch':form.batch})
 
         task = RevertTask(
-                batch=batch,
+                batch=form.batch,
                 user=request.user,
                 comment=form.cleaned_data['comment'])
         task.save()
+
+        return redirect(form.batch.url)
+
+class StopRevertTaskView(CreateAPIView):
+    """
+    The endpoint to stop reverting a task
+    """
+    permission_classes = (IsAuthenticated,)
+    template_name = 'store/batch.html'
+
+    def create(self, request, tool, uid, format=None):
+        batch = get_object_or_404(Batch, tool__shortid=tool, uid=uid)
+        task = batch.active_revert_task
+        if task is None:
+            return Response(status=404, data=BatchDetailSerializer(batch).data)
+
+        if task.user_id != request.user.id:
+            return Response(status=403, data=form.batch)
+
+        task.cancel = True
+        task.save(update_fields=['cancel'])
 
         return redirect(batch.url)
 

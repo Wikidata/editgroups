@@ -3,22 +3,28 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from requests_oauthlib import OAuth1
 import json
+import random
 from cached_property import cached_property
 
 from store.models import Batch
 from store.models import Edit
 
+def generate_uid():
+    uid_length = 7
+    return ('%0'+str(uid_length)+'x') % random.randrange(16**uid_length)
+
 class RevertTask(models.Model):
     """
     Represents the task of undoing a batch
     """
-    uid = models.CharField(max_length=32)
-    batch = models.ForeignKey(Batch, on_delete=models.CASCADE)
+    uid = models.CharField(max_length=32, default=generate_uid)
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name='revert_tasks')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.TextField()
     timestamp = models.DateTimeField(auto_now=True)
 
     cancel = models.BooleanField(default=False)
+    complete = models.BooleanField(default=False)
 
     @property
     def summary(self):
@@ -28,16 +34,16 @@ class RevertTask(models.Model):
     @cached_property
     def oauth_tokens(self):
         """
-        Returns a dictionary containing the OAuth 
+        Returns a dictionary containing the OAuth
         tokens required to execute the task.
         Raises various exceptions if the task is
         canceled, or OAuth tokens could not be found.
         """
-        if self.canceled:
+        if self.cancel:
              raise ValueError('Task was canceled.')
         socialauth = t.user.social_auth.get()
         dct = json.loads(socialauth.extra_data)
-        return dct['access_token']        
+        return dct['access_token']
 
     def revert_edit(self, edit):
         """

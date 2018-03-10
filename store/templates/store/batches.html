@@ -21,7 +21,7 @@ EditGroups
 {% for batch in results %}
         <tr>
                 <td><a href="{{ batch.url }}">{{ batch.uid }}</a></td>
-                <td><a href="https://www.wikidata.org/wiki/User:{{ batch.user }}">{{ batch.user }}</a></td>
+                <td><a href="https://www.wikidata.org/wiki/User:{{ batch.author }}">{{ batch.author }}</a></td>
                 <td><a href="{{ batch.url }}">{{ batch.summary }}</a></td>
                 <td class="numeric-column">{{ batch.editing_speed }}</td>
                 <td class="numeric-column">{{ batch.nb_edits }}</td>

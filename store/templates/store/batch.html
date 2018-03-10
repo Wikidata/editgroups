@@ -10,7 +10,7 @@
 
 {% block mainBody %}
 <div class="page-header">
-<h3>Edit group by <a href="https://www.wikidata.org/wiki/User:{{ user }}">{{ user }}</a>: {{ summary }} ({{ uid }})</h3>
+<h3>Edit group by <a href="https://www.wikidata.org/wiki/User:{{ author }}">{{ author }}</a>: {{ summary }} ({{ uid }})</h3>
 </div>
 <table class="table batch-details">
         <tr>
@@ -76,6 +76,27 @@
                 <td>{{ entities_speed }} entities/min</td>
         </tr>
 </table>
+
+<h4>Actions</h4>
+
+<div class="btn-group" role="group" aria-label="actions">
+    {% if active_revert_task %}
+        {% if active_revert_task.author.id == user.id %}
+            <form method="POST" action="{% url "stop-revert" tool.shortid uid %}">
+                {% csrf_token %}
+                <input type="submit" class="btn btn-danger" value="Stop undoing" />
+            </form>
+        {% else %}
+            <button class="btn btn-default disabled">{{ active_revert_task.author.username }} is undoing this group</button>
+        {% endif %}
+    {% else %}
+        {% if can_be_reverted %}
+            <a class="btn btn-default" href="{% url "initiate-revert" tool.shortid uid %}">Undo entire group</a>
+        {% else %}
+            <button class="btn btn-default disabled">Nothing to undo</button>
+        {% endif %}
+    {% endif %}
+</div>
 
 <h4>Latest edits</h4>
         <ul>

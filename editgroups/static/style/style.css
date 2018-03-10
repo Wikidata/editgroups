@@ -38,3 +38,20 @@ span.comment {
 .numeric-column {
         text-align: right;
 }
+
+.revert-dialog {
+        width: 25em;
+        margin: auto;
+}
+
+.revert-dialog .btn-group {
+        width: 100%;
+}
+
+.revert-dialog .btn-group .btn {
+        width: 50%;
+}
+
+#id_comment {
+        width: 100%;
+}

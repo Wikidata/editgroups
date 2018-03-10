@@ -9,3 +9,4 @@ social-auth-app-django
 pymysql
 html5lib
 cached-property
+requests-oauthlib

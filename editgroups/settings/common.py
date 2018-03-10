@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'social_django',
     'rest_framework',
     'store',
+    'revert',
 )
 
 MIDDLEWARE = [
@@ -100,7 +101,11 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
      ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 50
+    'PAGE_SIZE': 50,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    )
 }
 
 WSGI_APPLICATION = 'editgroups.wsgi.application'
@@ -127,7 +132,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-LOGIN_URL = 'list-batches'
+LOGIN_URL = '/oauth/login/mediawiki/'
 LOGIN_REDIRECT_URL = 'list-batches'
 
 
