@@ -168,3 +168,23 @@ SOCIAL_AUTH_NONCE_SERVER_URL_LENGTH = 190
 SOCIAL_AUTH_ASSOCIATION_SERVER_URL_LENGTH = 190
 SOCIAL_AUTH_ASSOCIATION_HANDLE_LENGTH = 190
 SOCIAL_AUTH_EMAIL_LENGTH = 190
+
+### Celery config ###
+# Celery runs asynchronous tasks such as metadata harvesting or
+# complex updates.
+# To communicate with it, we need a "broker".
+# This is an example broker with Redis
+# (with settings configured in your secret.py)
+REDIS_URL = ':%s@%s:%s/%d' % (
+        REDIS_PASSWORD,
+        REDIS_HOST,
+        REDIS_PORT,
+        REDIS_DB)
+BROKER_URL = 'redis://'+REDIS_URL
+# We also use Redis as result backend.
+CELERY_RESULT_BACKEND = BROKER_URL
+
+CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+CELERY_IMPORTS = ['revert.tasks']
+
+

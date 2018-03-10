@@ -6,10 +6,15 @@ from django.conf import settings
 from requests_oauthlib import OAuth1
 from social_django.models import UserSocialAuth
 import requests_mock
+from editgroups.celery import app as celery_app
+from unittest.mock import patch
 
 from store.models import Edit
 from store.models import Batch
 from .models import RevertTask
+
+def fake_revert(*args, **kwargs):
+    pass
 
 class RevertTaskTest(TestCase):
     @classmethod
@@ -31,6 +36,7 @@ class RevertTaskTest(TestCase):
 
     def setUp(self):
         self.client.force_login(self.mary)
+        celery_app.task_always_eager = True
 
     def test_revert_not_logged_in(self):
         self.client.logout()
@@ -70,12 +76,14 @@ class RevertTaskTest(TestCase):
             data={})
         self.assertEquals(400, response.status_code)
 
+    @patch.object(RevertTask, 'revert_edit', fake_revert)
     def test_revert_batch_fine(self):
         response = self.client.post(
             reverse('submit-revert', args=[self.batch.tool.shortid, self.batch.uid]),
             data={'comment':'testing reverts'})
         self.assertEquals(302, response.status_code)
 
+    @patch.object(RevertTask, 'revert_edit', fake_revert)
     def test_revert_batch_previous_canceled(self):
         task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
         task.cancel = True
