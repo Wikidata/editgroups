@@ -27,7 +27,11 @@ class CreateRevertTaskForm(forms.Form):
     def clean(self):
         super(CreateRevertTaskForm, self).clean()
         if self.batch.active_revert_task is not None:
-            raise ValidationError('This batch is already being canceled.', code='batch-already-being-canceled')
+            raise ValidationError('This batch is already being canceled.',
+                code='batch-already-being-canceled')
+        if not self.batch.nb_revertable_edits:
+            raise ValidationError('This batch does not have any edit that can be undone.',
+                code='nothing-to-undo')
 
 
 @login_required
@@ -51,7 +55,6 @@ class RevertTaskView(CreateAPIView):
         batch = get_object_or_404(Batch, tool__shortid=tool, uid=uid)
         form = CreateRevertTaskForm(batch, request.data)
         if not form.is_valid():
-            print('form not valid')
             return Response(status=400, data={'form':form, 'batch':form.batch})
 
         task = RevertTask(
@@ -76,7 +79,7 @@ class StopRevertTaskView(CreateAPIView):
             return Response(status=404, data=BatchDetailSerializer(batch).data)
 
         if task.user_id != request.user.id:
-            return Response(status=403, data=form.batch)
+            return Response(status=403, data=BatchDetailSerializer(batch).data)
 
         task.cancel = True
         task.save(update_fields=['cancel'])
