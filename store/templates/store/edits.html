@@ -1,0 +1,23 @@
+{% extends "editgroups/common.html" %}
+
+{% load parsetime %}
+{% load diffsize %}
+{% load secondsduration %}
+
+{% block title %}
+{{ summary }}
+{% endblock %}
+
+{% block mainBody %}
+<div class="page-header">
+<h3>Edits in this batch</h3>
+</div>
+        <ul>
+        {% for edit in results %}
+        <li>
+                {% include "store/editline.html" %}
+        </li>
+        {% endfor %}
+        </ul>
+{% include "store/pager.html" %}
+{% endblock %}

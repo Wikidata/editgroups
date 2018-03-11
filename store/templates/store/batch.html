@@ -103,13 +103,13 @@
 <h4>Latest edits</h4>
         <ul>
         {% for edit in edits %}
-        <li>
-                {% if not forloop.last or forloop.counter < 10 %}
+        {% if not forloop.last or forloop.counter < 10 %}
+            <li>
                 {% include "store/editline.html" %}
-                {% else %}
-                ...
-                {% endif %}
-        </li>
+            </li>
+        {% else %}
+            <a href="{% url "batch-edits" tool.shortid uid %}">See all</a>
+        {% endif %}
         {% endfor %}
         </ul>
 {% endblock %}

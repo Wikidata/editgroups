@@ -1,0 +1,10 @@
+<nav aria-label="navigation">
+  <ul class="pager">
+    {% if previous %}
+    <li><a href="{{ previous }}">Previous</a></li>
+    {% endif %}
+    {% if next %}
+    <li><a href="{{ next }}">Next</a></li>
+    {% endif %}
+  </ul>
+</nav>

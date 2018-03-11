@@ -19,24 +19,21 @@ from django.contrib.auth import logout
 from django.urls import path, include
 from rest_framework import routers
 from store import views
+from store import api
 from revert.views import StopRevertTaskView
 from revert.views import RevertTaskView
 from revert.views import initiate_revert_view
 
-router = routers.DefaultRouter()
-router.register(r'edits', views.EditViewSet)
-router.register(r'batches', views.BatchViewSet)
-# router.register(r'batches/(?P<id>\d+)/edits/', views.BatchEditsView.as_view(), 'BatchEdits')
 
 def logout_view(request):
     logout(request)
     return redirect(reverse('list-batches'))
 
 urlpatterns = [
-    #path('', include(router.urls)),
+    path('api/', include(api)),
     path('', views.BatchesView.as_view(), name='list-batches'),
     path('b/<tool>/<uid>/', views.BatchView.as_view(), name='batch-view'),
-    path('batches/<int:id>/edits/', views.BatchEditsView.as_view(), name='batch-edits'),
+    path('b/<tool>/<uid>/edits/', views.BatchEditsView.as_view(), name='batch-edits'),
     path('b/<tool>/<uid>/undo/', initiate_revert_view, name='initiate-revert'),
     path('b/<tool>/<uid>/undo/start/', RevertTaskView.as_view(), name='submit-revert'),
     path('b/<tool>/<uid>/undo/stop/', StopRevertTaskView.as_view(), name='stop-revert'),
