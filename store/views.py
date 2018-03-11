@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import Http404
 
 from rest_framework import viewsets
 from rest_framework import generics
@@ -31,7 +32,10 @@ class BatchView(generics.RetrieveAPIView):
     def get_object(self):
         batch_uid = self.kwargs.get('uid')
         tool_code = self.kwargs.get('tool')
-        return Batch.objects.get(uid=batch_uid,tool__shortid=tool_code)
+        try:
+            return Batch.objects.get(uid=batch_uid,tool__shortid=tool_code)
+        except Batch.DoesNotExist:
+            raise Http404
 
 class BatchesView(generics.ListAPIView):
     serializer_class = BatchSimpleSerializer
