@@ -45,6 +45,7 @@ class BatchSimpleSerializer(serializers.ModelSerializer):
     url = serializers.CharField()
     author = serializers.CharField(source='user')
     editing_speed = serializers.CharField()
+    full_uid = serializers.CharField()
 
     class Meta:
         model = Batch
@@ -57,6 +58,7 @@ class BatchDetailSerializer(serializers.ModelSerializer):
     url = serializers.CharField()
     author = serializers.CharField(source='user')
     editing_speed = serializers.CharField()
+    full_uid = serializers.CharField()
 
     edits = LimitedEditSerializer(many=True, read_only=True)
     entities_speed = serializers.CharField()

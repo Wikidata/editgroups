@@ -93,6 +93,10 @@ class Batch(models.Model):
         return '<Batch {}:{} by {}>'.format(self.tool.shortid, self.uid, self.user)
 
     @property
+    def full_uid(self):
+        return self.tool.shortid+'/'+self.uid
+
+    @property
     def editing_speed(self):
         time_diff = self.duration
         if time_diff <= 0:

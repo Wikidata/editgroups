@@ -79,13 +79,14 @@
 
 <h4>Actions</h4>
 
+<!-- this form should be inside the conditionals (it is only used when stopping a revert job) but somehow it breaks the button group -->
+<form method="POST" action="{% url "stop-revert" tool.shortid uid %}">
+{% csrf_token %}
 <div class="btn-group" role="group" aria-label="actions">
+    <a class="btn btn-default" href="https://www.wikidata.org/w/index.php?action=edit&amp;preload=Wikidata:Edit+groups/Preload&amp;title=Wikidata:Edit+groups/{{ full_uid }}&amp;preloadparams%5b0%5d={{ full_uid }}&amp;preloadparams%5b2%5d={{summary|urlencode}}&amp;preloadparams%5b3%5d={{ author }}&amp;preloadparams%5b4%5d={{ nb_edits }}&amp;preloadparams%5b5%5d={{ edits.0.title|urlencode }}&amp;preloadparams%5b6%5d={{ edits.0.oldrevid }}&amp;preloadparams%5b7%5d={{ edits.0.newrevid }}">Discuss</a>
     {% if active_revert_task %}
         {% if active_revert_task.author.id == user.id %}
-            <form method="POST" action="{% url "stop-revert" tool.shortid uid %}">
-                {% csrf_token %}
                 <input type="submit" class="btn btn-danger" value="Stop undoing" />
-            </form>
         {% else %}
             <button class="btn btn-default disabled">{{ active_revert_task.author.username }} is undoing this group</button>
         {% endif %}
@@ -97,6 +98,7 @@
         {% endif %}
     {% endif %}
 </div>
+</form>
 
 <h4>Latest edits</h4>
         <ul>
