@@ -87,6 +87,6 @@ class RevertTask(models.Model):
         print('#### UNDO EDIT')
         print(data)
         print(r.text)
-        r.raise_for_status()
+        #r.raise_for_status()
 
 

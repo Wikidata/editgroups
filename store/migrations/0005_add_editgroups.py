@@ -11,7 +11,7 @@ def populate_tools(apps, schema_editor):
             shortid='EG',
             idregex='.*EG/([a-f0-9]{7}).*',
             idgroupid=1,
-            summaryregex='.*[:,/] ([^,]*) \(\[\[',
+            summaryregex='.*\*/ (.*) \(\[\[',
             summarygroupid=1,
             userregex=None,
             usergroupid=0,

@@ -22,3 +22,5 @@ CACHES = {
         },
     },
 }
+
+LOGIN_URL = '/editgroups/oauth/login/mediawiki/'
