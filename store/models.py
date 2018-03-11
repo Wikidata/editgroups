@@ -236,7 +236,6 @@ class Edit(models.Model):
             revert_match = cls.reverted_re.match(edit_json['comment'])
             if revert_match:
                 reverted_ids.append(int(revert_match.group(1)))
-                continue
 
             # Otherwise, try to match the edit with a tool
             match = None

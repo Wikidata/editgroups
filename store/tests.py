@@ -60,6 +60,12 @@ class EditTest(TestCase):
         self.assertEquals(51, batch.nb_edits)
         self.assertEquals('32.9', batch.editing_speed)
 
+    def test_ingest_eg(self):
+        Edit.ingest_jsonlines('store/testdata/eg_revert.json')
+        self.assertEquals(1, Batch.objects.count())
+        batch = Batch.objects.get()
+        self.assertEquals('EG', batch.tool.shortid)
+
     def test_ingest_twice(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
@@ -162,6 +168,10 @@ class PagesTest(TestCase):
     def test_batch(self):
         response = self.client.get(self.batch.url)
         self.check_html(response)
+
+    def test_batch_404(self):
+        response = self.client.get('/b/ST/3849384/')
+        self.assertEqual(404, response.status_code)
 
     @classmethod
     def tearDownClass(cls):
