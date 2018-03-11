@@ -1,6 +1,7 @@
 {% extends "editgroups/common.html" %}
 
 {% load parsetime %}
+{% load ago %}
 
 {% block title %}
 EditGroups
@@ -14,7 +15,7 @@ EditGroups
                 <th>User</th>
                 <th>Summary</th>
                 <th class="numeric-column">Edits/min</th>
-                <th class="numeric-column">Edits</th>
+                <th class="numeric-column">Edits&nbsp;&nbsp;</th>
                 <th>Latest edit</th>
                 <th>Tool</th>
         </tr>
@@ -24,8 +25,8 @@ EditGroups
                 <td><a href="https://www.wikidata.org/wiki/User:{{ batch.author }}">{{ batch.author }}</a></td>
                 <td><a href="{{ batch.url }}">{{ batch.summary }}</a></td>
                 <td class="numeric-column">{{ batch.editing_speed }}</td>
-                <td class="numeric-column">{{ batch.nb_edits }}</td>
-                <td>{{ batch.ended|parsetime }}</td>
+                <td class="numeric-column">{{ batch.nb_edits }}&nbsp;&nbsp;</td>
+                <td>{{ batch.ended|parsetime|ago }}</td>
                 <td><a href="{{ batch.tool.url }}">{{ batch.tool.name }}</a></td>
         </tr>
 {% endfor %}
