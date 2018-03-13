@@ -83,9 +83,8 @@ def set_colors(apps, schema_editor):
     for tag_id, color in tag_to_color_name.items():
         html = color_name_to_html.get(color) or color
         tag, created = Tag.objects.get_or_create(id=tag_id, priority=10, defaults={'color':html})
-        if not created:
-            tag.color = html
-            tag.save(update_fields=['color'])
+        tag.color = html
+        tag.save(update_fields=['color'])
 
 def do_nothing(apps, schema_editor):
     pass
