@@ -7,6 +7,7 @@ from django_bulk_update.manager import BulkUpdateManager
 from caching.base import CachingManager, CachingMixin
 from collections import namedtuple
 from cached_property import cached_property
+from collections import defaultdict
 
 import re
 import json
@@ -158,6 +159,11 @@ class Batch(models.Model):
     def url(self):
         return reverse('batch-view', args=[self.tool.shortid, self.uid])
 
+    @cached_property
+    def tag_ids(self):
+        return self.tags.values_list('id', flat=True)
+
+from tagging.models import Tag
 
 class Edit(models.Model):
     """
@@ -228,6 +234,7 @@ class Edit(models.Model):
         batches = {}
         model_edits = []
         reverted_ids = []
+        new_tags = defaultdict(set)
 
         tools = Tool.objects.all()
 
@@ -281,7 +288,13 @@ class Edit(models.Model):
             batches[batch_key] = batch
 
             # Create the edit object
-            model_edits.append(Edit.from_json(edit_json, batch))
+            model_edit = Edit.from_json(edit_json, batch)
+            model_edits.append(model_edit)
+
+            # Extract tags from the edit
+            edit_tags = Tag.extract(model_edit)
+            missing_tags = [tag.id for tag in edit_tags if tag.id not in batch.tag_ids]
+            new_tags[batch.id].update(missing_tags)
 
         # Create all Edit objects update all the batch objects
         if batches:
@@ -304,8 +317,12 @@ class Edit(models.Model):
                     except Edit.DoesNotExist:
                         edit.save()
 
+            # update batch objects
             Batch.objects.bulk_update(list(batches.values()), update_fields=['ended', 'nb_edits'])
 
+            # update tags for batches
+            if new_tags:
+                Tag.add_tags_to_batches(new_tags)
 
         # If we saw any "undo" edit, mark all matching edits as reverted
         if reverted_ids:

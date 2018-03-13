@@ -4,6 +4,7 @@ from .models import Batch
 from .models import Edit
 from .models import Tool
 from revert.serializers import RevertTaskSerializer
+from tagging.serializers import TagSerializer
 
 
 class ToolSerializer(serializers.ModelSerializer):
@@ -46,6 +47,7 @@ class BatchSimpleSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='user')
     editing_speed = serializers.CharField()
     full_uid = serializers.CharField()
+    tags = TagSerializer(many=True)
 
     class Meta:
         model = Batch
@@ -59,6 +61,7 @@ class BatchDetailSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='user')
     editing_speed = serializers.CharField()
     full_uid = serializers.CharField()
+    tags = TagSerializer(many=True)
 
     edits = LimitedEditSerializer(many=True, read_only=True)
     entities_speed = serializers.CharField()

@@ -8,6 +8,7 @@ from django.test import TestCase
 from django.test import Client
 from django.urls import reverse
 from rest_framework.test import APITestCase
+from caching import invalidation
 
 from .models import Tool
 from .models import Edit
@@ -15,6 +16,8 @@ from .models import Batch
 from .stream import WikidataEditStream
 
 class ToolTest(TestCase):
+    def setUp(self):
+        invalidation.cache.clear()
 
     def test_or(self):
         tool = Tool.objects.get(shortid='OR')
@@ -47,6 +50,9 @@ class ToolTest(TestCase):
 
 
 class EditTest(TestCase):
+    def setUp(self):
+        invalidation.cache.clear()
+
     def test_ingest_jsonlines_or(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
 
