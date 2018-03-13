@@ -26,7 +26,7 @@ EditGroups
                 <td><a href="https://www.wikidata.org/wiki/User:{{ batch.author }}">{{ batch.author }}</a></td>
                 <td><a href="{{ batch.url }}">{{ batch.summary }}</a></td>
                 <td class="numeric-column">{% for tag in batch.tags %}
-                        {% if tag.display_name %}<span class="label label-default">{{ tag.display_name }}</span>{% endif %}
+                        {% if tag.display_name %}<span class="label" style="background-color: {{ tag.color }}">{{ tag.display_name }}</span>{% endif %}
                 {% endfor %}</td>
                 <td class="numeric-column">{{ batch.editing_speed }}</td>
                 <td class="numeric-column">{{ batch.nb_edits }}&nbsp;&nbsp;</td>

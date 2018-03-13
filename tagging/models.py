@@ -89,6 +89,8 @@ class Tag(CachingMixin, models.Model):
     priority = models.IntegerField(default=0)
     #: The batches that are tagged with this tag.
     batches = models.ManyToManyField(Batch, related_name='tags')
+    #: Color for the tag (HTML coded, including hash)
+    color = models.CharField(max_length=32, default='#939393')
 
     @property
     def display_name(self):
