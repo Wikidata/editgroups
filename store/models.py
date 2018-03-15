@@ -210,9 +210,9 @@ class Edit(models.Model):
         """
         return cls(
             id = json_edit['id'],
-            oldrevid = json_edit['revision']['old'],
+            oldrevid = json_edit['revision'].get('old') or 0,
             newrevid = json_edit['revision']['new'],
-            oldlength = json_edit['length']['old'],
+            oldlength = json_edit['length'].get('old') or 0,
             newlength = json_edit['length']['new'],
             timestamp = datetime.fromtimestamp(json_edit['timestamp'], tz=UTC),
             title = json_edit['title'][:MAX_CHARFIELD_LENGTH],
