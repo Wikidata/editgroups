@@ -137,9 +137,10 @@ class Tag(CachingMixin, models.Model):
         action_match = action_re.match(edit.comment)
         if action_match:
             tag_name = action_match.group(1)
-            tag, created = cls.objects.get_or_create(id=tag_name,
-                defaults={'priority': 10})
-            tags.append(tag)
+            if not tag_name in edit.batch.tag_ids:
+                tag, created = cls.objects.get_or_create(id=tag_name,
+                    defaults={'priority': 10})
+                tags.append(tag)
 
         # Extract properties
         # TODO
@@ -148,9 +149,10 @@ class Tag(CachingMixin, models.Model):
         language_match = language_re.match(edit.comment)
         if language_match:
             tag_name = 'lang-'+language_match.group(1)
-            tag, created = cls.objects.get_or_create(id=tag_name,
-                defaults={'priority':5, 'color':'#3eabab'})
-            tags.append(tag)
+            if not tag_name in edit.batch.tag_ids:
+                tag, created = cls.objects.get_or_create(id=tag_name,
+                    defaults={'priority':5, 'color':'#3eabab'})
+                tags.append(tag)
 
         return tags
 
