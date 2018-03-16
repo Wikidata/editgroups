@@ -75,6 +75,7 @@ tag_to_readable_name = {
 }
 
 action_re = re.compile('^/\* ([a-z\-]*):.*')
+language_re = re.compile('^/\* wb[a-z\-]*:\d+\|([a-z\-]+) \*/')
 
 class Tag(CachingMixin, models.Model):
     """
@@ -98,7 +99,10 @@ class Tag(CachingMixin, models.Model):
         Returns the text to display in the tag.
         It can return None, in which case the tag should not be displayed.
         """
-        return tag_to_readable_name.get(self.id)
+        if self.id in tag_to_readable_name:
+            return tag_to_readable_name[self.id]
+        elif self.id.startswith('lang-'):
+            return self.id[len('lang-'):]
 
     @classmethod
     def add_tags_to_batches(cls, batch_to_tags):
@@ -141,7 +145,12 @@ class Tag(CachingMixin, models.Model):
         # TODO
 
         # Extract languages
-        # TODO
+        language_match = language_re.match(edit.comment)
+        if language_match:
+            tag_name = 'lang-'+language_match.group(1)
+            tag, created = cls.objects.get_or_create(id=tag_name,
+                defaults={'priority':5, 'color':'#3eabab'})
+            tags.append(tag)
 
         return tags
 

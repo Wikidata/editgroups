@@ -3,6 +3,7 @@ from store.models import Edit
 from store.models import Batch
 from .models import Tag
 from .models import action_re
+from .models import language_re
 from caching import invalidation
 
 cache = invalidation.cache
@@ -33,4 +34,12 @@ class TagTest(TestCase):
         batch = Batch.objects.get()
         self.assertEquals(['wbcreateclaim-create'], list(batch.tag_ids))
 
+    def test_language_re(self):
+        self.assertEquals('ru', language_re.match('/* wbsetlabel-add:1|ru */ Eupelops brevicuspis').group(1))
 
+    def test_tags_with_languages(self):
+        Edit.ingest_jsonlines('store/testdata/qs_batch_with_terms.json')
+        batch = Batch.objects.get()
+        self.assertEquals(['wbsetdescription-add', 'lang-eu'], list(batch.tag_ids))
+        lang_tag = batch.tags.order_by('priority')[0]
+        self.assertEquals('eu', lang_tag.display_name)
