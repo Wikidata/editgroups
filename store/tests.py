@@ -84,7 +84,7 @@ class EditTest(TestCase):
         Edit.ingest_jsonlines('store/testdata/qs_batch_with_new_items.json')
         self.assertEquals(1, Batch.objects.count())
         batch = Batch.objects.get()
-        self.assertEquals(79, batch.nb_edits)
+        self.assertEquals(82, batch.nb_edits)
         self.assertEquals(9, batch.nb_new_pages)
         self.assertEquals(9, batch.nb_pages)
         self.assertEquals(0, batch.nb_existing_pages)
