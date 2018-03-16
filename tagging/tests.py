@@ -19,7 +19,8 @@ class TagTest(TestCase):
         Edit.ingest_jsonlines('store/testdata/one_qs_batch.json')
         batch = Batch.objects.get()
         last_edit = batch.edits.order_by('-timestamp')[0]
-        self.assertEquals(['wbcreateclaim-create'], [tag.id for tag in Tag.extract(last_edit)])
+        # tag extraction on the latest edit does not return any *new* tag
+        self.assertEquals([], [tag.id for tag in Tag.extract(last_edit)])
         self.assertEquals(['wbcreateclaim-create'], list(batch.tag_ids))
 
     def test_extract_editentity(self):
