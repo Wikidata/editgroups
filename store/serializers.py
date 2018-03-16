@@ -47,7 +47,7 @@ class BatchSimpleSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='user')
     editing_speed = serializers.CharField()
     full_uid = serializers.CharField()
-    tags = TagSerializer(many=True)
+    sorted_tags = TagSerializer(many=True)
 
     class Meta:
         model = Batch
