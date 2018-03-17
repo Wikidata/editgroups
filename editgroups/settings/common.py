@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'social_django',
+    'django_filters',
     'rest_framework',
     'store',
     'revert',
@@ -90,6 +91,7 @@ TEMPLATES = [
                     "django.template.context_processors.request",
                     "social_django.context_processors.backends",
                     "social_django.context_processors.login_redirect",
+                    "tagging.filters.context_processor",
                 ),
                 'debug': True
             }
@@ -106,7 +108,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-    )
+    ),
+    'REST_FRAMEWORK':{
+        'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+    }
 }
 
 WSGI_APPLICATION = 'editgroups.wsgi.application'

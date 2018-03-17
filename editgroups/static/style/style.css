@@ -63,3 +63,11 @@ span.comment {
 #footer a {
         padding: 15px;
 }
+
+.selected-tag {
+        border: 2px dashed white;
+}
+
+.selected-user {
+        font-weight: bold;
+}

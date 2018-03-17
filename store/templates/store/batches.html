@@ -1,6 +1,7 @@
 {% extends "editgroups/common.html" %}
 
 {% load parsetime %}
+{% load tagbutton %}
 {% load ago %}
 
 {% block title %}
@@ -23,15 +24,27 @@ EditGroups
 {% for batch in results %}
         <tr>
                 <td><a href="{{ batch.url }}">{{ batch.uid }}</a></td>
-                <td><a href="https://www.wikidata.org/wiki/User:{{ batch.author }}">{{ batch.author }}</a></td>
+                <td>
+                    {% if batch.author == request.GET.user %}
+                    <a href="{% set_get_param "user" None %}" class="selected-user">{{ batch.author }}</a>
+                    {% else %}
+                    <a href="{% set_get_param "user" batch.author %}">{{ batch.author }}</a>
+                    {% endif %}
+                </td>
                 <td><a href="{{ batch.url }}">{{ batch.summary }}</a></td>
                 <td class="numeric-column">{% for tag in batch.tags %}
-                        {% if tag.display_name %}<span class="label" style="background-color: {{ tag.color }}">{{ tag.display_name }}</span>{% endif %}
+                        {% if tag.display_name %}<a href="{% tagbutton tag %}" class="label {% if tag.id in tagging_form.tags %}selected-tag{% endif %}" style="background-color: {{ tag.color }}">{{ tag.display_name }}</a>{% endif %}
                 {% endfor %}</td>
                 <td class="numeric-column">{{ batch.editing_speed }}</td>
                 <td class="numeric-column">{{ batch.nb_edits }}&nbsp;&nbsp;</td>
                 <td>{{ batch.ended|parsetime|ago }}</td>
-                <td><a href="{{ batch.tool.url }}">{{ batch.tool.name }}</a></td>
+                <td>
+                    {% if batch.tool.shortid == request.GET.tool %}
+                    <a href="{% set_get_param "tool" None %}" class="selected-user">{{ batch.tool.name }}</a>
+                    {% else %}
+                    <a href="{% set_get_param "tool" batch.tool.shortid %}">{{ batch.tool.name }}</a>
+                    {% endif %}
+                </td>
         </tr>
 {% endfor %}
 </table>

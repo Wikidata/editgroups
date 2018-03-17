@@ -10,6 +10,8 @@ from .models import Tool
 from .models import Edit
 from .models import Batch
 from .serializers import BatchSimpleSerializer, BatchDetailSerializer, EditSerializer, ToolSerializer
+from django_filters.rest_framework import DjangoFilterBackend
+from tagging.filters import TaggingFilterBackend
 
 class BatchView(generics.RetrieveAPIView):
     serializer_class = BatchDetailSerializer
@@ -33,6 +35,8 @@ class BatchesView(generics.ListAPIView):
     serializer_class = BatchSimpleSerializer
     queryset = Batch.objects.all().order_by('-started')
     template_name = 'store/batches.html'
+    filter_fields = ('user',)
+    filter_backends = (TaggingFilterBackend,)
 
 class APIBatchesView(BatchesView):
     """

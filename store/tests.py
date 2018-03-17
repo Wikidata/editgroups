@@ -180,6 +180,13 @@ class PagesTest(TestCase):
         response = self.get_page('list-batches')
         self.check_html(response)
 
+    def test_batches_list_filtered(self):
+        response = self.client.get(reverse('list-batches')+'?tool=OR')
+        self.check_html(response)
+        tag = self.batch.tags.all()[0]
+        response = self.client.get(reverse('list-batches')+'?tool=OR&tags='+tag.id)
+        self.check_html(response)
+
     def test_batch(self):
         response = self.client.get(self.batch.url)
         self.check_html(response)
