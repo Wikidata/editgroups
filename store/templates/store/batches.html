@@ -32,7 +32,7 @@ EditGroups
                     {% endif %}
                 </td>
                 <td><a href="{{ batch.url }}">{{ batch.summary }}</a></td>
-                <td class="numeric-column">{% for tag in batch.tags %}
+                <td class="numeric-column">{% for tag in batch.sorted_tags %}
                         {% if tag.display_name %}<a href="{% tagbutton tag %}" class="label {% if tag.id in tagging_form.tags %}selected-tag{% endif %}" style="background-color: {{ tag.color }}">{{ tag.display_name }}</a>{% endif %}
                 {% endfor %}</td>
                 <td class="numeric-column">{{ batch.editing_speed }}</td>

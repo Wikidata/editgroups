@@ -161,7 +161,11 @@ class Batch(models.Model):
 
     @cached_property
     def tag_ids(self):
-        return self.tags.order_by('-priority').values_list('id', flat=True)
+        return self.sorted_tags.values_list('id', flat=True)
+
+    @cached_property
+    def sorted_tags(self):
+        return self.tags.order_by('-priority', 'id')
 
 from tagging.models import Tag
 
