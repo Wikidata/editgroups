@@ -35,7 +35,7 @@ before_script:
   - mysql -u travis -e 'CREATE DATABASE editgroups;'
 
 script:
-  - coverage run --source=editgroups,store,revert --omit=*/migrations/*,editgroups/settings/* manage.py test -v 2
+  - coverage run --source=editgroups,store,revert,tagging --omit=*/migrations/*,editgroups/settings/* manage.py test -v 2
 
 after_success:
   - coveralls
