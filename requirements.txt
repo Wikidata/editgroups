@@ -4,6 +4,7 @@ django-bulk-update
 django-redis-cache
 django-cache-machine
 django-rest-framework
+django-filter
 python-dateutil
 social-auth-app-django
 pymysql
