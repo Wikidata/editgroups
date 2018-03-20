@@ -56,11 +56,13 @@ class Tool(CachingMixin, models.Model):
         summaryre = re.compile(self.summaryregex)
         summarymatch = summaryre.match(comment)
 
-        if not idmatch or not summarymatch:
+        if not idmatch:
             return
 
         uid = idmatch.group(self.idgroupid)
-        summary = summarymatch.group(self.summarygroupid)
+        summary = ''
+        if summarymatch:
+            summary = summarymatch.group(self.summarygroupid)
 
         realuser = user
         if self.userregex:

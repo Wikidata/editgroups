@@ -26,6 +26,13 @@ class ToolTest(TestCase):
             tool.match("Pintoch",
                 "/* wbeditentity-update:0| */ import Charity Navigator ([[Wikidata:Edit groups/OR/ca7d7cc|discuss]])"))
 
+    def test_match_without_summary(self):
+        tool = Tool.objects.get(shortid='OR')
+
+        self.assertEquals(('ca7d7cc', 'Pintoch', ''),
+            tool.match("Pintoch",
+                "/* wbeditentity-update:0| */ ([[Wikidata:Edit groups/OR/ca7d7cc|discuss]])"))
+
     def test_or_setclaim(self):
         tool = Tool.objects.get(shortid='OR')
         self.assertEquals(('3990c0d', 'Pintoch', 'add EIN ids from Charity Navigator'),
@@ -43,7 +50,7 @@ class ToolTest(TestCase):
     def test_eg(self):
         tool = Tool.objects.get(shortid='EG')
 
-        self.assertEquals(None,
+        self.assertEquals(('c367abf', 'Pintoch', ''),
             tool.match("Pintoch", "this was just dumb ([[:toollabs:editgroups/b/EG/c367abf|details]])"))
         self.assertEquals(('c367abf', 'Pintoch', 'this was just dumb'),
             tool.match("Pintoch", "/* undo:0||1234|Rageux */ this was just dumb ([[:toollabs:editgroups/b/EG/c367abf|details]])"))
