@@ -10,7 +10,7 @@ def diffsize(edit):
         diffsize = edit
     else:
         diffsize = edit['newlength'] - edit['oldlength']
-    diffstr = '+%d' % diffsize if diffsize > 0 else str(diffsize)
+    diffstr = '+{:,}'.format(diffsize) if diffsize > 0 else '{:,}'.format(diffsize)
     if diffsize >= 500:
         span = '<strong class="mw-plusminus-pos">%s</strong>' % diffstr
     elif diffsize > 0:
