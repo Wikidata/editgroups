@@ -1,7 +1,7 @@
 Wikidata edit groups
 ====================
 
-[![Build Status](https://travis-ci.org/wetneb/editgroups.svg?branch=master)](https://travis-ci.org/wetneb/editgroups) [![Coverage Status](https://coveralls.io/repos/github/wetneb/editgroups/badge.svg?branch=master)](https://coveralls.io/github/wetneb/editgroups?branch=master)
+[![Build Status](https://travis-ci.org/Wikidata/editgroups.svg?branch=master)](https://travis-ci.org/Wikidata/editgroups) [![Coverage Status](https://coveralls.io/repos/github/Wikidata/editgroups/badge.svg?branch=master)](https://coveralls.io/github/Wikidata/editgroups?branch=master)
 
 
 Simple tool to track edit groups on Wikidata and revert them.
@@ -17,7 +17,7 @@ Install the dependencies in the virtualenv:
 * `cd www/python`
 * `virtualenv venv --python /usr/bin/python3`
 * `source venv/bin/activate`
-* `git clone https://github.com/wetneb/editgroups.git src`
+* `git clone https://github.com/Wikidata/editgroups.git src`
 * `pip install -r src/requirements.txt`
 
 Configure static files
