@@ -12,6 +12,13 @@
 <div class="page-header">
 <h3>Edit group by <a href="https://www.wikidata.org/wiki/User:{{ author }}">{{ author }}</a>: {{ summary }} ({{ uid }})</h3>
 </div>
+
+<p>
+{% for tag in sorted_tags %}
+{% if tag.display_name %}<span class="label" style="background-color: {{ tag.color }}">{{ tag.display_name }}</span>{% endif %}
+{% endfor %}
+</p>
+
 <table class="table batch-details">
         <tr>
                 <th>Execution</th>

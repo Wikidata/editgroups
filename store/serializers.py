@@ -61,7 +61,7 @@ class BatchDetailSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='user')
     editing_speed = serializers.CharField()
     full_uid = serializers.CharField()
-    tags = TagSerializer(many=True)
+    sorted_tags = TagSerializer(many=True)
 
     edits = LimitedEditSerializer(many=True, read_only=True)
     entities_speed = serializers.CharField()
