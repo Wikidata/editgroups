@@ -41,7 +41,7 @@ class CreateRevertTaskForm(forms.Form):
 @login_required
 def initiate_revert_view(request, tool, uid):
     batch = get_object_or_404(Batch, tool__shortid=tool, uid=uid)
-    form = CreateRevertTaskForm(batch, initial={
+    form = CreateRevertTaskForm(batch, request.user, initial={
         'tool_shortid':tool,
         'batch_uid':uid,
     })

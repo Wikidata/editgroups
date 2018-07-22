@@ -11,7 +11,7 @@ Undoing "{{ batch.summary }}"
 <h3>Undoing edit group by <a href="https://www.wikidata.org/wiki/User:{{ batch.user }}">{{ batch.user }}</a>: {{ batch.summary }} ({{ batch.uid }})</h3>
 </div>
 <div class="revert-dialog">
-    <p>You are about to undo {{ batch.nb_revertable_edits }} edits.</p>
+    <p>You are about to undo {{ batch.nb_revertable_edits }} edits{% if batch.nb_undeleted_new_items %}, including the creation of {{ batch.nb_undeleted_new_items }} items{% endif %}.</p>
     <form method="POST" action="{% url "submit-revert" batch.tool.shortid batch.uid %}">
        {% csrf_token %}
        {{ form }}
