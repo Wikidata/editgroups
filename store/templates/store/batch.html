@@ -101,7 +101,7 @@
     {% else %}
         {% if can_be_reverted %}
             {% if nb_undeleted_new_pages > 0 %}
-                {% if request.user|isadmin %}
+                {% if request.user.is_authenticated and request.user|isadmin %}
                      <a class="btn btn-default" href="{% url "initiate-revert" tool.shortid uid %}">Undo and delete entire group</a>
                 {% else %}
                      <a class="btn btn-default" href="https://www.wikidata.org/w/index.php?title=Wikidata:Requests_for_deletions&action=edit&section=new&preload=Wikidata:Edit+groups/Revert%20preload&amp;preloadparams%5b0%5d={{ full_uid }}&amp;preloadparams%5b2%5d={{summary|urlencode}}&amp;preloadparams%5b3%5d={{ author }}&amp;preloadparams%5b4%5d={{ nb_edits }}&amp;preloadparams%5b5%5d={{ edits.0.title|urlencode }}&amp;preloadparams%5b6%5d={{ edits.0.oldrevid }}&amp;preloadparams%5b7%5d={{ edits.0.newrevid }}&amp;preloadtitle=Edit%20group%20[[toollabs:editgroups/b/{{ full_uid }}|{{ full_uid }}]]">Ask an admin to undo</a>
