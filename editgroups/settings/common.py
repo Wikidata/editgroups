@@ -134,7 +134,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.mediawiki.MediaWiki',
+    'editgroups.oauth.CustomMediaWiki',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -174,6 +174,8 @@ SOCIAL_AUTH_NONCE_SERVER_URL_LENGTH = 190
 SOCIAL_AUTH_ASSOCIATION_SERVER_URL_LENGTH = 190
 SOCIAL_AUTH_ASSOCIATION_HANDLE_LENGTH = 190
 SOCIAL_AUTH_EMAIL_LENGTH = 190
+
+MEDIAWIKI_API_ENDPOINT = 'https://www.wikidata.org/w/api.php'
 
 ### Celery config ###
 # Celery runs asynchronous tasks such as metadata harvesting or
