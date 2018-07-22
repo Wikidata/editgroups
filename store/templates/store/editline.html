@@ -15,7 +15,7 @@ class="mw-changeslist-separator">. .</span>
 
 {{ edit|diffsize }}
 
-({% if edit.reverted %}<span class="edit-reverted">undone</span>{% else %}<a class="revert-link" href="{{ edit.revert_url }}">{% if edit.oldrevid %}undo{% else %}delete{% endif %}</a>{% endif %})
+({% if edit.reverted %}<span class="edit-reverted">{% if edit.oldrevid %}undone{% else %}deleted{% endif %}</span>{% else %}<a class="revert-link" href="{{ edit.revert_url }}">{% if edit.oldrevid %}undo{% else %}delete{% endif %}</a>{% endif %})
 
 <span class="mw-changeslist-separator">. .</span> 
 
