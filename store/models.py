@@ -221,12 +221,19 @@ class Edit(models.Model):
         """
         Creates an edit from json, without saving it
         """
+        # The following two fields are not provided in deletions
+        revision = json_edit.get('revision', {})
+        length = json_edit.get('length', {})
+        changetype = json_edit['type']
+        if changetype == 'log':
+            changetype = json_edit['log_type']
+
         return cls(
             id = json_edit['id'],
-            oldrevid = json_edit['revision'].get('old') or 0,
-            newrevid = json_edit['revision']['new'],
-            oldlength = json_edit['length'].get('old') or 0,
-            newlength = json_edit['length']['new'],
+            oldrevid = revision.get('old') or 0,
+            newrevid = revision.get('new') or 0,
+            oldlength = length.get('old') or 0,
+            newlength = length.get('new') or 0,
             timestamp = datetime.fromtimestamp(json_edit['timestamp'], tz=UTC),
             title = json_edit['title'][:MAX_CHARFIELD_LENGTH],
             namespace = json_edit['namespace'],
@@ -234,10 +241,10 @@ class Edit(models.Model):
             comment = json_edit['comment'],
             parsedcomment = json_edit['parsedcomment'],
             bot = json_edit['bot'],
-            minor = json_edit['minor'],
-            changetype = json_edit['type'],
+            minor = json_edit.get('minor') or False,
+            changetype = changetype,
             user = json_edit['user'][:MAX_CHARFIELD_LENGTH],
-            patrolled = json_edit['patrolled'],
+            patrolled = json_edit.get('patrolled') or False,
             batch = batch,
             reverted = False)
 
