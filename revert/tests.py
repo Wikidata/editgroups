@@ -147,7 +147,7 @@ class RevertTaskTest(TestCase):
         task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
         edit = self.batch.edits.all()[0]
         self.assertTrue(len(task.uid) > 5)
-        summary = task.summary(edit)
+        summary = task.undo_summary(edit)
         self.assertTrue(summary.startswith('/* undo'))
         self.assertTrue("Already reverting" in summary)
         self.assertTrue(task.uid in summary)
