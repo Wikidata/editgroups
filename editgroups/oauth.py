@@ -20,7 +20,8 @@ class CustomMediaWiki(MediaWiki):
         r = requests.get(settings.MEDIAWIKI_API_ENDPOINT,
             {'action':'query',
              'meta':'userinfo',
-             'uiprop':'rights|ratelimits|blockinfo'
+             'uiprop':'rights|ratelimits|blockinfo',
+             'format':'json',
             }, auth=auth)
         data['userinfo'] = r.json()['query']['userinfo']
         return data
