@@ -204,7 +204,10 @@ class Edit(models.Model):
 
     @property
     def revert_url(self):
-        return 'https://www.wikidata.org/w/index.php?title={}&action=edit&undoafter={}&undo={}'.format(self.title, self.oldrevid, self.newrevid)
+        if self.oldrevid:
+            return 'https://www.wikidata.org/w/index.php?title={}&action=edit&undoafter={}&undo={}'.format(self.title, self.oldrevid, self.newrevid)
+        else:
+            return 'https://www.wikidata.org/w/index.php?title={}&action=delete'.format(self.title)
 
     def __str__(self):
         return '<Edit {} >'.format(self.url)
@@ -240,6 +243,7 @@ class Edit(models.Model):
         batches = {}
         model_edits = []
         reverted_ids = []
+        deleted_pages = []
         new_tags = defaultdict(set)
 
         tools = Tool.objects.all()
@@ -254,7 +258,11 @@ class Edit(models.Model):
             if revert_match:
                 reverted_ids.append(int(revert_match.group(1)))
 
-            # Otherwise, try to match the edit with a tool
+            # or a deletion
+            if edit_json.get('log_action') == 'delete':
+                deleted_pages.append(edit_json['title'])
+
+            # Then, try to match the edit with a tool
             match = None
             matching_tool = None
             for tool in tools:
@@ -333,6 +341,9 @@ class Edit(models.Model):
         # If we saw any "undo" edit, mark all matching edits as reverted
         if reverted_ids:
             Edit.objects.filter(newrevid__in=reverted_ids).update(reverted=True)
+        # similarly if we saw some deletions which match any creations we know of, mark them as deleted
+        if deleted_pages:
+            Edit.objects.filter(title__in=deleted_pages, oldrevid=0).update(reverted=True)
 
     @classmethod
     def ingest_jsonlines(cls, fname, batch_size=50):

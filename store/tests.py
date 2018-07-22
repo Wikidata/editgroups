@@ -128,6 +128,13 @@ class EditTest(TestCase):
         self.assertEquals(5, batch.nb_edits)
         self.assertEquals(2, batch.nb_reverted)
 
+    def test_deletions(self):
+        Edit.ingest_jsonlines('store/testdata/new_items_deleted.json')
+        self.assertEquals(1, Batch.objects.count())
+        batch = Batch.objects.get()
+        self.assertEquals(1, batch.nb_new_pages)
+        self.assertEqual(1, batch.nb_reverted)
+
     def test_str(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
 
