@@ -123,7 +123,7 @@ class Batch(models.Model):
 
     @cached_property
     def revertable_edits(self):
-        return self.edits.filter(reverted=False, oldrevid__gt=0)
+        return self.edits.filter(reverted=False)
 
     @cached_property
     def active_revert_task(self):
@@ -148,6 +148,10 @@ class Batch(models.Model):
     @cached_property
     def nb_new_pages(self):
         return self.edits.all().filter(oldrevid=0).count()
+
+    @cached_property
+    def nb_undeleted_new_pages(self):
+        return self.revertable_edits.filter(oldrevid=0).count()
 
     @property
     def nb_existing_pages(self):

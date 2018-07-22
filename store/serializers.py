@@ -70,6 +70,7 @@ class BatchDetailSerializer(serializers.ModelSerializer):
     nb_revertable_edits = serializers.IntegerField()
     nb_pages = serializers.IntegerField()
     nb_new_pages = serializers.IntegerField()
+    nb_undeleted_new_pages = serializers.IntegerField()
     nb_existing_pages = serializers.IntegerField()
     avg_diffsize = serializers.IntegerField()
     can_be_reverted = serializers.BooleanField()

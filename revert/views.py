@@ -12,6 +12,7 @@ from rest_framework.generics import DestroyAPIView
 
 from store.models import Batch
 from store.serializers import BatchDetailSerializer
+from store.templatetags.isadmin import isadmin
 from .models import RevertTask
 
 class CreateRevertTaskForm(forms.Form):
@@ -20,9 +21,10 @@ class CreateRevertTaskForm(forms.Form):
     """
     comment = forms.CharField(required=True, max_length=150, widget=forms.TextInput(attrs={'placeholder': 'describe why you are undoing this group'}))
 
-    def __init__(self, batch, *args, **kwargs):
+    def __init__(self, batch, user, *args, **kwargs):
         super(CreateRevertTaskForm, self).__init__(*args, **kwargs)
         self.batch = batch
+        self.user = user
 
     def clean(self):
         super(CreateRevertTaskForm, self).clean()
@@ -32,6 +34,8 @@ class CreateRevertTaskForm(forms.Form):
         if not self.batch.nb_revertable_edits:
             raise ValidationError('This batch does not have any edit that can be undone.',
                 code='nothing-to-undo')
+        if self.batch.nb_undeleted_new_pages and not isadmin(user):
+            raise ValidationError('Undoing this batch requires admin privileges.')
 
 
 @login_required
@@ -53,7 +57,7 @@ class RevertTaskView(CreateAPIView):
 
     def create(self, request, tool, uid, format=None):
         batch = get_object_or_404(Batch, tool__shortid=tool, uid=uid)
-        form = CreateRevertTaskForm(batch, request.data)
+        form = CreateRevertTaskForm(batch, request.user, request.data)
         if not form.is_valid():
             return Response(status=400, data={'form':form, 'batch':form.batch})
 
