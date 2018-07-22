@@ -30,10 +30,13 @@ class RevertTask(models.Model):
     def __str__(self):
         return 'reverting '+str(self.batch)
 
-    def summary(self, edit):
-        prefix = '/* undo:0||{}|{} */ '.format(edit.newrevid, edit.user)
-        return (prefix + self.comment +
+    def comment_with_stamp(self):
+        return (self.comment +
                 ' ([[:toollabs:editgroups/b/EG/{}|details]])'.format(self.uid))
+
+    def undo_summary(self, edit):
+        prefix = '/* undo:0||{}|{} */ '.format(edit.newrevid, edit.user)
+        return (prefix + self.comment_with_stamp())
 
     @cached_property
     def oauth_tokens(self):
@@ -61,32 +64,43 @@ class RevertTask(models.Model):
 
         # Get token
         r = requests.get('https://www.wikidata.org/w/api.php', params={
-        'action':'query',
-        'meta':'tokens',
+            'action':'query',
+            'meta':'tokens',
             'format': 'json',
         }, auth=auth)
         print('#### GET TOKEN')
-        print(r.url)
         print(r.text)
         r.raise_for_status()
         token = r.json()['query']['tokens']['csrftoken']
 
-        # Undo the edit
-        data = {
-            'action':'edit',
-            'title': edit.title,
-            'undo': edit.newrevid,
-            'summary': self.summary(edit),
-            'format': 'json',
-            'token': token,
-            'watchlist': 'nochange',
-        }
+        if edit.oldrevid:
+            # Undo the edit
+            data = {
+                'action':'edit',
+                'title': edit.title,
+                'undo': edit.newrevid,
+                'summary': self.undo_summary(edit),
+                'format': 'json',
+                'token': token,
+                'watchlist': 'nochange',
+            }
+        else:
+            # Delete the page
+            data = {
+                'action': 'delete',
+                'title': edit.title,
+                'reason': self.comment_with_stamp(),
+                'token': token,
+                'format': 'json',
+                'watchlist': 'nochange',
+            }
+
         r = requests.post('https://www.wikidata.org/w/api.php',
                 data=data, auth=auth)
 
         print('#### UNDO EDIT')
-        print(data)
         print(r.text)
         #r.raise_for_status()
+
 
 
