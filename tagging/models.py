@@ -71,9 +71,9 @@ tag_to_readable_name = {
 	"wbeditentity-create": _("new items"),
 	"wbeditentity-override": _("clears items"),
 	"special-create-property": _("new properties"),
-        "undo": _("undo"),
-        "delete": _("delete"),
-        "restore": _("restore"),
+        "undo": _("undo edits"),
+        "delete": _("delete items"),
+        "restore": _("restore items"),
 }
 
 action_re = re.compile('^/\* ([a-z\-]*):.*')
