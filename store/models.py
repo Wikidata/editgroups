@@ -151,7 +151,7 @@ class Batch(models.Model):
 
     @cached_property
     def nb_undeleted_new_pages(self):
-        return self.revertable_edits.filter(changetype='new').count()
+        return self.revertable_edits.filter(changetype__in=['new','restore','delete']).count()
 
     @property
     def nb_existing_pages(self):
@@ -263,7 +263,7 @@ class Edit(models.Model):
         tools = Tool.objects.all()
 
         for edit_json in json_batch:
-            if not edit_json:
+            if not edit_json or edit_json.get('namespace') not in [0,120]:
                 continue
             timestamp = datetime.fromtimestamp(edit_json['timestamp'], tz=UTC)
 

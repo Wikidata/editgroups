@@ -110,6 +110,13 @@ class EditTest(TestCase):
         batch = Batch.objects.get()
         self.assertEquals(51, batch.nb_edits)
 
+    def test_wrong_namespace(self):
+        """
+        Only edits in the item and property namespaces are considered
+        """
+        Edit.ingest_jsonlines('store/testdata/wrong_namespace.json')
+        self.assertEquals(0, Batch.objects.count())
+
     def test_ingest_jsonlines_qs(self):
         Edit.ingest_jsonlines('store/testdata/one_qs_batch.json')
 
@@ -151,6 +158,7 @@ class EditTest(TestCase):
         restore_batch = Edit.objects.get(changetype='restore').batch
         self.assertEquals(1, delete_batch.nb_reverted)
         self.assertEqual(0, restore_batch.nb_reverted)
+        self.assertEqual(1, restore_batch.nb_undeleted_new_pages)
 
     def test_new_deletion_restore_deletion(self):
         Edit.ingest_jsonlines('store/testdata/new_deletion_restore_deletion.json')
