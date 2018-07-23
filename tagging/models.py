@@ -73,7 +73,7 @@ tag_to_readable_name = {
 	"special-create-property": _("new properties"),
         "undo": _("undo"),
         "delete": _("delete"),
-        "undelete": _("undelete"),
+        "restore": _("restore"),
 }
 
 action_re = re.compile('^/\* ([a-z\-]*):.*')

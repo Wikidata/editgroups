@@ -226,7 +226,7 @@ class Edit(models.Model):
         length = json_edit.get('length', {})
         changetype = json_edit['type']
         if changetype == 'log':
-            changetype = json_edit['log_type']
+            changetype = json_edit['log_action']
 
         return cls(
             id = json_edit['id'],
@@ -254,7 +254,8 @@ class Edit(models.Model):
         batches = {}
         model_edits = []
         reverted_ids = []
-        deleted_pages = []
+        deleted_pages = {} # map: title -> latest deletion timestamp
+        restored_pages = {} # map: title -> latest restoration timestamp
         new_tags = defaultdict(set)
 
         tools = Tool.objects.all()
@@ -271,7 +272,11 @@ class Edit(models.Model):
 
             # or a deletion
             if edit_json.get('log_action') == 'delete':
-                deleted_pages.append(edit_json['title'])
+                deleted_pages[edit_json['title']] = timestamp
+
+            # or a restore
+            if edit_json.get('log_action') == 'restore':
+                restored_pages[edit_json['title']] = timestamp
 
             # Then, try to match the edit with a tool
             match = None
@@ -321,6 +326,27 @@ class Edit(models.Model):
             missing_tags = [tag.id for tag in edit_tags if tag.id not in batch.tag_ids]
             new_tags[batch.id].update(missing_tags)
 
+        # if we saw some deletions which match any creations or undeletions we know of, mark them as deleted.
+        # We do this before creating the previous edits in the same batch, because deletions and restorations
+        # do not come with unique ids to identify the creation, deletion or restoration that they undo
+        # (this is a notion that we introduce ourselves) so if a deletion and the corresponding revert happen
+        # in the same batch we need to inspect the order in which they happened.
+        if deleted_pages:
+            Edit.objects.filter(title__in=deleted_pages.keys(), changetype__in=['new','restore']).update(reverted=True)
+            for edit in model_edits:
+                if (edit.title in deleted_pages
+                    and edit.changetype in ['new','restore']
+                    and edit.timestamp < deleted_pages.get(edit.title)):
+                    edit.reverted = True
+        # finally if we saw some undeletions which match any deletions we know of, mark them as undone
+        if restored_pages:
+            Edit.objects.filter(title__in=restored_pages.keys(), changetype='delete').update(reverted=True)
+            for edit in model_edits:
+                if (edit.title in restored_pages
+                    and edit.changetype == 'delete'
+                    and edit.timestamp < restored_pages.get(edit.title)):
+                    edit.reverted = True
+
         # Create all Edit objects update all the batch objects
         if batches:
             # Create all the edit objects
@@ -349,12 +375,11 @@ class Edit(models.Model):
             if new_tags:
                 Tag.add_tags_to_batches(new_tags)
 
-        # If we saw any "undo" edit, mark all matching edits as reverted
+        # If we saw any "undo" edit, mark all matching edits as reverted.
+        # We do this after creating the latest edits because it could be possible that
+        # an edit from the batch we just processed was undone in the same go.
         if reverted_ids:
             Edit.objects.filter(newrevid__in=reverted_ids).update(reverted=True)
-        # similarly if we saw some deletions which match any creations we know of, mark them as deleted
-        if deleted_pages:
-            Edit.objects.filter(title__in=deleted_pages, changetype='new').update(reverted=True)
 
     @classmethod
     def ingest_jsonlines(cls, fname, batch_size=50):

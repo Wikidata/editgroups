@@ -50,10 +50,12 @@ class ToolTest(TestCase):
     def test_eg(self):
         tool = Tool.objects.get(shortid='EG')
 
-        self.assertEquals(('c367abf', 'Pintoch', ''),
-            tool.match("Pintoch", "this was just dumb ([[:toollabs:editgroups/b/EG/c367abf|details]])"))
         self.assertEquals(('c367abf', 'Pintoch', 'this was just dumb'),
             tool.match("Pintoch", "/* undo:0||1234|Rageux */ this was just dumb ([[:toollabs:editgroups/b/EG/c367abf|details]])"))
+
+        # for deletions, undeletions
+        self.assertEquals(('c367abf', 'Pintoch', 'deleting gibberish items'),
+            tool.match("Pintoch", "deleting gibberish items ([[:toollabs:editgroups/b/EG/c367abf|details]])"))
 
 
 class EditTest(TestCase):
@@ -141,6 +143,23 @@ class EditTest(TestCase):
         batch = Batch.objects.get()
         self.assertEquals(0, batch.nb_new_pages)
         self.assertEqual(0, batch.nb_reverted)
+
+    def test_deletion_restore(self):
+        Edit.ingest_jsonlines('store/testdata/deletion_restore.json')
+        self.assertEquals(2, Batch.objects.count())
+        delete_batch = Edit.objects.get(changetype='delete').batch
+        restore_batch = Edit.objects.get(changetype='restore').batch
+        self.assertEquals(1, delete_batch.nb_reverted)
+        self.assertEqual(0, restore_batch.nb_reverted)
+
+    def test_new_deletion_restore_deletion(self):
+        Edit.ingest_jsonlines('store/testdata/new_deletion_restore_deletion.json')
+        self.assertEquals(4, Batch.objects.count())
+        new_batch = Edit.objects.get(changetype='new').batch
+        restore_batch = Edit.objects.get(changetype='restore').batch
+        self.assertEquals(1, new_batch.nb_reverted)
+        self.assertEqual(1, restore_batch.nb_reverted)
+        self.assertEqual(Edit.objects.filter(reverted=False).count(), 1)
 
     def test_str(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
