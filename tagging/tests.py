@@ -44,3 +44,11 @@ class TagTest(TestCase):
         self.assertEquals(['wbsetdescription-add', 'lang-eu'], list(batch.tag_ids))
         lang_tag = batch.tags.order_by('priority')[0]
         self.assertEquals('eu', lang_tag.display_name)
+
+    def test_deletion_batch(self):
+        Edit.ingest_jsonlines('store/testdata/deletion_edit.json')
+        self.assertEquals(1, Batch.objects.count())
+        batch = Batch.objects.get()
+        self.assertEquals(['delete'], list(batch.tag_ids))
+
+

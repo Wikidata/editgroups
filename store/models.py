@@ -147,11 +147,11 @@ class Batch(models.Model):
 
     @cached_property
     def nb_new_pages(self):
-        return self.edits.all().filter(oldrevid=0).count()
+        return self.edits.all().filter(changetype='new').count()
 
     @cached_property
     def nb_undeleted_new_pages(self):
-        return self.revertable_edits.filter(oldrevid=0).count()
+        return self.revertable_edits.filter(changetype='new').count()
 
     @property
     def nb_existing_pages(self):
@@ -354,7 +354,7 @@ class Edit(models.Model):
             Edit.objects.filter(newrevid__in=reverted_ids).update(reverted=True)
         # similarly if we saw some deletions which match any creations we know of, mark them as deleted
         if deleted_pages:
-            Edit.objects.filter(title__in=deleted_pages, oldrevid=0).update(reverted=True)
+            Edit.objects.filter(title__in=deleted_pages, changetype='new').update(reverted=True)
 
     @classmethod
     def ingest_jsonlines(cls, fname, batch_size=50):

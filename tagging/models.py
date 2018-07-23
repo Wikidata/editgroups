@@ -72,6 +72,8 @@ tag_to_readable_name = {
 	"wbeditentity-override": _("clears items"),
 	"special-create-property": _("new properties"),
         "undo": _("undo"),
+        "delete": _("delete"),
+        "undelete": _("undelete"),
 }
 
 action_re = re.compile('^/\* ([a-z\-]*):.*')
@@ -153,6 +155,12 @@ class Tag(CachingMixin, models.Model):
                 tag, created = cls.objects.get_or_create(id=tag_name,
                     defaults={'priority':5, 'color':'#3eabab'})
                 tags.append(tag)
+
+        # Other actions
+        if edit.changetype in tag_to_readable_name:
+            tag, created = cls.objects.get_or_create(id=edit.changetype,
+                defaults={'priority':20, 'color':'#dc4ec9'})
+            tags.append(tag)
 
         return tags
 
