@@ -34,7 +34,7 @@ class CreateRevertTaskForm(forms.Form):
         if not self.batch.nb_revertable_edits:
             raise ValidationError('This batch does not have any edit that can be undone.',
                 code='nothing-to-undo')
-        if self.batch.nb_undeleted_new_pages and not isadmin(user):
+        if self.batch.nb_undeleted_new_pages and not isadmin(self.user):
             raise ValidationError('Undoing this batch requires admin privileges.')
 
 
