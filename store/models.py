@@ -210,6 +210,8 @@ class Edit(models.Model):
     def revert_url(self):
         if self.oldrevid:
             return 'https://www.wikidata.org/w/index.php?title={}&action=edit&undoafter={}&undo={}'.format(self.title, self.oldrevid, self.newrevid)
+        elif self.changetype == 'delete':
+            return 'https://www.wikidata.org/wiki/Special:Undelete/{}'.format(self.title)
         else:
             return 'https://www.wikidata.org/w/index.php?title={}&action=delete'.format(self.title)
 

@@ -2,7 +2,7 @@
 {% load parsetime %}
 {% load fixwikilinks %}
 
-(<a href="{{ edit.url }}" class="mw-changeslist-diff" title="{{ edit.title }}">diff</a> | <a href="https://www.wikidata.org/w/index.php?title={{ edit.title }}&amp;action=history"
+({% if edit.oldrevid %}<a href="{{ edit.url }}" class="mw-changeslist-diff" title="{{ edit.title }}">diff</a> | {% endif %}<a href="https://www.wikidata.org/w/index.php?title={{ edit.title }}&amp;action=history"
 class="mw-changeslist-history" title="{{ edit.title }}">hist</a>)
 
 <span class="mw-changeslist-separator">. .</span> 
@@ -10,12 +10,20 @@ class="mw-changeslist-history" title="{{ edit.title }}">hist</a>)
 <span class="mw-title"><a href="{{ edit.uri }}" class="mw-changeslist-title"><span class="wb-itemlink"><span class="wb-itemlink-label"
 dir="ltr" lang="en">{{ edit.title }}</span></span></a></span>;
 
+{% if edit.changetype == 'delete' %}
+deleted
+{% elif edit.changetype == 'restore' %}
+restored
+{% endif %}
+
 <span class="mw-changeslist-date">{{ edit.timestamp|parsetime }}</span> <span
 class="mw-changeslist-separator">. .</span>
 
+{% if edit.newrevid %}
 {{ edit|diffsize }}
+{% endif %}
 
-({% if edit.reverted %}<span class="edit-reverted">{% if edit.oldrevid %}undone{% else %}deleted{% endif %}</span>{% else %}<a class="revert-link" href="{{ edit.revert_url }}">{% if edit.oldrevid %}undo{% else %}delete{% endif %}</a>{% endif %})
+({% if edit.reverted %}<span class="edit-reverted">{% if edit.oldrevid %}undone{% elif edit.changetype == 'delete' %}restored{% else %}deleted{% endif %}</span>{% else %}<a class="revert-link" href="{{ edit.revert_url }}">{% if edit.oldrevid %}undo{% elif edit.changetype == 'delete' %}restore{% else %}delete{% endif %}</a>{% endif %})
 
 <span class="mw-changeslist-separator">. .</span> 
 
