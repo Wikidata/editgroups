@@ -84,10 +84,20 @@ class RevertTask(models.Model):
                 'token': token,
                 'watchlist': 'nochange',
             }
-        else:
+        elif edit.changetype in ['new','restore']:
             # Delete the page
             data = {
                 'action': 'delete',
+                'title': edit.title,
+                'reason': self.comment_with_stamp(),
+                'token': token,
+                'format': 'json',
+                'watchlist': 'nochange',
+            }
+        elif edit.changetype == 'delete':
+            # Restore the page
+            data = {
+                'action': 'undelete',
                 'title': edit.title,
                 'reason': self.comment_with_stamp(),
                 'token': token,
