@@ -206,6 +206,13 @@ class WikidataEditStreamTest(unittest.TestCase):
                 break
             self.assertEquals('wikidatawiki', edit['wiki'])
 
+    def test_offset(self):
+        from time import sleep
+        s = WikidataEditStream()
+        first_offset = s.latest_offset()
+        sleep(1)
+        second_offset = s.latest_offset()
+        self.assertTrue(first_offset < second_offset)
 
 class PagesTest(TestCase):
 
