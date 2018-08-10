@@ -43,7 +43,7 @@ Configure database access and other settings
 * edit `secret.py` with the user and password of the table (they can be found in `~/replica.my.cnf`). The name of the table is the one you used at creation above (`s1234__editgroups` where `s1234` is replaced by the username of the tool).
 
 Configure OAuth login
-* Request an OAuth client id at https://meta.wikimedia.org/wiki/Special:OAuthConsumerRegistration/propose
+* Request an OAuth client id at https://meta.wikimedia.org/wiki/Special:OAuthConsumerRegistration/propose. Beyond the normal editing scopes, you will also need to perform administrative actions (delete, restore) on behalf of users, so make sure you request these scopes too.
 * Put the tokens in `~/www/python/src/editgroups/settings/secret.py`
 
 Migrate the database
