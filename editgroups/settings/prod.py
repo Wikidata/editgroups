@@ -20,7 +20,11 @@ CACHES = {
         'OPTIONS': {
             'DB': 2,
         },
+        'KEY_PREFIX': 'editgroups.cache.',
     },
 }
+
+BROKER_TRANSPORT_OPTIONS = { 'keyprefix_queue': 'editgroups._kombu.binding.%s', 'queue_name_prefix': 'editgroups-', 'fanout_prefix': True, 'fanout_patterns': True }
+TASK_DEFAULT_QUEUE = 'editgroupstasks'
 
 LOGIN_URL = '/editgroups/oauth/login/mediawiki/'
