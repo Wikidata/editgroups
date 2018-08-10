@@ -8,7 +8,7 @@ Simple tool to track edit groups on Wikidata and revert them.
 
 Use it at https://tools.wmflabs.org/editgroups/
 
-Steps to deploy this on WMF Toolslab:
+Steps to deploy this on WMF Toollabs:
 
 * `become editgroups`
 * `mkdir -p www/python/src`
