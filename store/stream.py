@@ -6,18 +6,11 @@ class WikidataEditStream(object):
         self.url = 'https://stream.wikimedia.org/v2/stream/recentchange'
         self.wiki = 'wikidatawiki'
 
-    def latest_offset(self):
-        """
-        Returns the offset of the latest event
-        """
-        for event in self.stream():
-            return event.get('meta', {}).get('offset')
-
-    def stream(self, last_id=None):
-        last_id_json = None
-        if last_id is not None:
-             last_id_json = json.dumps({'offset':offset,'topic':'eqiad.mediawiki.recentchange','partition':0})
-        for event in EventSource(self.url, last_id=last_id_json):
+    def stream(self, from_time=None):
+        last_id_str = None
+        if from_time is not None:
+             last_id_str = json.dumps([{'timestamp':int(from_time.timestamp()),'topic':'eqiad.mediawiki.recentchange','partition':0}])
+        for event in EventSource(self.url, last_id=last_id_str):
             if event.event == 'message':
                 try:
                     change = json.loads(event.data)

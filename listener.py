@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import os
 import sys
+from datetime import datetime
+from datetime import timedelta
 
 """
 Number of seconds to look back when restarting
@@ -9,7 +11,7 @@ lose any edit when the listener is restarted.
 
 10000 amounts to about 5 minutes of looking back.
 """
-LOOKBEHIND_OFFSET = 10000
+LOOKBEHIND_OFFSET = timedelta(days=1)
 
 if __name__ == '__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "editgroups.settings")
@@ -24,11 +26,11 @@ if __name__ == '__main__':
 
     print('Listening to Wikidata edits...')
     s = WikidataEditStream()
-    last_offset = s.last_offset()
-    fetching_offset = last_offset - LOOKBEHIND_OFFSET
-    print('Starting from offset %d' % fetching_offset)
+    utcnow = datetime.utcnow()
+    fetch_from = utcnow - LOOKBEHIND_OFFSET
+    print('Starting from offset %s' % fetch_from.isoformat())
 
-    for i, batch in enumerate(grouper(s.stream(fetching_offset), 50)):
+    for i, batch in enumerate(grouper(s.stream(fetch_from), 50)):
        if i % 50 == 0:
             print('batch %d' % i)
        sys.stdout.flush()
