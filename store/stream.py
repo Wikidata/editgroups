@@ -7,10 +7,10 @@ class WikidataEditStream(object):
         self.wiki = 'wikidatawiki'
 
     def stream(self, from_time=None):
-        last_id_str = None
+        url = self.url
         if from_time is not None:
-             last_id_str = json.dumps([{'timestamp':int(from_time.timestamp()),'topic':'eqiad.mediawiki.recentchange','partition':0}])
-        for event in EventSource(self.url, last_id=last_id_str):
+             url += '?since='+from_time.isoformat().replace('+00:00', 'Z')
+        for event in EventSource(url)::
             if event.event == 'message':
                 try:
                     change = json.loads(event.data)
