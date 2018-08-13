@@ -7,7 +7,7 @@ django-rest-framework
 django-filter
 python-dateutil
 social-auth-app-django
-pymysql
+mysqlclient
 html5lib
 cached-property
 requests-oauthlib

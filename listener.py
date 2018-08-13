@@ -15,8 +15,6 @@ LOOKBEHIND_OFFSET = timedelta(hours=1)
 
 if __name__ == '__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "editgroups.settings")
-    import pymysql
-    pymysql.install_as_MySQLdb()
     import django
     django.setup()
 
