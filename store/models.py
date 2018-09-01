@@ -115,7 +115,7 @@ class Batch(models.Model):
 
     @cached_property
     def duration(self):
-        return (self.ended - self.started).seconds
+        return (self.ended - self.started).total_seconds()
 
     @property
     def nb_reverted(self):

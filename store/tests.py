@@ -75,6 +75,14 @@ class EditTest(TestCase):
         self.assertEquals(51, batch.nb_edits)
         self.assertEquals('32.9', batch.editing_speed)
 
+    def test_duration(self):
+        tool = Tool.objects.get(shortid='OR')
+        b = Batch(tool=tool, user='MyUser', uid='e839fda2', summary='hello',
+            started=datetime(2018, 3, 3, 16, 39, 37, tzinfo=UTC),
+            ended=datetime(2018, 3, 6, 16, 39, 37, tzinfo=UTC),
+            nb_edits=4)
+        self.assertEquals(b.duration, 3*24*3600)
+
     def test_ingest_eg(self):
         Edit.ingest_jsonlines('store/testdata/eg_revert.json')
         self.assertEquals(1, Batch.objects.count())
