@@ -52,3 +52,6 @@ Migrate the database
 Run the webserver
 * `webservice --backend kubernetes python start`
 
+Backup the database regularly with:
+* `mysqldump -C s1234__editgroups | gzip > database_dump.gz`
+
