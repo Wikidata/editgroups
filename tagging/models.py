@@ -63,17 +63,20 @@ tag_to_readable_name = {
 	"wbmergeitems-to": _("merges items"),
 	"wbcreate-new": _("new items"),
 	"wbeditentity": _("new items"),
-	"wbeditentity-create": _("new items"),
+	"wbeditentity-create-item": _("new items"),
+	"wbeditentity-create-property": _("new properties"),
 	"wbeditentity-override": _("clears items"),
 	"wblinktitles-create": _("clears items"),
 	"wblinktitles-connect": _("new sitelinks"),
 	"wbcreate-new": _("new items"),
-	"wbeditentity-create": _("new items"),
 	"wbeditentity-override": _("clears items"),
 	"special-create-property": _("new properties"),
         "undo": _("undo edits"),
         "delete": _("delete items"),
         "restore": _("restore items"),
+	"wbeditentity-create-lexeme": _("new lexemes"),
+	"wbeditentity-create-form": _("new forms"),
+	"wbeditentity-create-sense": _("new senses"),
 }
 
 action_re = re.compile('^/\* ([a-z\-]*):.*')
@@ -170,9 +173,16 @@ class Tag(CachingMixin, models.Model):
         Useful to retag all batches after creating new tags.
         Existing tags should be cleared first.
         """
-        from store.models import Edit
+        cls.retag_edits(Edit.objects.all())
+
+    @classmethod
+    def retag_edits(cls, edits):
+        """
+        Useful to retag all batches after creating new tags.
+        Existing tags should be cleared first.
+        """
         batch_to_tags = defaultdict(set)
-        for edit in Edit.objects.all():
+        for edit in edits:
             tags = cls.extract(edit)
             batch_to_tags[edit.batch_id].update(tags)
 
