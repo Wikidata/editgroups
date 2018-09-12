@@ -77,6 +77,24 @@ tag_to_readable_name = {
 	"wbeditentity-create-lexeme": _("new lexemes"),
 	"wbeditentity-create-form": _("new forms"),
 	"wbeditentity-create-sense": _("new senses"),
+        "add-form": _("adds forms"),
+        "remove-form": _("removes forms"),
+        "update-form-representations": _("updates form representations"),
+        "add-form-representations": _("adds form representations"),
+        "set-form-representations": _("changes form representations"),
+        "remove-form-representations": _("removes form representations"),
+        "update-form-grammatical-features": _("updates grammatical features"),
+        "add-form-grammatical-features": _("adds grammatical features"),
+        "remove-form-grammatical-features": _("removes grammatical features"),
+        "update-form-elements": _("updates forms"),
+        "add-sense": _("adds senses"),
+        "remove-sense": _("removes senses"),
+        "update-sense-glosses": _("updates glosses"),
+        "add-sense-glosses": _("adds glosses"),
+        "set-sense-glosses": _("changes glosses"),
+        "remove-sense-glosses": _("removes glosses"),
+        "update-sense-elements": _("changes glosses"),
+
 }
 
 action_re = re.compile('^/\* ([a-z\-]*):.*')
