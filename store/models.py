@@ -39,6 +39,9 @@ class Tool(CachingMixin, models.Model):
 
     url = models.URLField()
 
+    class Meta(object):
+        base_manager_name = 'objects'
+
     def __str__(self):
         return self.name
 
@@ -181,11 +184,11 @@ class Edit(models.Model):
     """
     id = models.IntegerField(unique=True, primary_key=True)
     oldrevid = models.IntegerField(null=True)
-    newrevid = models.IntegerField()
+    newrevid = models.IntegerField(db_index=True)
     oldlength = models.IntegerField()
     newlength = models.IntegerField()
     timestamp = models.DateTimeField()
-    title = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
+    title = models.CharField(max_length=MAX_CHARFIELD_LENGTH, db_index=True)
     namespace = models.IntegerField()
     uri = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
     comment = models.TextField()
