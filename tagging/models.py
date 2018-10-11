@@ -191,6 +191,7 @@ class Tag(CachingMixin, models.Model):
         Useful to retag all batches after creating new tags.
         Existing tags should be cleared first.
         """
+        from store.models import Edit
         cls.retag_edits(Edit.objects.all())
 
     @classmethod
