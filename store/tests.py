@@ -136,6 +136,7 @@ class EditTest(TestCase):
         self.assertEquals(datetime(2018, 3, 7, 16, 20, 12, tzinfo=UTC), batch.started)
         self.assertEquals(datetime(2018, 3, 7, 16, 20, 14, tzinfo=UTC), batch.ended)
         self.assertEquals(4, batch.nb_edits)
+        self.assertEquals(1, batch.nb_pages)
 
     def test_reverts(self):
         Edit.ingest_jsonlines('store/testdata/qs_batch_with_reverts.json')
@@ -144,6 +145,7 @@ class EditTest(TestCase):
         batch = Batch.objects.get()
         self.assertEquals(5, batch.nb_edits)
         self.assertEquals(2, batch.nb_reverted)
+        self.assertEquals(1, batch.nb_pages)
 
     def test_deletions(self):
         Edit.ingest_jsonlines('store/testdata/new_items_deleted.json')
@@ -151,6 +153,7 @@ class EditTest(TestCase):
         batch = Batch.objects.get()
         self.assertEquals(1, batch.nb_new_pages)
         self.assertEqual(1, batch.nb_reverted)
+        self.assertEquals(1, batch.nb_pages)
 
     def test_deletion_batch(self):
         Edit.ingest_jsonlines('store/testdata/deletion_edit.json')

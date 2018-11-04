@@ -91,6 +91,7 @@ class Batch(models.Model):
     started = models.DateTimeField()
     ended = models.DateTimeField(db_index=True)
     nb_edits = models.IntegerField()
+    nb_distinct_pages = models.IntegerField()
 
     class Meta:
         unique_together = (('tool','uid','user'))
@@ -146,7 +147,9 @@ class Batch(models.Model):
 
     @cached_property
     def nb_pages(self):
-        return self.edits.all().values('title').distinct().count()
+        # used to be: self.edits.all().values('title').distinct().count()
+        # but that is too expensive when the batches get large, so we cache this:
+        return self.nb_distinct_pages
 
     @cached_property
     def nb_new_pages(self):
@@ -261,6 +264,7 @@ class Edit(models.Model):
         reverted_ids = []
         deleted_pages = {} # map: title -> latest deletion timestamp
         restored_pages = {} # map: title -> latest restoration timestamp
+        modified_pages = defaultdict(set) # map: batch_key -> set of touched pages
         new_tags = defaultdict(set)
 
         tools = Tool.objects.all()
@@ -309,6 +313,7 @@ class Edit(models.Model):
                         'started': timestamp,
                         'ended': timestamp,
                         'nb_edits': 0,
+                        'nb_distinct_pages': 0,
                     })
 
             # Check that the batch is owned by the right user
@@ -330,6 +335,9 @@ class Edit(models.Model):
             edit_tags = Tag.extract(model_edit)
             missing_tags = [tag.id for tag in edit_tags if tag.id not in batch.tag_ids]
             new_tags[batch.id].update(missing_tags)
+
+            # Take note of the modified page, for computation of the number of entities edited by a batch
+            modified_pages[batch_key].add(edit_json['title'])
 
         # if we saw some deletions which match any creations or undeletions we know of, mark them as deleted.
         # We do this before creating the previous edits in the same batch, because deletions and restorations
@@ -354,6 +362,13 @@ class Edit(models.Model):
 
         # Create all Edit objects update all the batch objects
         if batches:
+            # Update the number of modified pages
+            for batch_key, pages in modified_pages.items():
+                batch = batches.get(batch_key)
+                existing_pages = set(batch.edits.filter(title__in=pages).values_list('title',flat=True))
+                unseen_pages = pages-existing_pages
+                batch.nb_distinct_pages += len(unseen_pages)
+
             # Create all the edit objects
             try:
                 with transaction.atomic():
@@ -374,7 +389,7 @@ class Edit(models.Model):
                         edit.save()
 
             # update batch objects
-            Batch.objects.bulk_update(list(batches.values()), update_fields=['ended', 'nb_edits'])
+            Batch.objects.bulk_update(list(batches.values()), update_fields=['ended', 'nb_edits', 'nb_distinct_pages'])
 
             # update tags for batches
             if new_tags:
