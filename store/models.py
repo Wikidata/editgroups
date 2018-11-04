@@ -89,7 +89,7 @@ class Batch(models.Model):
 
     summary = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
     started = models.DateTimeField()
-    ended = models.DateTimeField()
+    ended = models.DateTimeField(db_index=True)
     nb_edits = models.IntegerField()
 
     class Meta:
@@ -187,7 +187,7 @@ class Edit(models.Model):
     newrevid = models.IntegerField(db_index=True)
     oldlength = models.IntegerField()
     newlength = models.IntegerField()
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(db_index=True)
     title = models.CharField(max_length=MAX_CHARFIELD_LENGTH, db_index=True)
     namespace = models.IntegerField()
     uri = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
