@@ -1,0 +1,23 @@
+{% extends "editgroups/common.html" %}
+
+{% load secondsduration %}
+
+{% block title %}
+{{ summary }}
+{% endblock %}
+
+{% block mainBody %}
+<div class="page-header">
+<h3>Edit group "{{ uid }}" not found</h3>
+</div>
+
+<p>
+This edit group was not found. Here are the possible causes:
+<ul>
+   <li>No such edit group exists on Wikidata;</li>
+   <li>The tool used to make the edits was not properly set up to work with EditGroups;</li>
+   <li>The EditGroups tool is lagging behind the Wikidata edit stream. The current lag is <strong>{{ current_lag|secondsduration }} ({{ current_lag }} seconds)</strong> - if this is more than an hour then something is probably wrong - please notify the maintainers of the tool and try again
+later.</li>
+</ul>
+</p>
+{% endblock %}

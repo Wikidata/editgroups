@@ -3,6 +3,7 @@ from django.http import Http404
 
 from rest_framework import viewsets
 from rest_framework import generics
+from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.renderers import BrowsableAPIRenderer
 
@@ -24,6 +25,17 @@ class BatchView(generics.RetrieveAPIView):
             return Batch.objects.get(uid=batch_uid,tool__shortid=tool_code)
         except Batch.DoesNotExist:
             raise Http404
+
+    # Manual bypass for 404 pages for batches
+    def get(self, *args, **kwargs):
+        try:
+            return super(BatchView, self).get(*args, **kwargs)
+        except Http404 as e:
+            ctxt = {
+                'uid':self.kwargs.get('uid'),
+                'current_lag': int(Edit.current_lag().total_seconds()),
+            }
+            return Response(ctxt, template_name='store/batch-not-found.html', status=404)
 
 class APIBatchView(BatchView):
     """

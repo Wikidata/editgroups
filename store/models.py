@@ -400,3 +400,16 @@ class Edit(models.Model):
         for batch in grouper(lines_generator(), batch_size, ):
             cls.ingest_edits(batch)
 
+    @classmethod
+    def latest_edit_time(cls):
+        try:
+            return Edit.objects.all().order_by('-timestamp').values_list('timestamp', flat=True)[0]
+        except IndexError: # no edit in the database…
+            return datetime.utcnow().replace(tzinfo=UTC)
+
+    @classmethod
+    def current_lag(cls):
+        """
+        Returns the amount of time since the last edit successfully ingested.
+        """
+        return datetime.utcnow().replace(tzinfo=UTC) - cls.latest_edit_time()

@@ -181,8 +181,18 @@ class EditTest(TestCase):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
 
         edit = Edit.objects.all().order_by('timestamp')[0]
-        self.assertEquals('https://www.wikidata.org/wiki/index.php?diff=644512815&oldid=376870215', edit.url)
-        self.assertEquals('<Edit https://www.wikidata.org/wiki/index.php?diff=644512815&oldid=376870215 >', str(edit))
+        self.assertEquals('https://www.wikidata.org/wiki/index.php?diff={newrevid}&oldid={oldrevid}'.format(
+                newrevid=edit.newrevid, oldrevid=edit.oldrevid), edit.url)
+        self.assertEquals('<Edit {url} >'.format(url=edit.url), str(edit))
+
+    def test_current_lag(self):
+        Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
+        current_lag = Edit.current_lag()
+        self.assertTrue(current_lag.seconds > 1)
+
+    def test_current_lag_no_edit(self):
+        current_lag = Edit.current_lag()
+        self.assertTrue(current_lag.total_seconds() < 1)
 
 class BatchEditsViewTest(APITestCase):
     @classmethod
