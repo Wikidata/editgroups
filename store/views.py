@@ -33,14 +33,14 @@ class APIBatchView(BatchView):
 
 class BatchesView(generics.ListAPIView):
     serializer_class = BatchSimpleSerializer
-    queryset = Batch.objects.all().order_by('-started')
+    queryset = Batch.objects.all().order_by('-ended')
     template_name = 'store/batches.html'
     filter_fields = ('user',)
     filter_backends = (TaggingFilterBackend,)
 
 class APIBatchesView(BatchesView):
     """
-    Lists the latest batches, by inverse date of creation.
+    Lists the latest batches, by inverse date of last edit.
     """
     renderer_classes = (JSONRenderer,BrowsableAPIRenderer)
 
