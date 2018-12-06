@@ -92,6 +92,8 @@ class Batch(models.Model):
     ended = models.DateTimeField(db_index=True)
     nb_edits = models.IntegerField()
     nb_distinct_pages = models.IntegerField()
+    nb_reverted_edits = models.IntegerField()
+    nb_new_pages = models.IntegerField()
 
     class Meta:
         unique_together = (('tool','uid','user'))
@@ -123,7 +125,7 @@ class Batch(models.Model):
 
     @property
     def nb_reverted(self):
-        return self.edits.filter(reverted=True).count()
+        return self.nb_reverted_edits
 
     @cached_property
     def revertable_edits(self):
@@ -143,17 +145,13 @@ class Batch(models.Model):
 
     @cached_property
     def nb_revertable_edits(self):
-        return self.revertable_edits.count()
+        return self.nb_edits - self.nb_reverted_edits
 
     @cached_property
     def nb_pages(self):
         # used to be: self.edits.all().values('title').distinct().count()
         # but that is too expensive when the batches get large, so we cache this:
         return self.nb_distinct_pages
-
-    @cached_property
-    def nb_new_pages(self):
-        return self.edits.all().filter(changetype='new').count()
 
     @cached_property
     def nb_undeleted_new_pages(self):
@@ -314,6 +312,8 @@ class Edit(models.Model):
                         'ended': timestamp,
                         'nb_edits': 0,
                         'nb_distinct_pages': 0,
+                        'nb_new_pages': 0,
+                        'nb_reverted_edits': 0,
                     })
 
             # Check that the batch is owned by the right user
@@ -338,6 +338,9 @@ class Edit(models.Model):
 
             # Take note of the modified page, for computation of the number of entities edited by a batch
             modified_pages[batch_key].add(edit_json['title'])
+            # And the number of new pages
+            if model_edit.changetype == 'new':
+                batch.nb_new_pages += 1
 
         # if we saw some deletions which match any creations or undeletions we know of, mark them as deleted.
         # We do this before creating the previous edits in the same batch, because deletions and restorations
@@ -351,6 +354,7 @@ class Edit(models.Model):
                     and edit.changetype in ['new','restore']
                     and edit.timestamp < deleted_pages.get(edit.title)):
                     edit.reverted = True
+                    edit.batch.nb_reverted_edits += 1
         # finally if we saw some undeletions which match any deletions we know of, mark them as undone
         if restored_pages:
             Edit.objects.filter(title__in=restored_pages.keys(), changetype='delete').update(reverted=True)
@@ -359,6 +363,7 @@ class Edit(models.Model):
                     and edit.changetype == 'delete'
                     and edit.timestamp < restored_pages.get(edit.title)):
                     edit.reverted = True
+                    edit.batch.nb_reverted_edits += 1
 
         # Create all Edit objects update all the batch objects
         if batches:
@@ -389,7 +394,7 @@ class Edit(models.Model):
                         edit.save()
 
             # update batch objects
-            Batch.objects.bulk_update(list(batches.values()), update_fields=['ended', 'nb_edits', 'nb_distinct_pages'])
+            Batch.objects.bulk_update(list(batches.values()), update_fields=['ended', 'nb_edits', 'nb_distinct_pages', 'nb_reverted_edits', 'nb_new_pages'])
 
             # update tags for batches
             if new_tags:
@@ -399,7 +404,12 @@ class Edit(models.Model):
         # We do this after creating the latest edits because it could be possible that
         # an edit from the batch we just processed was undone in the same go.
         if reverted_ids:
-            Edit.objects.filter(newrevid__in=reverted_ids).update(reverted=True)
+            nb_updated = Edit.objects.filter(newrevid__in=reverted_ids).update(reverted=True)
+            if nb_updated:
+                for edit in Edit.objects.filter(newrevid__in=reverted_ids):
+                    b = edit.batch
+                    b.nb_reverted_edits += 1
+                    b.save(update_fields=['nb_reverted_edits'])
 
     @classmethod
     def ingest_jsonlines(cls, fname, batch_size=50):

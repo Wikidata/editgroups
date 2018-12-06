@@ -53,6 +53,9 @@ class RevertTaskTest(TestCase):
 
     def test_revert_batch_already_reverted(self):
         Edit.objects.all().update(reverted=True)
+        b = Batch.objects.get()
+        b.nb_reverted_edits = b.nb_edits
+        b.save()
         response = self.client.post(
             reverse('submit-revert', args=[self.batch.tool.shortid, self.batch.uid]),
             data={'comment':'testing reverts'})
