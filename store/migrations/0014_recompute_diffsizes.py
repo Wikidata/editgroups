@@ -17,6 +17,7 @@ def do_nothing(apps, schema_editor):
     pass
 
 class Migration(migrations.Migration):
+    atomic = False
 
     dependencies = [
         ('store', '0013_batch_total_diffsize'),
