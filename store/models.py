@@ -164,7 +164,7 @@ class Batch(models.Model):
 
     @property
     def avg_diffsize(self):
-        if self.nb_pages:
+        if self.nb_edits:
             return self.total_diffsize / self.nb_edits
         return 0
 
@@ -396,6 +396,7 @@ class Edit(models.Model):
                         batch = batches.get(batch_key)
                         if batch:
                             batch.nb_edits -= 1
+                            batch.total_diffsize -= edit.newlength - edit.oldlength
                     except Edit.DoesNotExist:
                         edit.save()
 
