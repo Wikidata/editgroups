@@ -94,6 +94,7 @@ class Batch(models.Model):
     nb_distinct_pages = models.IntegerField()
     nb_reverted_edits = models.IntegerField()
     nb_new_pages = models.IntegerField()
+    total_diffsize = models.IntegerField()
 
     class Meta:
         unique_together = (('tool','uid','user'))
@@ -163,7 +164,9 @@ class Batch(models.Model):
 
     @property
     def avg_diffsize(self):
-        return self.edits.all().aggregate(avg_diff=models.Avg('newlength')-models.Avg('oldlength')).get('avg_diff')
+        if self.nb_pages:
+            return self.total_diffsize / self.nb_edits
+        return 0
 
     @property
     def url(self):
@@ -323,6 +326,7 @@ class Edit(models.Model):
                 continue
 
             batch.nb_edits += 1
+            batch.total_diffsize += edit_json['newlength'] - edit_json['oldlength']
             batch.ended = max(batch.ended, timestamp)
 
             batches[batch_key] = batch
@@ -394,7 +398,9 @@ class Edit(models.Model):
                         edit.save()
 
             # update batch objects
-            Batch.objects.bulk_update(list(batches.values()), update_fields=['ended', 'nb_edits', 'nb_distinct_pages', 'nb_reverted_edits', 'nb_new_pages'])
+            Batch.objects.bulk_update(list(batches.values()),
+                update_fields=['ended', 'nb_edits', 'nb_distinct_pages',
+                                'nb_reverted_edits', 'nb_new_pages', 'total_diffsize'])
 
             # update tags for batches
             if new_tags:
@@ -404,7 +410,7 @@ class Edit(models.Model):
         # We do this after creating the latest edits because it could be possible that
         # an edit from the batch we just processed was undone in the same go.
         if reverted_ids:
-            cls.mark_as_reverted(Edit.objects.filter(newrevid__in=reverted_ids)
+            cls.mark_as_reverted(Edit.objects.filter(newrevid__in=reverted_ids))
 
     @classmethod
     def ingest_jsonlines(cls, fname, batch_size=50):
