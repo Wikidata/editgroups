@@ -348,7 +348,7 @@ class Edit(models.Model):
         # (this is a notion that we introduce ourselves) so if a deletion and the corresponding revert happen
         # in the same batch we need to inspect the order in which they happened.
         if deleted_pages:
-            Edit.objects.filter(title__in=deleted_pages.keys(), changetype__in=['new','restore']).update(reverted=True)
+            cls.mark_as_reverted(Edit.objects.filter(title__in=deleted_pages.keys(), changetype__in=['new','restore']))
             for edit in model_edits:
                 if (edit.title in deleted_pages
                     and edit.changetype in ['new','restore']
@@ -357,7 +357,7 @@ class Edit(models.Model):
                     edit.batch.nb_reverted_edits += 1
         # finally if we saw some undeletions which match any deletions we know of, mark them as undone
         if restored_pages:
-            Edit.objects.filter(title__in=restored_pages.keys(), changetype='delete').update(reverted=True)
+            cls.mark_as_reverted(Edit.objects.filter(title__in=restored_pages.keys(), changetype='delete'))
             for edit in model_edits:
                 if (edit.title in restored_pages
                     and edit.changetype == 'delete'
@@ -404,12 +404,7 @@ class Edit(models.Model):
         # We do this after creating the latest edits because it could be possible that
         # an edit from the batch we just processed was undone in the same go.
         if reverted_ids:
-            nb_updated = Edit.objects.filter(newrevid__in=reverted_ids).update(reverted=True)
-            if nb_updated:
-                for edit in Edit.objects.filter(newrevid__in=reverted_ids):
-                    b = edit.batch
-                    b.nb_reverted_edits += 1
-                    b.save(update_fields=['nb_reverted_edits'])
+            cls.mark_as_reverted(Edit.objects.filter(newrevid__in=reverted_ids)
 
     @classmethod
     def ingest_jsonlines(cls, fname, batch_size=50):
@@ -424,6 +419,21 @@ class Edit(models.Model):
 
         for batch in grouper(lines_generator(), batch_size, ):
             cls.ingest_edits(batch)
+
+    @classmethod
+    def mark_as_reverted(cls, qs):
+        """
+        Given a queryset of edits, mark each edit object as reverted and update
+        the batch-level statistics accordingly.
+        """
+        nb_updated = qs.update(reverted=True)
+        # there is probably a clever way to do this in SQL but there are generally
+        # few reverts so this scales fine for now.
+        if nb_updated:
+            for edit in qs:
+                b = edit.batch
+                b.nb_reverted_edits += 1
+                b.save(update_fields=['nb_reverted_edits'])
 
     @classmethod
     def latest_edit_time(cls):
