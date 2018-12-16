@@ -327,7 +327,8 @@ class Edit(models.Model):
                 continue
 
             batch.nb_edits += 1
-            batch.total_diffsize += edit_json['newlength'] - edit_json['oldlength']
+            length_obj = edit_json.get('length') or {}
+            batch.total_diffsize += (length_obj.get('new') or 0) - (length_obj.get('old') or 0)
             batch.ended = max(batch.ended, timestamp)
 
             batches[batch_key] = batch
