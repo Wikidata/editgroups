@@ -317,6 +317,7 @@ class Edit(models.Model):
                         'nb_distinct_pages': 0,
                         'nb_new_pages': 0,
                         'nb_reverted_edits': 0,
+                        'total_diffsize': 0,
                     })
 
             # Check that the batch is owned by the right user
