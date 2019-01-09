@@ -45,9 +45,20 @@ class BatchSimpleSerializer(serializers.ModelSerializer):
     tool = ToolSerializer()
     url = serializers.CharField()
     author = serializers.CharField(source='user')
+
     editing_speed = serializers.CharField()
+    entities_speed = serializers.CharField()
+
     full_uid = serializers.CharField()
     sorted_tags = TagSerializer(many=True)
+
+    nb_pages = serializers.IntegerField()
+    nb_new_pages = serializers.IntegerField()
+    nb_existing_pages = serializers.IntegerField()
+    nb_reverted = serializers.IntegerField()
+    avg_diffsize = serializers.IntegerField()
+
+    duration = serializers.IntegerField()
 
     class Meta:
         model = Batch
