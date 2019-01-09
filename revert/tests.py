@@ -86,6 +86,12 @@ class RevertTaskTest(TestCase):
             data={'comment':'testing reverts'})
         self.assertEquals(302, response.status_code)
 
+    def test_initiate_revert_fine(self):
+        response = self.client.get(
+            reverse('initiate-revert', args=[self.batch.tool.shortid,
+                self.batch.uid]))
+        self.assertEquals(200, response.status_code)
+
     @patch.object(RevertTask, 'revert_edit', fake_revert)
     def test_revert_batch_previous_canceled(self):
         task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
