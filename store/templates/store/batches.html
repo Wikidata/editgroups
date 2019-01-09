@@ -3,6 +3,7 @@
 {% load parsetime %}
 {% load tagbutton %}
 {% load ago %}
+{% load diffsize %}
 
 {% block title %}
 EditGroups
@@ -16,8 +17,8 @@ EditGroups
                 <th>User</th>
                 <th>Summary</th>
                 <th class="numeric-column">Tags</th>
-                <th class="numeric-column">Edits/min</th>
-                <th class="numeric-column">Edits&nbsp;&nbsp;</th>
+                <th class="numeric-column">Size/edit&nbsp;&nbsp;</th>
+                <th class="numeric-column">Edits</th>
                 <th>Latest edit</th>
                 <th>Tool</th>
         </tr>
@@ -35,7 +36,7 @@ EditGroups
                 <td class="numeric-column">{% for tag in batch.sorted_tags %}
                         {% if tag.display_name %}<a href="{% tagbutton tag %}" class="label {% if tag.id in tagging_form.tags %}selected-tag{% endif %}" style="background-color: {{ tag.color }}">{{ tag.display_name }}</a>{% endif %}
                 {% endfor %}</td>
-                <td class="numeric-column">{{ batch.editing_speed }}</td>
+                <td class="numeric-column">{{ batch.avg_diffsize|diffsize }}</td>
                 <td class="numeric-column">{{ batch.nb_edits }}&nbsp;&nbsp;</td>
                 <td>{{ batch.ended|parsetime|ago }}</td>
                 <td>
