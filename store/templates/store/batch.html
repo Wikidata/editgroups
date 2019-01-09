@@ -100,7 +100,7 @@
         {% endif %}
     {% else %}
         {% if can_be_reverted %}
-            {% if nb_undeleted_new_pages > 0 %}
+            {% if nb_new_pages > 0 %}
                 {% if user.is_authenticated and user|isadmin %}
                      <a class="btn btn-default" href="{% url "initiate-revert" tool.shortid uid %}">Undo and delete/restore entire group</a>
                 {% else %}
