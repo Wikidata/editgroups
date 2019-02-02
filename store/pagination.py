@@ -28,5 +28,6 @@ class PaginationWithoutCounts(pagination.LimitOffsetPagination):
     def get_next_link(self):
         if not self.more_results_available:
             return None
+        self.count = self.limit + 1
         return super(PaginationWithoutCounts, self).get_next_link()
 
