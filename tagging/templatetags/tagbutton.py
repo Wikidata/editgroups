@@ -29,6 +29,10 @@ def set_get_param(context, key, value):
         new_get_params[key] = value
     else:
         del new_get_params[key]
+    if 'offset' in new_get_params:
+        del new_get_params['offset']
+    if 'limit' in new_get_params:
+        del new_get_params['limit']
     new_url = request.path
     if new_get_params:
         new_url += '?' + urlencode(new_get_params)
