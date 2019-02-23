@@ -180,6 +180,24 @@ class Batch(models.Model):
     def sorted_tags(self):
         return self.tags.order_by('-priority', 'id')
 
+    @cached_property
+    def reverting_batches(self):
+        """
+        Returns the list of batches which revert this batch
+        """
+        uids = self.revert_tasks.values_list('uid', flat=True)
+        return Batch.objects.filter(uid__in=uids)
+
+    @cached_property
+    def reverted_batch(self):
+        """
+        Returns the batch reverted by this batch, if any (None otherwise).
+        """
+        try:
+            return Batch.objects.get(revert_tasks__uid=self.uid)
+        except Batch.DoesNotExist:
+            return None
+
 from tagging.models import Tag
 
 class Edit(models.Model):

@@ -116,6 +116,23 @@
 </div>
 </form>
 
+{% if reverted_batch %}
+<div class="reverted-batch">
+   <p>This batch reverts <a href="{{ reverted_batch.url }}">{{ reverted_batch.full_uid }}: {{ reverted_batch.summary }}</a> by <a href="https://www.wikidata.org/wiki/User:{{ reverted_batch.author }}">{{ reverted_batch.author }}</a></p>
+</div>
+{% endif %}
+
+{% if reverting_batches %}
+<h4>Reverting batches</h4>
+<div class="reverting-batches">
+<ul>
+{% for batch in reverting_batches %}
+   <li><a href="{{ batch.url }}">{{ batch.full_uid }}</a> by <a href="https://www.wikidata.org/wiki/User:{{ batch.author }}">{{ batch.author }}</a> (reason: {{ batch.summary }})</li>
+{% endfor %}
+</ul>
+</div>
+{% endif %}
+
 <h4>Latest edits</h4>
         <ul>
         {% for edit in edits %}
