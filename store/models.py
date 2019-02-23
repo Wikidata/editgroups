@@ -415,6 +415,10 @@ class Edit(models.Model):
                         if batch:
                             batch.nb_edits -= 1
                             batch.total_diffsize -= edit.newlength - edit.oldlength
+                            if edit.changetype == 'new':
+                                batch.nb_new_pages -= 1
+                            if edit.reverted:
+                                batch.nb_reverted_edits -= 1
                     except Edit.DoesNotExist:
                         edit.save()
 
