@@ -13,6 +13,11 @@
 <div class="page-header">
 <h3>Edit group by <a href="https://www.wikidata.org/wiki/User:{{ author }}">{{ author }}</a>: {{ summary }} ({{ uid }})</h3>
 </div>
+{% if reverted_batch %}
+<div class="alert alert-primary reverted-batch" role="alert">
+   <p>This batch reverts <a href="{{ reverted_batch.url }}">{{ reverted_batch.full_uid }}: {{ reverted_batch.summary }}</a> by <a href="https://www.wikidata.org/wiki/User:{{ reverted_batch.author }}">{{ reverted_batch.author }}</a>.</p>
+</div>
+{% endif %}
 
 <p>
 {% for tag in sorted_tags %}
@@ -115,6 +120,17 @@
     {% endif %}
 </div>
 </form>
+
+{% if reverting_batches %}
+<h4>Reverting batches</h4>
+<div class="reverting-batches">
+<ul>
+{% for batch in reverting_batches %}
+   <li><a href="{{ batch.url }}">{{ batch.full_uid }}</a> by <a href="https://www.wikidata.org/wiki/User:{{ batch.author }}">{{ batch.author }}</a> (reason: {{ batch.summary }})</li>
+{% endfor %}
+</ul>
+</div>
+{% endif %}
 
 <h4>Latest edits</h4>
         <ul>

@@ -65,6 +65,14 @@ class BatchSimpleSerializer(serializers.ModelSerializer):
         exclude = ('user',) # translated as 'author'
         depth = 1
 
+class BatchListSerializer(LimitedListSerializer):
+    model_ordering = '-started'
+
+class LimitedBatchSimpleSerializer(BatchSimpleSerializer):
+    class Meta:
+        model = Batch
+        fields = '__all__'
+        list_serializer_class = BatchListSerializer
 
 class BatchDetailSerializer(serializers.ModelSerializer):
     tool = ToolSerializer()
@@ -84,6 +92,8 @@ class BatchDetailSerializer(serializers.ModelSerializer):
     nb_existing_pages = serializers.IntegerField()
     avg_diffsize = serializers.IntegerField()
     can_be_reverted = serializers.BooleanField()
+    reverted_batch = BatchSimpleSerializer()
+    reverting_batches = LimitedBatchSimpleSerializer(many=True, read_only=True)
 
     active_revert_task = RevertTaskSerializer()
 

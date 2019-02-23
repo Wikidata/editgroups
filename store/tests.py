@@ -14,6 +14,8 @@ from .models import Tool
 from .models import Edit
 from .models import Batch
 from .stream import WikidataEditStream
+from revert.models import RevertTask
+from django.contrib.auth.models import User
 
 class ToolTest(TestCase):
     def setUp(self):
@@ -186,6 +188,20 @@ class EditTest(TestCase):
         self.assertEquals(1, new_batch.nb_reverted)
         self.assertEqual(1, restore_batch.nb_reverted)
         self.assertEqual(Edit.objects.filter(reverted=False).count(), 1)
+
+        # This relies on the RevertTask model
+        user = User.objects.create_user('fabio', 'fabio@futureproof.io', 'babebibobu')
+        rt1 = RevertTask(uid='be3a1d9', batch=new_batch, user=user, comment="I really don't like this item")
+        rt1.save()
+        rt2 = RevertTask(uid='45bc44f', batch=restore_batch, user=user, comment="I insist, this item sucks")
+        rt2.save()
+
+        self.assertEqual(len(new_batch.reverting_batches), 1)
+        first_reverting_batch = new_batch.reverting_batches[0]
+        self.assertEqual(first_reverting_batch.reverted_batch, new_batch)
+        self.assertEqual(len(restore_batch.reverting_batches), 1)
+        second_reverting_batch = restore_batch.reverting_batches[0]
+        self.assertEqual(second_reverting_batch.reverted_batch, restore_batch)
 
     def test_str(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
