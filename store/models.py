@@ -197,6 +197,18 @@ class Batch(models.Model):
             return Batch.objects.get(revert_tasks__uid=self.uid)
         except Batch.DoesNotExist:
             return None
+    def recompute_cached_stats(self):
+        """
+        Recomputes all the cached stats from the edits.
+        This is expensive to do - it should only done if things have gone wrong.
+
+        This does not save the Batch object yet.
+        """
+        self.nb_edits = self.edits.count()
+        self.nb_distinct_pages = self.edits.all().values('title').distinct().count()
+        self.nb_reverted_edits = self.edits.all().filter(reverted=True).count()
+        self.nb_new_pages = self.edits.all().filter(changetype='new').count()
+        self.total_diffsize = self.edits.all().aggregate(total_diff=models.Sum('newlength')-models.Sum('oldlength')).get('total_diff')
 
 from tagging.models import Tag
 
