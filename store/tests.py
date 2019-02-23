@@ -79,6 +79,25 @@ class EditTest(TestCase):
         self.assertEquals(0, batch.nb_new_pages)
         self.assertEquals('32.9', batch.editing_speed)
 
+    def test_recompute_stats(self):
+        Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
+
+        self.assertEquals(1, Batch.objects.count())
+        # Mess around with the editing statistics
+        batch = Batch.objects.get()
+        batch.nb_edits = 0
+        batch.nb_new_pages = 12
+        batch.nb_reverted_edits = 389
+        batch.nb_distinct_pages = 32
+        batch.save()
+
+        # Update them
+        batch.recompute_cached_stats()
+        self.assertEqual(51, batch.nb_edits)
+        self.assertEqual(0, batch.nb_reverted_edits)
+        self.assertEqual(0, batch.nb_new_pages)
+        self.assertEqual(51, batch.nb_distinct_pages)
+
     def test_duration(self):
         tool = Tool.objects.get(shortid='OR')
         b = Batch(tool=tool, user='MyUser', uid='e839fda2', summary='hello',
@@ -106,6 +125,17 @@ class EditTest(TestCase):
         self.assertEquals(0, batch.nb_new_pages)
 
     def test_ingest_new_items(self):
+        Edit.ingest_jsonlines('store/testdata/qs_batch_with_new_items.json')
+        self.assertEquals(1, Batch.objects.count())
+        batch = Batch.objects.get()
+        self.assertEquals(82, batch.nb_edits)
+        self.assertEquals(9, batch.nb_new_pages)
+        self.assertEquals(9, batch.nb_pages)
+        self.assertEquals(0, batch.nb_existing_pages)
+        self.assertEquals(0, batch.nb_reverted_edits)
+
+    def test_ingest_new_items_twice(self):
+        Edit.ingest_jsonlines('store/testdata/qs_batch_with_new_items.json')
         Edit.ingest_jsonlines('store/testdata/qs_batch_with_new_items.json')
         self.assertEquals(1, Batch.objects.count())
         batch = Batch.objects.get()
