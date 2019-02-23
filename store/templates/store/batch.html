@@ -13,6 +13,11 @@
 <div class="page-header">
 <h3>Edit group by <a href="https://www.wikidata.org/wiki/User:{{ author }}">{{ author }}</a>: {{ summary }} ({{ uid }})</h3>
 </div>
+{% if reverted_batch %}
+<div class="alert alert-primary reverted-batch" role="alert">
+   <p>This batch reverts <a href="{{ reverted_batch.url }}">{{ reverted_batch.full_uid }}: {{ reverted_batch.summary }}</a> by <a href="https://www.wikidata.org/wiki/User:{{ reverted_batch.author }}">{{ reverted_batch.author }}</a>.</p>
+</div>
+{% endif %}
 
 <p>
 {% for tag in sorted_tags %}
@@ -86,12 +91,6 @@
 </table>
 
 <h4>Actions</h4>
-
-{% if reverted_batch %}
-<div class="alert alert-primary reverted-batch" role="alert">
-   <p>This batch reverts <a href="{{ reverted_batch.url }}">{{ reverted_batch.full_uid }}: {{ reverted_batch.summary }}</a> by <a href="https://www.wikidata.org/wiki/User:{{ reverted_batch.author }}">{{ reverted_batch.author }}</a>.</p>
-</div>
-{% endif %}
 
 <!-- this form should be inside the conditionals (it is only used when stopping a revert job) but somehow it breaks the button group -->
 <form method="POST" action="{% url "stop-revert" tool.shortid uid %}">
