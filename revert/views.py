@@ -85,7 +85,7 @@ class StopRevertTaskView(CreateAPIView):
         if task is None:
             return Response(status=404, data=BatchDetailSerializer(batch).data)
 
-        if task.user_id != request.user.id:
+        if task.user_id != request.user.id and not request.user.is_superuser:
             return Response(status=403, data=BatchDetailSerializer(batch).data)
 
         task.cancel = True
