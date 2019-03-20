@@ -16,7 +16,7 @@ def retag_all_edits(apps, schema_editor):
         seen = False
         print(lastpk)
         sys.stdout.flush()
-        qs = list(Edit.objects.filter(pk__gt=lastpk).order_by('pk')[:bs])
+        qs = list(Edit.objects.filter(pk__gt=lastpk).order_by('pk').prefetch_related('batch')[:bs])
         if qs:
             Tag.retag_edits(qs)
             seen = True
