@@ -13,3 +13,4 @@ cached-property
 requests-oauthlib
 celery
 requests-mock
+lxml

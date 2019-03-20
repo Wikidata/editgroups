@@ -1,3 +1,4 @@
+import unittest
 from django.test import TestCase
 from store.models import Edit
 from store.models import Batch
@@ -5,7 +6,11 @@ from .models import Tag
 from .models import action_re
 from .models import property_re
 from .models import language_re
+from .diffinspector import DiffInspector
+from .diffdigest import DiffDigest
 from caching import invalidation
+import requests_mock
+import os
 
 cache = invalidation.cache
 
@@ -62,4 +67,80 @@ class TagTest(TestCase):
         batch = Batch.objects.get()
         self.assertEquals(['delete'], list(batch.tag_ids))
 
+class MockDiffInspector(DiffInspector):
+
+    def __init__(self):
+        super(MockDiffInspector, self).__init__()
+        self.responses = {}
+
+    def _retrieve_html_diff(self, oldrevid, newrevid):
+        return self.responses.get((oldrevid, newrevid))
+
+class DiffDigestTest(unittest.TestCase):
+    def test_json(self):
+        self.assertEqual({'statements':{'P31'},
+            'qualifiers':set(),
+            'labels':set(),
+            'descriptions':set(),
+            'aliases':set(),
+        }, DiffDigest(statements=['P31']).json())
+
+    def test_repr(self):
+        self.assertEqual('<DiffDigest: empty>',repr(DiffDigest()))
+        self.assertEqual("<DiffDigest: statements: {'P31'}>",repr(DiffDigest(statements=['P31'])))
+
+    def test_equal(self):
+        self.assertEqual(DiffDigest(), DiffDigest())
+        self.assertNotEqual(DiffDigest(labels=['fr']), DiffDigest(labels=['de']))
+
+class DiffInspectorTest(unittest.TestCase):
+    def setUp(self):
+        self.html = """
+        <tr><td colspan="2" class="diff-lineno">aliases / en / 0</td><td colspan="2" class="diff-lineno">aliases / en / 0</td></tr><tr><td colspan="2">&nbsp;</td><td class="diff-marker">+</td><td class="diff-addedline"><div><ins class="diffchange diffchange-inline">PF3D7_0720400</ins></div></td></tr><tr><td colspan="2" class="diff-lineno">aliases / en / 1</td><td colspan="2" class="diff-lineno">aliases / en / 1</td></tr><tr><td class="diff-marker">-</td><td class="diff-deletedline"><div><del class="diffchange diffchange-inline">PF07_0085</del></div></td></tr><!-- diff cache key wikidatawiki:diff:wikidiff2:1.12:old-888082520:rev-888696170:1.7.3:25:lang-en -->
+        """.strip()
+        self.testdir = os.path.dirname(os.path.abspath(__file__))
+
+    def get_test_diff(self, name):
+        with open(os.path.join(self.testdir, 'data', name), 'r') as f:
+            return f.read()
+
+    def test_retrieve_html_diff(self):
+        di = DiffInspector()
+
+        response = '{"compare":{"fromid":20525554,"fromrevid":888082520,"fromns":0,"fromtitle":"Q18968698","toid":20525554,"torevid":888696170,"tons":0,"totitle":"Q18968698","*":"'+self.html.replace('"', '\\"')+'"}}'
+
+        with requests_mock.mock() as m:
+            m.get('https://www.wikidata.org/w/api.php?action=compare&fromrev=1234&torev=12345&uselang=en&format=json',
+                text=response)
+
+            self.assertEqual(self.html, di._retrieve_html_diff(1234, 12345))
+
+    def test_extract_properties(self):
+        di = MockDiffInspector()
+        di.responses[(12,34)] = self.html
+        diff_digest = DiffDigest(aliases={'en'})
+        self.assertEqual(diff_digest, di.extract(12, 34))
+
+    def test_extract_digest(self):
+        di = DiffInspector()
+        examples = {
+            self.get_test_diff('ice_skating.html'):
+                DiffDigest(
+                    statements={'P710'},
+                    qualifiers={'P1351', 'P4826', 'P4815', 'P1545', 'P1352', 'P4825', 'P1532'}),
+            self.get_test_diff('death.html'):
+                DiffDigest(statements={'P723', 'P570', 'P569'}),
+            self.get_test_diff('patronage.html'):
+                DiffDigest(
+                    statements={'P3872'},
+                    qualifiers={'P585'},
+                    aliases={'fr'}),
+            self.get_test_diff('head_coach.html'):
+                DiffDigest(
+                    statements={'P286'},
+                    qualifiers={'P580', 'P582'}
+                    ),
+        }
+        for html, digest in examples.items():
+            self.assertEqual(digest, di._extract_digest(html))
 
