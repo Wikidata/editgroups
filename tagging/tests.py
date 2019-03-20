@@ -3,6 +3,7 @@ from store.models import Edit
 from store.models import Batch
 from .models import Tag
 from .models import action_re
+from .models import property_re
 from .models import language_re
 from caching import invalidation
 
@@ -15,13 +16,23 @@ class TagTest(TestCase):
     def test_action_re(self):
         self.assertEquals('wbsetdescription-add', action_re.match('/* wbsetdescription-add:1|eu */ Indonesiako herria, #quickstatements').group(1))
 
+    def test_property_re(self):
+        examples = {
+            "/* wbremoveclaims-remove:1| */ [[Property:P4135]]: 70, #quickstatements; [[:toollabs:quickstatements/#/batch/9509|batch #9509]] by [[User:Tibbs001|]]": "P4135",
+            "/* wbcreateclaim-create:1| */ [[Property:P106]]: [[Q1650915]], #quickstatements; [[:toollabs:quickstatements/#/batch/9516|batch #9516]] by [[User:Sic19|]]": "P106",
+            "/* wbsetreference-add:2| */ [[Property:P1433]]: [[Q3186921]], #quickstatements; #temporary_batch_1553059981737": "P1433",
+            "/* wbsetclaim-update:2||1|2 */ [[Property:P159]]: [[Q3887146]]": "P159",
+        }
+        for example, expected in examples.items():
+            self.assertEquals(expected, property_re.match(example).group(1))
+
     def test_extract(self):
         Edit.ingest_jsonlines('store/testdata/one_qs_batch.json')
         batch = Batch.objects.get()
         last_edit = batch.edits.order_by('-timestamp')[0]
         # tag extraction on the latest edit does not return any *new* tag
         self.assertEquals([], [tag.id for tag in Tag.extract(last_edit)])
-        self.assertEquals(['wbcreateclaim-create'], list(batch.tag_ids))
+        self.assertEquals(['wbcreateclaim-create', 'prop-P18', 'prop-P2534', 'prop-P3896', 'prop-P856'], list(batch.tag_ids))
 
     def test_extract_editentity(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
@@ -33,7 +44,7 @@ class TagTest(TestCase):
         Tag.objects.all().delete()
         Tag.retag_all_batches()
         batch = Batch.objects.get()
-        self.assertEquals(['wbcreateclaim-create'], list(batch.tag_ids))
+        self.assertEquals(['wbcreateclaim-create', 'prop-P18', 'prop-P2534', 'prop-P3896', 'prop-P856'], list(batch.tag_ids))
 
     def test_language_re(self):
         self.assertEquals('ru', language_re.match('/* wbsetlabel-add:1|ru */ Eupelops brevicuspis').group(1))

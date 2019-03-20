@@ -76,12 +76,17 @@ class Tool(CachingMixin, models.Model):
 
         return self.Match(uid=uid, user=realuser, summary=summary)
 
+class BatchManager(BulkUpdateManager):
+    """
+    This makes Batch methods available in migrations.
+    """
+    use_in_migrations = True
 
 class Batch(models.Model):
     """
     A group of edits
     """
-    objects = BulkUpdateManager()
+    objects = BatchManager()
 
     tool = models.ForeignKey(Tool, on_delete=models.CASCADE)
     user = models.CharField(max_length=MAX_CHARFIELD_LENGTH, db_index=True)

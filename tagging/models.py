@@ -99,13 +99,20 @@ tag_to_readable_name = {
 
 action_re = re.compile('^/\* ([a-z\-]*):.*')
 language_re = re.compile('^/\* wb[a-z\-]*:\d+\|([a-z\-]+) \*/')
+property_re = re.compile('^/\* wb[a-z\-]*:[\d\|]* \*/ \[\[Property:(P[1-9]\d+)\]\]: ')
+
+class TagManager(CachingManager):
+    """
+    This enables methods in data migrations.
+    """
+    use_in_migrations = True
 
 class Tag(CachingMixin, models.Model):
     """
     A tag, which represents a feature extracted from an edit
     and aggregated at the level of batches.
     """
-    objects = CachingManager()
+    objects = TagManager()
 
     #: The content of the tag
     id = models.CharField(max_length=128, primary_key=True)
@@ -126,6 +133,8 @@ class Tag(CachingMixin, models.Model):
             return tag_to_readable_name[self.id]
         elif self.id.startswith('lang-'):
             return self.id[len('lang-'):]
+        elif self.id.startswith('prop-'):
+            return self.id[len('prop-'):]
 
     @classmethod
     def add_tags_to_batches(cls, batch_to_tags):
@@ -160,22 +169,25 @@ class Tag(CachingMixin, models.Model):
         action_match = action_re.match(edit.comment)
         if action_match:
             tag_name = action_match.group(1)
-            if not tag_name in edit.batch.tag_ids:
-                tag, created = cls.objects.get_or_create(id=tag_name,
-                    defaults={'priority': 10})
-                tags.append(tag)
+            tag, created = cls.objects.get_or_create(id=tag_name,
+                defaults={'priority': 10})
+            tags.append(tag)
 
         # Extract properties
-        # TODO
+        property_match = property_re.match(edit.comment)
+        if property_match:
+            tag_name = 'prop-'+property_match.group(1)
+            tag, created = cls.objects.get_or_create(id=tag_name,
+                defaults={'priority':2, 'color': '#5180bc'})
+            tags.append(tag)
 
         # Extract languages
         language_match = language_re.match(edit.comment)
         if language_match:
             tag_name = 'lang-'+language_match.group(1)
-            if not tag_name in edit.batch.tag_ids:
-                tag, created = cls.objects.get_or_create(id=tag_name,
-                    defaults={'priority':5, 'color':'#3eabab'})
-                tags.append(tag)
+            tag, created = cls.objects.get_or_create(id=tag_name,
+                defaults={'priority':5, 'color':'#3eabab'})
+            tags.append(tag)
 
         # Other actions
         if edit.changetype in tag_to_readable_name:
@@ -183,7 +195,7 @@ class Tag(CachingMixin, models.Model):
                 defaults={'priority':20, 'color':'#dc4ec9'})
             tags.append(tag)
 
-        return tags
+        return [t for t in tags if t.id not in edit.batch.tag_ids]
 
     @classmethod
     def retag_all_batches(cls):
@@ -192,7 +204,7 @@ class Tag(CachingMixin, models.Model):
         Existing tags should be cleared first.
         """
         from store.models import Edit
-        cls.retag_edits(Edit.objects.all())
+        cls.retag_edits(Edit.objects.all().iterator())
 
     @classmethod
     def retag_edits(cls, edits):
