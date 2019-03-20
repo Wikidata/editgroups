@@ -34,6 +34,15 @@ class DiffDigest(object):
             'aliases': self.aliases,
         }
 
+    def __add__(self, other):
+        return DiffDigest(
+            statements = self.statements | other.statements,
+            qualifiers = self.qualifiers | other.qualifiers,
+            labels = self.labels | other.labels,
+            descriptions = self.descriptions | other.descriptions,
+            aliases = self.aliases | other.aliases,
+        )
+
     def __str__(self):
         return ', '.join('{}: {}'.format(key, val) for key, val in self.json().items() if val) or 'empty'
 

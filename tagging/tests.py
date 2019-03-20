@@ -8,9 +8,11 @@ from .models import property_re
 from .models import language_re
 from .diffinspector import DiffInspector
 from .diffdigest import DiffDigest
+from .newentityinspector import NewEntityInspector
 from caching import invalidation
 import requests_mock
 import os
+import json
 
 cache = invalidation.cache
 
@@ -143,4 +145,62 @@ class DiffInspectorTest(unittest.TestCase):
         }
         for html, digest in examples.items():
             self.assertEqual(digest, di._extract_digest(html))
+
+class NewEntityInspectorStub(NewEntityInspector):
+    def __init__(self):
+        super(NewEntityInspectorStub, self).__init__()
+        self.revisions = {}
+
+    def _retrieve_revisions(self, revids):
+        return {
+            revid: self.revisions.get(revid)
+            for revid in revids
+        }
+
+class NewEntityInspectorTest(unittest.TestCase):
+    def setUp(self):
+        self.testdir = os.path.dirname(os.path.abspath(__file__))
+
+    def get_json(self, name):
+        with open(os.path.join(self.testdir, 'data', name), 'r') as f:
+            return f.read()
+
+    def test_extract(self):
+        inspector = NewEntityInspectorStub()
+        revid1 = 881732187
+        revid2 = 888850125
+        inspector.revisions[revid1] = json.loads(self.get_json('trophee.json'))
+        inspector.revisions[revid2] = json.loads(self.get_json('wilhelm.json'))
+
+        digest = inspector.extract([revid1, revid2])
+        expected_digest = DiffDigest(
+            statements = {'P31', 'P569', 'P570', 'P723', 'P664', 'P641', 'P17', 'P276', 'P585'},
+            labels = {'nl', 'en'},
+            descriptions = {'en'})
+        self.assertEqual(expected_digest, digest)
+
+
+    def test_qualifiers(self):
+        inspector = NewEntityInspectorStub()
+        inspector.revisions[1234] = json.loads(self.get_json('foundation.json'))
+
+        digest = inspector.extract([1234])
+        expected_digest = DiffDigest(
+            statements = {'P361', 'P279', 'P910', 'P1001'},
+            qualifiers = {'P17'},
+            labels = {'en', 'es', 'nb', 'fr'})
+        self.assertEqual(expected_digest, digest)
+
+    def test_retrieve_revisions(self):
+        inspector = NewEntityInspector()
+
+        response = self.get_json('api_response.json')
+        with requests_mock.mock() as m:
+            m.get('https://www.wikidata.org/w/api.php?action=query&prop=revisions&rvprop=content|ids&revids=881732187|888850125&rvslots=*&format=json',
+                text=response)
+
+            revisions = inspector._retrieve_revisions([881732187, 888850125])
+
+            self.assertTrue('claims' in revisions[881732187])
+            self.assertEqual(revisions[888850125].get('labels').get('en')['value'], 'Wilhelm Schenk')
 
