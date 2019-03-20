@@ -99,6 +99,7 @@ tag_to_readable_name = {
 
 action_re = re.compile('^/\* ([a-z\-]*):.*')
 language_re = re.compile('^/\* wb[a-z\-]*:\d+\|([a-z\-]+) \*/')
+property_re = re.compile('^/\* wb[a-z\-]*:[\d\|]* \*/ \[\[Property:(P[1-9]\d+)\]\]: ')
 
 class Tag(CachingMixin, models.Model):
     """
