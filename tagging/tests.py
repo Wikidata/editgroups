@@ -32,7 +32,7 @@ class TagTest(TestCase):
         last_edit = batch.edits.order_by('-timestamp')[0]
         # tag extraction on the latest edit does not return any *new* tag
         self.assertEquals([], [tag.id for tag in Tag.extract(last_edit)])
-        self.assertEquals(['wbcreateclaim-create'], list(batch.tag_ids))
+        self.assertEquals(['wbcreateclaim-create', 'prop-P18', 'prop-P2534', 'prop-P3896', 'prop-P856'], list(batch.tag_ids))
 
     def test_extract_editentity(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
@@ -44,7 +44,7 @@ class TagTest(TestCase):
         Tag.objects.all().delete()
         Tag.retag_all_batches()
         batch = Batch.objects.get()
-        self.assertEquals(['wbcreateclaim-create'], list(batch.tag_ids))
+        self.assertEquals(['wbcreateclaim-create', 'prop-P18', 'prop-P2534', 'prop-P3896', 'prop-P856'], list(batch.tag_ids))
 
     def test_language_re(self):
         self.assertEquals('ru', language_re.match('/* wbsetlabel-add:1|ru */ Eupelops brevicuspis').group(1))
