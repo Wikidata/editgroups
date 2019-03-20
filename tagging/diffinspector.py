@@ -84,7 +84,7 @@ class DiffInspector(object):
                     digest.descriptions.add(difftype[len('descriptions / '):].split(' ')[0])
                 elif difftype.startswith('aliases /'):
                     digest.aliases.add(difftype[len('aliases / '):].split(' ')[0])
-            elif td.get('class') == 'diff-addedline' and qualifier_change:
+            elif td.get('class') in ['diff-addedline','diff-deletedline'] and qualifier_change:
                 link = td.xpath('.//a')[0]
                 pid = self._a_to_pid(link)
                 if pid:

@@ -142,6 +142,11 @@ class DiffInspectorTest(unittest.TestCase):
                     statements={'P286'},
                     qualifiers={'P580', 'P582'}
                     ),
+            self.get_test_diff('delete_statements.html'):
+                DiffDigest(
+                    statements={'P2093'},
+                    qualifiers={'P1545'}
+                    ),
         }
         for html, digest in examples.items():
             self.assertEqual(digest, di._extract_digest(html))
