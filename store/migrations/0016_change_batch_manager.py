@@ -7,7 +7,7 @@ import store.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('store', '0014_recompute_diffsizes'),
+        ('store', '0015_recompute_stats'),
     ]
 
     operations = [

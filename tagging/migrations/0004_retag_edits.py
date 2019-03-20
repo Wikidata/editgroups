@@ -26,10 +26,11 @@ def do_nothing(apps, schema_editor):
     pass
 
 class Migration(migrations.Migration):
+    atomic = False
 
     dependencies = [
         ('tagging', '0003_lexeme_tags'),
-        ('store', '0015_change_batch_manager'),
+        ('store', '0016_change_batch_manager'),
     ]
 
     operations = [
