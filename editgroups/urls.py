@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.shortcuts import redirect, reverse
 from django.contrib.auth import logout
 from django.urls import path, include
+from django.http import HttpResponse
 from rest_framework import routers
 from store import views
 from store import api
@@ -28,6 +29,9 @@ from revert.views import initiate_revert_view
 def logout_view(request):
     logout(request)
     return redirect(reverse('list-batches'))
+
+def robots_view(request):
+    return HttpResponse('User-Agent: *\nDisallow: /\n', content_type="text/plain")
 
 urlpatterns = [
     path('api/', include(api)),
@@ -41,4 +45,5 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('oauth/', include('social_django.urls', namespace='social')),
     path('logout/', logout_view, name='logout'),
+    path('robots.txt', robots_view, name='robots-txt'),
 ]
