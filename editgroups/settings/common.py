@@ -8,6 +8,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
+from datetime import timedelta
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -197,6 +199,17 @@ BROKER_URL = 'redis://'+REDIS_URL
 CELERY_RESULT_BACKEND = BROKER_URL
 
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-CELERY_IMPORTS = ['revert.tasks']
+CELERY_IMPORTS = ['revert.tasks', 'tagging.tasks' ]
+
+# Batch inspection
+BATCH_INSPECTION_LOOKBEHIND = timedelta(minutes=30)
+BATCH_INSPECTION_DELAY = timedelta(minutes=10)
+
+CELERYBEAT_SCHEDULE = {
+    'inspect_batches': {
+        'task': 'inspect_batches',
+        'schedule': BATCH_INSPECTION_DELAY,
+    },
+}
 
 
