@@ -37,6 +37,7 @@ class BatchInspector(object):
         Inspect the given batch if needed, and add the corresponding
         tags to the batch.
         """
+        print('Inspecting {}'.format(batch))
         digest = DiffDigest()
         tags = set(batch.tag_ids)
 
@@ -54,7 +55,7 @@ class BatchInspector(object):
 
         if batch.nb_new_pages:
             # We need to inspect some new items!
-            revids = batch.edit_set.filter(oldrevid=0)[:self.max_new_items_inspections].values_list('newrevid', flat=True)
+            revids = batch.edits.filter(oldrevid=0)[:self.max_new_items_inspections].values_list('newrevid', flat=True)
             digest += self.new_entity_inspector.inspect(revids)
             sleep(self.requests_delay)
 
