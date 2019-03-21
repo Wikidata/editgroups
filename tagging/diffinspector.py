@@ -19,7 +19,7 @@ class DiffInspector(object):
         """
         self.endpoint = endpoint
 
-    def extract(self, oldrevid, newrevid):
+    def inspect(self, oldrevid, newrevid):
         """
         Given two revision ids, assumed to be of the same page,
         extract a digest from it.

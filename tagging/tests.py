@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime
 from django.test import TestCase
 from store.models import Edit
 from store.models import Batch
@@ -9,10 +10,13 @@ from .models import language_re
 from .diffinspector import DiffInspector
 from .diffdigest import DiffDigest
 from .newentityinspector import NewEntityInspector
+from .batchinspector import BatchInspector
 from caching import invalidation
 import requests_mock
 import os
 import json
+from pytz import UTC
+from unittest.mock import patch
 
 cache = invalidation.cache
 
@@ -36,9 +40,6 @@ class TagTest(TestCase):
     def test_extract(self):
         Edit.ingest_jsonlines('store/testdata/one_qs_batch.json')
         batch = Batch.objects.get()
-        last_edit = batch.edits.order_by('-timestamp')[0]
-        # tag extraction on the latest edit does not return any *new* tag
-        self.assertEquals([], [tag.id for tag in Tag.extract(last_edit)])
         self.assertEquals(['wbcreateclaim-create', 'prop-P18', 'prop-P2534', 'prop-P3896', 'prop-P856'], list(batch.tag_ids))
 
     def test_extract_editentity(self):
@@ -121,7 +122,7 @@ class DiffInspectorTest(unittest.TestCase):
         di = MockDiffInspector()
         di.responses[(12,34)] = self.html
         diff_digest = DiffDigest(aliases={'en'})
-        self.assertEqual(diff_digest, di.extract(12, 34))
+        self.assertEqual(diff_digest, di.inspect(12, 34))
 
     def test_extract_digest(self):
         di = DiffInspector()
@@ -177,7 +178,7 @@ class NewEntityInspectorTest(unittest.TestCase):
         inspector.revisions[revid1] = json.loads(self.get_json('trophee.json'))
         inspector.revisions[revid2] = json.loads(self.get_json('wilhelm.json'))
 
-        digest = inspector.extract([revid1, revid2])
+        digest = inspector.inspect([revid1, revid2])
         expected_digest = DiffDigest(
             statements = {'P31', 'P569', 'P570', 'P723', 'P664', 'P641', 'P17', 'P276', 'P585'},
             labels = {'nl', 'en'},
@@ -189,7 +190,7 @@ class NewEntityInspectorTest(unittest.TestCase):
         inspector = NewEntityInspectorStub()
         inspector.revisions[1234] = json.loads(self.get_json('foundation.json'))
 
-        digest = inspector.extract([1234])
+        digest = inspector.inspect([1234])
         expected_digest = DiffDigest(
             statements = {'P361', 'P279', 'P910', 'P1001'},
             qualifiers = {'P17'},
@@ -209,3 +210,28 @@ class NewEntityInspectorTest(unittest.TestCase):
             self.assertTrue('claims' in revisions[881732187])
             self.assertEqual(revisions[888850125].get('labels').get('en')['value'], 'Wilhelm Schenk')
 
+
+def fake_diff_inspect(*args, **kwargs):
+    return DiffDigest(statements=['P2427'])
+
+def fake_new_entity_inspect(*args, **kwargs):
+    return DiffDigest(statements=['P31'], labels=['en'])
+
+class BatchInspectorStub(BatchInspector):
+    requests_delay = 0
+
+class BatchInspectorTest(TestCase):
+    def setUp(self):
+        self.testdir = os.path.dirname(os.path.abspath(__file__))
+        Edit.ingest_jsonlines(os.path.join(self.testdir, 'data', 'batches_to_inspect.json'))
+
+    @patch.object(DiffInspector, 'inspect', fake_diff_inspect)
+    @patch.object(NewEntityInspector, 'inspect', fake_new_entity_inspect)
+    def test_inspect(self):
+        batch_inspector = BatchInspector()
+        batch_inspector.inspect_batches_since(datetime(year=2019,month=3,day=18).replace(tzinfo=UTC))
+
+        batch_with_editentity = Batch.objects.filter(tags__id='wbeditentity-update')[0]
+        self.assertTrue('prop-P2427' in batch_with_editentity.tag_ids)
+        batch_with_creation = Batch.objects.filter(nb_new_pages__gt=0)[0]
+        self.assertTrue('prop-P31' in batch_with_creation.tag_ids)

@@ -12,7 +12,7 @@ class NewEntityInspector(object):
         """
         self.endpoint = endpoint
 
-    def extract(self, revids):
+    def inspect(self, revids):
         """
         Given a list of revision ids, extract one merged digest
         of all their contents.
