@@ -144,7 +144,7 @@ class Tag(CachingMixin, models.Model):
         This method requires that the batches have not been tagged yet with the list of tag
         names supplied.
 
-        :param batch_to_tags: a dictionnary from batch ids to the new tags they should have.
+        :param batch_to_tags: a dictionnary from batch ids to the new tag ids they should have.
         """
         ThroughModel = cls.batches.through
 
@@ -163,39 +163,64 @@ class Tag(CachingMixin, models.Model):
         later on).
         :returns: a list of tags
         """
-        tags = []
-
         # Extract action types
         action_match = action_re.match(edit.comment)
         if action_match:
-            tag_name = action_match.group(1)
-            tag, created = cls.objects.get_or_create(id=tag_name,
-                defaults={'priority': 10})
-            tags.append(tag)
+            yield cls.for_action(action_match.group(1))
 
         # Extract properties
         property_match = property_re.match(edit.comment)
         if property_match:
-            tag_name = 'prop-'+property_match.group(1)
-            tag, created = cls.objects.get_or_create(id=tag_name,
-                defaults={'priority':2, 'color': '#5180bc'})
-            tags.append(tag)
+            yield cls.for_property(property_match.group(1))
 
         # Extract languages
         language_match = language_re.match(edit.comment)
         if language_match:
-            tag_name = 'lang-'+language_match.group(1)
-            tag, created = cls.objects.get_or_create(id=tag_name,
-                defaults={'priority':5, 'color':'#3eabab'})
-            tags.append(tag)
+            yield cls.for_language(language_match.group(1))
 
         # Other actions
         if edit.changetype in tag_to_readable_name:
-            tag, created = cls.objects.get_or_create(id=edit.changetype,
-                defaults={'priority':20, 'color':'#dc4ec9'})
-            tags.append(tag)
+            yield cls.for_changetype(edit.changetype)
 
-        return [t for t in tags if t.id not in edit.batch.tag_ids]
+
+    @classmethod
+    def for_action(cls, action):
+        """
+        Returns a tag for a given action type.
+        """
+        tag_name = action
+        tag, created = cls.objects.get_or_create(id=tag_name,
+            defaults={'priority': 10})
+        return tag
+
+    @classmethod
+    def for_property(cls, pid):
+        """
+        Returns a tag for a given property id.
+        """
+        tag_name = 'prop-'+pid
+        tag, created = cls.objects.get_or_create(id=tag_name,
+            defaults={'priority':2, 'color': '#5180bc'})
+        return tag
+
+    @classmethod
+    def for_language(cls, lang):
+        """
+        Returns a tag for a given language code.
+        """
+        tag_name = 'lang-'+lang
+        tag, created = cls.objects.get_or_create(id=tag_name,
+            defaults={'priority':5, 'color':'#3eabab'})
+        return tag
+
+    @classmethod
+    def for_changetype(cls, changetype):
+        """
+        Returns a tag for a given change type.
+        """
+        tag, created = cls.objects.get_or_create(id=changetype,
+            defaults={'priority':20, 'color':'#dc4ec9'})
+        return tag
 
     @classmethod
     def retag_all_batches(cls):
@@ -215,7 +240,8 @@ class Tag(CachingMixin, models.Model):
         batch_to_tags = defaultdict(set)
         for edit in edits:
             tags = cls.extract(edit)
-            batch_to_tags[edit.batch_id].update(tags)
+            missing_tags = [t for t in tags if t.id not in edit.batch.tag_ids]
+            batch_to_tags[edit.batch_id].update(missing_tags)
 
         ThroughModel = cls.batches.through
         instances = []

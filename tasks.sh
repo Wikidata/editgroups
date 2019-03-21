@@ -14,7 +14,7 @@ else
       pip install -r requirements.txt
 fi;
 echo "Starting celery"
-/data/project/editgroups/celery_venv/bin/python3 /data/project/editgroups/celery_venv/bin/celery --app=editgroups.celery:app worker -l INFO
+/data/project/editgroups/celery_venv/bin/python3 /data/project/editgroups/celery_venv/bin/celery --app=editgroups.celery:app worker -l INFO -B
 echo $?
 echo "Celery done"
 
