@@ -86,6 +86,7 @@ class DiffDigestTest(unittest.TestCase):
             'labels':set(),
             'descriptions':set(),
             'aliases':set(),
+            'sitelinks':set(),
         }, DiffDigest(statements=['P31']).json())
 
     def test_repr(self):
@@ -148,6 +149,10 @@ class DiffInspectorTest(unittest.TestCase):
                     statements={'P2093'},
                     qualifiers={'P1545'}
                     ),
+            self.get_test_diff('sitelink.html'):
+                DiffDigest(
+                    sitelinks={'enwiki'}
+                ),
         }
         for html, digest in examples.items():
             self.assertEqual(digest, di._extract_digest(html))

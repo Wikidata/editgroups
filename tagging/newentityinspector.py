@@ -40,6 +40,7 @@ class NewEntityInspector(object):
             labels = (entity_json.get('labels') or {}).keys(),
             descriptions = (entity_json.get('descriptions') or {}).keys(),
             aliases = (entity_json.get('aliases') or {}).keys(),
+            sitelinks = (entity_json.get('sitelinks') or {}).keys(),
         )
 
     def _extract_qualifiers(self, entity_json):

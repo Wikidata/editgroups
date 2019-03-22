@@ -71,7 +71,7 @@ class BatchInspector(object):
         for batch in queryset:
             diffdigest = self.inspect(batch)
             tags = ([Tag.for_property(pid) for pid in diffdigest.statements | diffdigest.qualifiers ] +
-                    [Tag.for_language(lang) for lang in diffdigest.labels | diffdigest.descriptions | diffdigest.aliases ])
+                    [Tag.for_language(lang) for lang in diffdigest.labels | diffdigest.descriptions | diffdigest.aliases | diffdigest.sitelinks ])
             tags_not_there_yet = [tag for tag in tags if tag.id not in batch.tag_ids]
             # We could call this method just once for all batches but it would add some delay,
             # as inspection takes a while.

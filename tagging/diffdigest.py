@@ -12,7 +12,8 @@ class DiffDigest(object):
             qualifiers=None,
             labels=None,
             descriptions=None,
-            aliases=None):
+            aliases=None,
+            sitelinks=None):
         """
         Create a diff digest.
         """
@@ -21,6 +22,7 @@ class DiffDigest(object):
         self.labels = set(labels or [])
         self.descriptions = set(descriptions or [])
         self.aliases = set(aliases or [])
+        self.sitelinks = set(sitelinks or [])
 
     def json(self):
         """
@@ -32,6 +34,7 @@ class DiffDigest(object):
             'labels': self.labels,
             'descriptions': self.descriptions,
             'aliases': self.aliases,
+            'sitelinks': self.sitelinks,
         }
 
     def __add__(self, other):
@@ -41,6 +44,7 @@ class DiffDigest(object):
             labels = self.labels | other.labels,
             descriptions = self.descriptions | other.descriptions,
             aliases = self.aliases | other.aliases,
+            sitelinks = self.sitelinks | other.sitelinks,
         )
 
     def __str__(self):
