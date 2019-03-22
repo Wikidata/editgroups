@@ -131,7 +131,31 @@ class Tag(CachingMixin, models.Model):
         """
         if self.id in tag_to_readable_name:
             return tag_to_readable_name[self.id]
+        else:
+            return self.code
+
+    @property
+    def category(self):
+        """
+        Returns the type of tag (action, lang or prop)
+        """
+        print('tag.category')
+        print(self.id)
+        if self.id in tag_to_readable_name:
+            return 'action'
         elif self.id.startswith('lang-'):
+            return 'lang'
+        elif self.id.startswith('prop-'):
+            return 'prop'
+        return 'no category for '+self.id
+
+    @property
+    def code(self):
+        """
+        Returns the property id or language code if the
+        tag is of these types.
+        """
+        if self.id.startswith('lang-'):
             return self.id[len('lang-'):]
         elif self.id.startswith('prop-'):
             return self.id[len('prop-'):]

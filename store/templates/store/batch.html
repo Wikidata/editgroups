@@ -21,7 +21,8 @@
 
 <p>
 {% for tag in sorted_tags %}
-{% if tag.display_name %}<span class="label" style="background-color: {{ tag.color }}">{{ tag.display_name }}</span>{% endif %}
+{% if tag.display_name %}<span class="label" style="background-color: {{ tag.color }}">{% if tag.category == "prop" %}<a href="https://www.wikidata.org/wiki/Property:{{ tag.code }}">Property:{{ tag.code }}</a>{% else %}{{ tag.display_name }}{% endif %}</span>
+{% endif %}
 {% endfor %}
 </p>
 

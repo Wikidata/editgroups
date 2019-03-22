@@ -24,8 +24,14 @@ class TagTest(TestCase):
     def setUp(self):
         cache.clear()
 
+    def test_category(self):
+        self.assertEqual(Tag.for_language('en').category, 'lang')
+        self.assertEqual(Tag.for_language('en').code, 'en')
+        self.assertEqual(Tag.for_property('P2427').category, 'prop')
+        self.assertEqual(Tag.for_property('P2427').code, 'P2427')
+
     def test_action_re(self):
-        self.assertEquals('wbsetdescription-add', action_re.match('/* wbsetdescription-add:1|eu */ Indonesiako herria, #quickstatements').group(1))
+        self.assertEqual('wbsetdescription-add', action_re.match('/* wbsetdescription-add:1|eu */ Indonesiako herria, #quickstatements').group(1))
 
     def test_property_re(self):
         examples = {
@@ -35,40 +41,40 @@ class TagTest(TestCase):
             "/* wbsetclaim-update:2||1|2 */ [[Property:P159]]: [[Q3887146]]": "P159",
         }
         for example, expected in examples.items():
-            self.assertEquals(expected, property_re.match(example).group(1))
+            self.assertEqual(expected, property_re.match(example).group(1))
 
     def test_extract(self):
         Edit.ingest_jsonlines('store/testdata/one_qs_batch.json')
         batch = Batch.objects.get()
-        self.assertEquals(['wbcreateclaim-create', 'prop-P18', 'prop-P2534', 'prop-P3896', 'prop-P856'], list(batch.tag_ids))
+        self.assertEqual(['wbcreateclaim-create', 'prop-P18', 'prop-P2534', 'prop-P3896', 'prop-P856'], list(batch.tag_ids))
 
     def test_extract_editentity(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
         batch = Batch.objects.get()
-        self.assertEquals(['wbeditentity-update'], list(batch.tag_ids))
+        self.assertEqual(['wbeditentity-update'], list(batch.tag_ids))
 
     def test_tag_former_batches(self):
         Edit.ingest_jsonlines('store/testdata/one_qs_batch.json')
         Tag.objects.all().delete()
         Tag.retag_all_batches()
         batch = Batch.objects.get()
-        self.assertEquals(['wbcreateclaim-create', 'prop-P18', 'prop-P2534', 'prop-P3896', 'prop-P856'], list(batch.tag_ids))
+        self.assertEqual(['wbcreateclaim-create', 'prop-P18', 'prop-P2534', 'prop-P3896', 'prop-P856'], list(batch.tag_ids))
 
     def test_language_re(self):
-        self.assertEquals('ru', language_re.match('/* wbsetlabel-add:1|ru */ Eupelops brevicuspis').group(1))
+        self.assertEqual('ru', language_re.match('/* wbsetlabel-add:1|ru */ Eupelops brevicuspis').group(1))
 
     def test_tags_with_languages(self):
         Edit.ingest_jsonlines('store/testdata/qs_batch_with_terms.json')
         batch = Batch.objects.get()
-        self.assertEquals(['wbsetdescription-add', 'lang-eu'], list(batch.tag_ids))
+        self.assertEqual(['wbsetdescription-add', 'lang-eu'], list(batch.tag_ids))
         lang_tag = batch.tags.order_by('priority')[0]
-        self.assertEquals('eu', lang_tag.display_name)
+        self.assertEqual('eu', lang_tag.display_name)
 
     def test_deletion_batch(self):
         Edit.ingest_jsonlines('store/testdata/deletion_edit.json')
-        self.assertEquals(1, Batch.objects.count())
+        self.assertEqual(1, Batch.objects.count())
         batch = Batch.objects.get()
-        self.assertEquals(['delete'], list(batch.tag_ids))
+        self.assertEqual(['delete'], list(batch.tag_ids))
 
 class MockDiffInspector(DiffInspector):
 
