@@ -68,7 +68,7 @@ class BatchInspector(object):
         batches with a latest edit later than the given time.
         """
         queryset = Batch.objects.filter(Q(tags__id__in = self.tags_for_diff_inspection) | Q(nb_new_pages__gt = 0), ended__gt=since_time)
-        for batch in queryset:
+        for batch in queryset.distinct():
             diffdigest = self.inspect(batch)
             tags = ([Tag.for_property(pid) for pid in diffdigest.statements | diffdigest.qualifiers ] +
                     [Tag.for_language(lang) for lang in diffdigest.labels | diffdigest.descriptions | diffdigest.aliases | diffdigest.sitelinks ])
