@@ -159,6 +159,14 @@ class DiffInspectorTest(unittest.TestCase):
                 DiffDigest(
                     sitelinks={'enwiki'}
                 ),
+            self.get_test_diff('airports.html'):
+                DiffDigest(
+                    labels={'fr','frc'}
+                ),
+            self.get_test_diff('descriptions.html'):
+                DiffDigest(
+                    descriptions={'en'},
+                ),
         }
         for html, digest in examples.items():
             self.assertEqual(digest, di._extract_digest(html))

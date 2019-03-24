@@ -81,10 +81,10 @@ class DiffInspector(object):
                         digest.statements.add(pid)
                         if difftype.endswith('qualifier'):
                             qualifier_change = True
-                elif difftype.startswith('labels / '):
-                    digest.labels.add(difftype[len('labels / '):].split(' ')[0])
-                elif difftype.startswith('descriptions /'):
-                    digest.descriptions.add(difftype[len('descriptions / '):].split(' ')[0])
+                elif difftype.startswith('label / '):
+                    digest.labels.add(difftype[len('label / '):].split(' ')[0])
+                elif difftype.startswith('description /'):
+                    digest.descriptions.add(difftype[len('description / '):].split(' ')[0])
                 elif difftype.startswith('aliases /'):
                     digest.aliases.add(difftype[len('aliases / '):].split(' ')[0])
                 elif difftype.startswith('links /'):
