@@ -134,6 +134,7 @@ class DiffInspectorTest(unittest.TestCase):
     def test_extract_digest(self):
         di = DiffInspector()
         examples = {
+            None: DiffDigest(),
             self.get_test_diff('ice_skating.html'):
                 DiffDigest(
                     statements={'P710'},
