@@ -71,3 +71,7 @@ span.comment {
 .selected-user {
         font-weight: bold;
 }
+
+p span.label a {
+    color: inherit;
+}

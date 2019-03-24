@@ -60,9 +60,12 @@ class DiffInspector(object):
         in the diff and the language codes appearing as terms,
         in a DiffDigest object.
         """
+        digest = DiffDigest()
+        if not html_diff:
+            return digest
+
         encoded_html = ('<table>'+html_diff+'</table>').encode('utf-8')
         tree = lxml.html.fromstring(encoded_html)
-        digest = DiffDigest()
 
         qualifier_change = False
         for td in tree.xpath('//td'):

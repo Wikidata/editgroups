@@ -139,8 +139,6 @@ class Tag(CachingMixin, models.Model):
         """
         Returns the type of tag (action, lang or prop)
         """
-        print('tag.category')
-        print(self.id)
         if self.id in tag_to_readable_name:
             return 'action'
         elif self.id.startswith('lang-'):
