@@ -5,3 +5,4 @@ editgroups/settings/secret.py
 editgroups/settings/__init__.py
 static/
 celerybeat-schedule.db
+docs/_build/
