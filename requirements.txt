@@ -5,6 +5,7 @@ django-redis-cache
 django-cache-machine
 django-rest-framework
 django-filter
+django-extensions
 python-dateutil
 social-auth-app-django
 mysqlclient

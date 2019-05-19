@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     'store',
     'revert',
     'tagging',
+    'django_extensions',
 )
 
 MIDDLEWARE = [
