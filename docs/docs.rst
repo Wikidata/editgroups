@@ -1,7 +1,7 @@
 .. _page-docs:
 
-Documenting EditGroups
-======================
+Documenting
+===========
 
 This manual is written using Sphinx and the source files can be found in the `docs` folder 
 of the repository for this application.

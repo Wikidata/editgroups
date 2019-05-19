@@ -1,7 +1,7 @@
 .. _page-architecture:
 
-EditGroups' architecture
-========================
+Architecture
+============
 
 EditGroups works by replicating some of the wiki's data in its own SQL database.
 This makes it possible to have custom indices and quickly answer requests that would

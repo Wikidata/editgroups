@@ -1,7 +1,7 @@
 .. _page-api:
 
-EditGroups' API
-===============
+API
+===
 
 EditGroups offers a web API that can be used to search for edit groups and retrieve
 statistics about them.

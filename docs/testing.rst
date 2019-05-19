@@ -1,7 +1,7 @@
 .. _page-testing:
 
-Testing EditGroups
-==================
+Testing
+=======
 
 EditGroups comes with an extensive test suite, that can be run using Django's testing tools: ``python manage.py test``.
 This will create a test database, so that the changes made do not interfere with any production database.

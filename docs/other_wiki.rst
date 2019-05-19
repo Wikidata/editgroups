@@ -1,7 +1,7 @@
 .. _page-other_wiki:
 
-Running EditGroups on other wikis than Wikidata
-===============================================
+Running on other wikis
+======================
 
 EditGroups is originally designed for Wikidata but could be run on other Wikibase or even MediaWiki instances.
 Some lightweight modifications to the code will be required. Any contribution towards this goal will be gratefully received.

@@ -1,7 +1,7 @@
 .. _page-install:
 
-Deploying EditGroups
-====================
+Deploying
+=========
 
 Overview of the requirements
 ----------------------------
