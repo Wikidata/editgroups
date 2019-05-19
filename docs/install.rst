@@ -11,6 +11,7 @@ for Django projects <https://docs.djangoproject.com/en/2.2/howto/deployment/>`_.
 `Celery <http://www.celeryproject.org/>`_, a tasks backend commonly used in conjunction with Django.
 
 To run it, you will need:
+
 - a web server with WSGI support, to deploy the Django app;
 - a SQL server supported by Django, such as MySQL, PostgreSQL or MariaDB;
 - Python 3 and dependencies listed in the ``requirements.txt`` file (these should be installed in a virtualenv, see below);
@@ -45,14 +46,15 @@ Configure static files::
   mkdir -p src/static
   ln -s src/static
 
-put the following content in ``~/www/uwsgi.ini``::
+Put the following content in ``~/www/uwsgi.ini``::
 
   [uwsgi]
   check-static = /data/project/editgroups/www/python
 
--  run ``./manage.py collectstatic``
+and run ``./manage.py collectstatic``.
 
 Create the SQL database:
+
 - ``sql tools`` 
 - ``CREATE DATABASE s1234__editgroups;`` where ``s1234`` is the SQL
 username of the tool
@@ -71,17 +73,19 @@ The name of the table is the one you used at creation above
 the tool).
 
 Configure OAuth login:
-- Request an OAuth client id at
-https://meta.wikimedia.org/wiki/Special:OAuthConsumerRegistration/propose. Beyond the normal editing scopes, you will also need to perform administrative actions (delete, restore) on behalf of users, so make sure you request these scopes too.
-- Put the tokens in
-``~/www/python/src/editgroups/settings/secret.py``
+
+- Request an OAuth client id at https://meta.wikimedia.org/wiki/Special:OAuthConsumerRegistration/propose. Beyond the normal editing scopes, you will also need to perform administrative actions (delete, restore) on behalf of users, so make sure you request these scopes too.
+- Put the tokens in ``~/www/python/src/editgroups/settings/secret.py``
 
 Migrate the database:
+
 - ``./manage.py migrate``
 
 Run the webserver:
+
 - ``webservice --backend kubernetes python start``
 
 Backup the database regularly with:
+
 - ``mysqldump -C s1234__editgroups | gzip > database_dump.gz``
 

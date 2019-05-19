@@ -17,13 +17,11 @@ Possible tags
 
 Each tag is identified by a string identifier, such as ``lang-de``.
 We currently store three sorts of tags on batches:
-* **action** tags, which indicate which sort of edit was made (adding a claim, adding a reference, removing a description, and so on). These action tags correspond to API actions as exposed in the edit summary of the edits involved. The Wikibase API provide
-various methods, some of which overlap in functionality: for instance, adding a claim can be recorded either as ``wbcreateclaim-create`` or ``wbsetclaim-create`` depending on whether the ```wbcreateclaim
-<https://www.wikidata.org/w/api.php?action=help&modules=wbcreateclaim>`_`` or ```wbsetclaim
-<https://www.wikidata.org/w/api.php?action=help&modules=wbsetclaim>`_`` API actions were used.
-* **language** tags, which are prefixed by ``lang-``. These tags are added when the batch changes terms (labels, descriptions or aliases) in the corresponding language. The code following the ``lang-`` prefix is a Wikimedia language code, such as ``lang-de``.
-* **property** tags, which are prefixed by ``prop-``. These tags are added when the batch adds claims or qualifiers with the given property. The code following the ``prop-`` prefix is the property id, such as ``prop-P2427``.
 
+- **action** tags, which indicate which sort of edit was made (adding a claim, adding a reference, removing a description, and so on). These action tags correspond to API actions as exposed in the edit summary of the edits involved. The Wikibase API provide various methods, some of which overlap in functionality: for instance, adding a claim can be recorded either as ``wbcreateclaim-create`` or ``wbsetclaim-create`` depending on whether the `wbcreateclaim <https://www.wikidata.org/w/api.php?action=help&modules=wbcreateclaim>`_ or `wbsetclaim <https://www.wikidata.org/w/api.php?action=help&modules=wbsetclaim>`_ API actions were used.
+- **language** tags, which are prefixed by ``lang-``. These tags are added when the batch changes terms (labels, descriptions or aliases) in the corresponding language. The code following the ``lang-`` prefix is a Wikimedia language code, such as ``lang-de``.
+- **property** tags, which are prefixed by ``prop-``. These tags are added when the batch adds claims or qualifiers with the given property. The code following the ``prop-`` prefix is the property id, such as ``prop-P2427``.
+ 
 How tags are computed
 ---------------------
 
