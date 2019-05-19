@@ -1,4 +1,4 @@
-.. _page-install
+.. _page-other_wiki:
 
 Running EditGroups on other wikis than Wikidata
 ===============================================
