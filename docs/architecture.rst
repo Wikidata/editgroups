@@ -33,6 +33,22 @@ This is a fairly reliable endpoint which also lets us resume the stream from a r
 ingestion stopped for some reason. By default, the listener tries to resume listening from the 
 date of the latest edit it has ingested.
 
+This process can be invoked directly as a script::
+
+   python listener.py
+
+Or it can be run as a Kubernetes pod using the ``deployment/listener.yaml`` configuration provided.
+
 In the interest of running EditGroups on other Wikibase instances which do not have an associated EventStream
 endpoint, it would be great to add the possibility on ingesting edits by polling the recent changes too.
+
+Running asynchronous and periodic tasks
+---------------------------------------
+
+Tasks which cannot be completed in the course of a web request, such as undoing batches,
+are run by a Celery worker which can be invoked by::
+
+   ./celery.sh
+
+A Kubernetes deployment script for it is provided in ``deployment/celery.yaml``.
 

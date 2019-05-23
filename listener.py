@@ -5,11 +5,9 @@ from datetime import datetime
 from datetime import timedelta
 
 """
-Number of seconds to look back when restarting
+Amount of time to look back  when restarting
 the listener. This helps make sure that we don't
 lose any edit when the listener is restarted.
-
-10000 amounts to about 5 minutes of looking back.
 """
 LOOKBEHIND_OFFSET = timedelta(hours=1)
 
