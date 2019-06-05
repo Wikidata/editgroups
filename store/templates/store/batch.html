@@ -11,11 +11,11 @@
 
 {% block mainBody %}
 <div class="page-header">
-<h3>Edit group by <a href="https://www.wikidata.org/wiki/User:{{ author }}">{{ author }}</a>: {{ summary }} ({{ uid }})</h3>
+<h3>Edit group by <a href="https://www.wikidata.org/wiki/User:{{ author }}">{{ author }}</a>: {% if summary %}{{ summary }}{% else %}(no summary){% endif %} ({{ uid }})</h3>
 </div>
 {% if reverted_batch %}
 <div class="alert alert-primary reverted-batch" role="alert">
-   <p>This batch reverts <a href="{{ reverted_batch.url }}">{{ reverted_batch.full_uid }}: {{ reverted_batch.summary }}</a> by <a href="https://www.wikidata.org/wiki/User:{{ reverted_batch.author }}">{{ reverted_batch.author }}</a>.</p>
+   <p>This batch reverts <a href="{{ reverted_batch.url }}">{{ reverted_batch.full_uid }}: {% if reverted_batch.summary %}{{ reverted_batch.summary }}{% else %}(no summary){% endif %}</a> by <a href="https://www.wikidata.org/wiki/User:{{ reverted_batch.author }}">{{ reverted_batch.author }}</a>.</p>
 </div>
 {% endif %}
 
