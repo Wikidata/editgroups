@@ -33,7 +33,7 @@ EditGroups
                     <a href="{% set_get_param "user" batch.author %}">{{ batch.author }}</a>
                     {% endif %}
                 </td>
-                <td><a href="{{ batch.url }}">{% if batch.summary %}{{ batch.summary }}{% else %}(no summary){% end %}</a></td>
+                <td><a href="{{ batch.url }}">{% if batch.summary %}{{ batch.summary }}{% else %}(no summary){% endif %}</a></td>
                 <td class="numeric-column">{% for tag in batch.sorted_tags %}
                         {% if tag.display_name %}<a href="{% tagbutton tag %}" class="label {% if tag.id in tagging_form.tags %}selected-tag{% endif %}" style="background-color: {{ tag.color }}">{{ tag.display_name }}</a>{% endif %}
                 {% endfor %}</td>
