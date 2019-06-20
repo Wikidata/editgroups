@@ -101,6 +101,11 @@ class Batch(models.Model):
     nb_new_pages = models.IntegerField()
     total_diffsize = models.IntegerField()
 
+    # Internal field to keep track of when a batch was last modified.
+    # In general this will not be equal to 'ended' as we can ingest
+    # batches retrospectively after they ended.
+    last_modified = models.DateTimeField(auto_now=True)
+
     class Meta:
         unique_together = (('tool','uid','user'))
 

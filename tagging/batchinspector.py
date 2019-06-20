@@ -67,7 +67,7 @@ class BatchInspector(object):
         Inspects all batches that need inspection, only considering
         batches with a latest edit later than the given time.
         """
-        queryset = Batch.objects.filter(Q(tags__id__in = self.tags_for_diff_inspection) | Q(nb_new_pages__gt = 0), ended__gt=since_time).order_by('ended').distinct()
+        queryset = Batch.objects.filter(Q(tags__id__in = self.tags_for_diff_inspection) | Q(nb_new_pages__gt = 0), last_modified__gt=since_time).order_by('ended').distinct()
         for batch in queryset:
             diffdigest = self.inspect(batch)
             tags = ([Tag.for_property(pid) for pid in diffdigest.statements | diffdigest.qualifiers ] +
