@@ -11,6 +11,8 @@ from .diffinspector import DiffInspector
 from .diffdigest import DiffDigest
 from .newentityinspector import NewEntityInspector
 from .batchinspector import BatchInspector
+from .utils import MockDiffInspector
+from .utils import BatchInspectorStub
 from caching import invalidation
 import requests_mock
 import os
@@ -75,15 +77,6 @@ class TagTest(TestCase):
         self.assertEqual(1, Batch.objects.count())
         batch = Batch.objects.get()
         self.assertEqual(['delete'], list(batch.tag_ids))
-
-class MockDiffInspector(DiffInspector):
-
-    def __init__(self):
-        super(MockDiffInspector, self).__init__()
-        self.responses = {}
-
-    def _retrieve_html_diff(self, oldrevid, newrevid):
-        return self.responses.get((oldrevid, newrevid))
 
 class DiffDigestTest(unittest.TestCase):
     def test_json(self):
@@ -236,9 +229,6 @@ def fake_diff_inspect(*args, **kwargs):
 
 def fake_new_entity_inspect(*args, **kwargs):
     return DiffDigest(statements=['P31'], labels=['en'])
-
-class BatchInspectorStub(BatchInspector):
-    requests_delay = 0
 
 class BatchInspectorTest(TestCase):
     def setUp(self):

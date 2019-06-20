@@ -16,6 +16,7 @@ from datetime import datetime
 from .utils import grouper
 
 MAX_CHARFIELD_LENGTH = 190
+EDITS_KEPT_AFTER_ARCHIVAL = 10
 
 class Tool(CachingMixin, models.Model):
     """
@@ -100,6 +101,8 @@ class Batch(models.Model):
     nb_reverted_edits = models.IntegerField()
     nb_new_pages = models.IntegerField()
     total_diffsize = models.IntegerField()
+
+    archived = models.BooleanField(default=False)
 
     # Internal field to keep track of when a batch was last modified.
     # In general this will not be equal to 'ended' as we can ingest
@@ -207,6 +210,7 @@ class Batch(models.Model):
             return Batch.objects.get(revert_tasks__uid=self.uid)
         except Batch.DoesNotExist:
             return None
+
     def recompute_cached_stats(self):
         """
         Recomputes all the cached stats from the edits.
@@ -214,11 +218,36 @@ class Batch(models.Model):
 
         This does not save the Batch object yet.
         """
+        # Refuse to do this if the batch is archived, as this will yield incorrect results
+        if self.archived:
+            return
+
         self.nb_edits = self.edits.count()
         self.nb_distinct_pages = self.edits.all().values('title').distinct().count()
         self.nb_reverted_edits = self.edits.all().filter(reverted=True).count()
         self.nb_new_pages = self.edits.all().filter(changetype='new').count()
         self.total_diffsize = self.edits.all().aggregate(total_diff=models.Sum('newlength')-models.Sum('oldlength')).get('total_diff')
+
+    def archive(self, batch_inspector):
+        """
+        Recomputes all cached statistics from the edits, computes tags again,
+        and then deletes all edits in the batch except the last few ones.
+
+        This marks the batch as archived.
+        """
+        if self.archived:
+            return
+
+        # First, make sure we have up-to-date batch statistics and tags
+        self.recompute_cached_stats()
+        batch_inspector.add_missing_tags(self)
+
+        # Then, archive the batch
+        if self.nb_edits > EDITS_KEPT_AFTER_ARCHIVAL:
+            self.archived = True
+            self.save()
+            first_revid = self.edits.order_by('-newrevid')[EDITS_KEPT_AFTER_ARCHIVAL-1].newrevid
+            self.edits.filter(newrevid__lt=first_revid).delete()
 
 from tagging.models import Tag
 

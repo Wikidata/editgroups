@@ -2,28 +2,6 @@
 
 from django.db import migrations
 import tagging.models
-from store.models import Edit
-import sys
-
-def retag_all_edits(apps, schema_editor):
-    # Edit = apps.get_model('store', 'Edit')
-    Tag = tagging.models.Tag
-
-    bs = 1024
-    lastpk = 0
-    seen = True
-    while seen:
-        seen = False
-        print(lastpk)
-        sys.stdout.flush()
-        qs = list(Edit.objects.filter(pk__gt=lastpk).order_by('pk').prefetch_related('batch')[:bs])
-        if qs:
-            Tag.retag_edits(qs)
-            seen = True
-            lastpk = qs[-1].pk
-
-def do_nothing(apps, schema_editor):
-    pass
 
 class Migration(migrations.Migration):
     atomic = False
@@ -39,8 +17,5 @@ class Migration(migrations.Migration):
             managers=[
                 ('objects', tagging.models.TagManager()),
             ],
-        ),
-        migrations.RunPython(
-            retag_all_edits, do_nothing
         ),
     ]

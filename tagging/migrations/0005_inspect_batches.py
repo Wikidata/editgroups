@@ -5,7 +5,10 @@ from tagging.batchinspector import BatchInspector
 from datetime import datetime
 
 def retag_all_batches(apps, schema_editor):
-    BatchInspector().inspect_batches_since(datetime(year=2014,month=1,day=1))
+    """
+    Migration made void, to be squashed
+    """
+    pass
 
 def do_nothing(apps, schema_editor):
     pass
