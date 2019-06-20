@@ -166,13 +166,14 @@ class EditTest(TestCase):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
 
         batch = Batch.objects.get()
-        self.assertFalse(batch.archived)
         self.assertEquals(51, batch.nb_edits)
         self.assertEquals(0, batch.nb_new_pages)
         self.assertEquals(130901, batch.total_diffsize)
         self.assertEquals(datetime(2018, 3, 6, 16, 39, 37, tzinfo=UTC), batch.started)
         self.assertEquals(datetime(2018, 3, 6, 16, 41, 10, tzinfo=UTC), batch.ended)
         self.assertEquals(51, batch.edits.count())
+        self.assertFalse(batch.archived)
+        self.assertTrue(batch.can_be_reverted)
 
         # Mess up with the statistics a bit
         batch.nb_edits = 42
@@ -184,12 +185,13 @@ class EditTest(TestCase):
         batch = Batch.objects.get()
 
         # The correct statistics have been recomputed
-        self.assertTrue(batch.archived)
         self.assertEquals(51, batch.nb_edits)
         self.assertEquals(0, batch.nb_new_pages)
         self.assertEquals(130901, batch.total_diffsize)
         self.assertEquals(datetime(2018, 3, 6, 16, 39, 37, tzinfo=UTC), batch.started)
         self.assertEquals(datetime(2018, 3, 6, 16, 41, 10, tzinfo=UTC), batch.ended)
+        self.assertTrue(batch.archived)
+        self.assertFalse(batch.can_be_reverted)
 
         # Most edits were deleted
         self.assertEquals(EDITS_KEPT_AFTER_ARCHIVAL, batch.edits.count())
@@ -205,6 +207,7 @@ class EditTest(TestCase):
         batch = Batch.objects.get()
         batch.archive(self.batch_inspector)
         self.assertFalse(batch.archived)
+        self.assertTrue(batch.can_be_reverted)
 
     def test_wrong_namespace(self):
         """

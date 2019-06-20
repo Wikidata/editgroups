@@ -155,7 +155,8 @@ class Batch(models.Model):
     @property
     def can_be_reverted(self):
         return (self.nb_revertable_edits > 0 and
-            self.active_revert_task is None)
+            self.active_revert_task is None and
+            not self.archived)
 
     @cached_property
     def nb_revertable_edits(self):
