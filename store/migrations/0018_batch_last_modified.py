@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('store', '0016_change_batch_manager'),
+        ('store', '0017_bigint_total_diffsize'),
     ]
 
     operations = [
