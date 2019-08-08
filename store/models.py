@@ -99,7 +99,7 @@ class Batch(models.Model):
     nb_distinct_pages = models.IntegerField()
     nb_reverted_edits = models.IntegerField()
     nb_new_pages = models.IntegerField()
-    total_diffsize = models.IntegerField()
+    total_diffsize = models.BigIntegerField()
 
     class Meta:
         unique_together = (('tool','uid','user'))
