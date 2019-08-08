@@ -13,7 +13,10 @@ from caching import invalidation
 from .models import Tool
 from .models import Edit
 from .models import Batch
+from .models import EDITS_KEPT_AFTER_ARCHIVAL
 from .stream import WikidataEditStream
+from tagging.utils import FileBasedDiffInspector
+from tagging.utils import BatchInspectorStub
 from revert.models import RevertTask
 from django.contrib.auth.models import User
 
@@ -63,6 +66,8 @@ class ToolTest(TestCase):
 class EditTest(TestCase):
     def setUp(self):
         invalidation.cache.clear()
+        diff_inspector = FileBasedDiffInspector('store/testdata/diffs/')
+        self.batch_inspector = BatchInspectorStub(diff_inspector=diff_inspector)
 
     def test_ingest_jsonlines_or(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
@@ -156,6 +161,53 @@ class EditTest(TestCase):
         self.assertEquals(1, Batch.objects.count())
         batch = Batch.objects.get()
         self.assertEquals(51, batch.nb_edits)
+
+    def test_archive(self):
+        Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
+
+        batch = Batch.objects.get()
+        self.assertEquals(51, batch.nb_edits)
+        self.assertEquals(0, batch.nb_new_pages)
+        self.assertEquals(130901, batch.total_diffsize)
+        self.assertEquals(datetime(2018, 3, 6, 16, 39, 37, tzinfo=UTC), batch.started)
+        self.assertEquals(datetime(2018, 3, 6, 16, 41, 10, tzinfo=UTC), batch.ended)
+        self.assertEquals(51, batch.edits.count())
+        self.assertFalse(batch.archived)
+        self.assertTrue(batch.can_be_reverted)
+
+        # Mess up with the statistics a bit
+        batch.nb_edits = 42
+        batch.nb_new_pages = 42
+        batch.save()
+
+        batch.archive(self.batch_inspector)
+
+        batch = Batch.objects.get()
+
+        # The correct statistics have been recomputed
+        self.assertEquals(51, batch.nb_edits)
+        self.assertEquals(0, batch.nb_new_pages)
+        self.assertEquals(130901, batch.total_diffsize)
+        self.assertEquals(datetime(2018, 3, 6, 16, 39, 37, tzinfo=UTC), batch.started)
+        self.assertEquals(datetime(2018, 3, 6, 16, 41, 10, tzinfo=UTC), batch.ended)
+        self.assertTrue(batch.archived)
+        self.assertFalse(batch.can_be_reverted)
+
+        # Most edits were deleted
+        self.assertEquals(EDITS_KEPT_AFTER_ARCHIVAL, batch.edits.count())
+
+        # If we attempt to archive again, the statistics will not be recomputed
+        batch.archive(self.batch_inspector)
+        self.assertTrue(batch.archived)
+        self.assertEquals(51, batch.nb_edits)
+
+    def test_archive_small_batch(self):
+        # There is no point in archiving small batches
+        Edit.ingest_jsonlines('store/testdata/one_qs_batch.json')
+        batch = Batch.objects.get()
+        batch.archive(self.batch_inspector)
+        self.assertFalse(batch.archived)
+        self.assertTrue(batch.can_be_reverted)
 
     def test_wrong_namespace(self):
         """

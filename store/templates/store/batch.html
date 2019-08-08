@@ -115,6 +115,8 @@
             {% else %}
                 <a class="btn btn-default" href="{% url "initiate-revert" tool.shortid uid %}">Undo entire group</a>
             {% endif %}
+        {% elif archived %}
+            <button class="btn btn-default disabled">Batch archived</button>
         {% else %}
             <button class="btn btn-default disabled">Nothing to undo</button>
         {% endif %}

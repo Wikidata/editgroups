@@ -61,6 +61,15 @@ class RevertTaskTest(TestCase):
             data={'comment':'testing reverts'})
         self.assertEquals(400, response.status_code)
 
+    def test_revert_batch_archived(self):
+        b = Batch.objects.get()
+        b.archived = True
+        b.save()
+        response = self.client.post(
+            reverse('submit-revert', args=[self.batch.tool.shortid, self.batch.uid]),
+            data={'comment':'testing reverts'})
+        self.assertEquals(400, response.status_code)
+
     def test_revert_batch_already_being_reverted(self):
         task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
         task.save()

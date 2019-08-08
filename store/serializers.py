@@ -92,6 +92,7 @@ class BatchDetailSerializer(serializers.ModelSerializer):
     nb_existing_pages = serializers.IntegerField()
     avg_diffsize = serializers.IntegerField()
     can_be_reverted = serializers.BooleanField()
+    archived = serializers.BooleanField()
     reverted_batch = BatchSimpleSerializer()
     reverting_batches = LimitedBatchSimpleSerializer(many=True, read_only=True)
 

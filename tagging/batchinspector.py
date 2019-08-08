@@ -37,7 +37,6 @@ class BatchInspector(object):
         Inspect the given batch if needed, and add the corresponding
         tags to the batch.
         """
-        print('Inspecting {}'.format(batch))
         digest = DiffDigest()
         tags = set(batch.tag_ids)
 
@@ -61,18 +60,22 @@ class BatchInspector(object):
 
         return digest
 
+    def add_missing_tags(self, batch):
+        """
+        Like `inspect`, but adds any missing tags to the batch instead of returning a digest.
+        """
+        diffdigest = self.inspect(batch)
+        tags = ([Tag.for_property(pid) for pid in diffdigest.statements | diffdigest.qualifiers ] +
+                [Tag.for_language(lang) for lang in diffdigest.labels | diffdigest.descriptions | diffdigest.aliases | diffdigest.sitelinks ])
+        tags_not_there_yet = [tag for tag in tags if tag.id not in batch.tag_ids]
+        Tag.add_tags_to_batches({batch.id: [tag.id for tag in tags_not_there_yet]})
 
     def inspect_batches_since(self, since_time):
         """
         Inspects all batches that need inspection, only considering
-        batches with a latest edit later than the given time.
+        batches modified since the given time.
         """
-        queryset = Batch.objects.filter(Q(tags__id__in = self.tags_for_diff_inspection) | Q(nb_new_pages__gt = 0), ended__gt=since_time).order_by('ended').distinct()
+        queryset = Batch.objects.filter(Q(tags__id__in = self.tags_for_diff_inspection) | Q(nb_new_pages__gt = 0), last_modified__gt=since_time).order_by('ended').distinct()
         for batch in queryset:
-            diffdigest = self.inspect(batch)
-            tags = ([Tag.for_property(pid) for pid in diffdigest.statements | diffdigest.qualifiers ] +
-                    [Tag.for_language(lang) for lang in diffdigest.labels | diffdigest.descriptions | diffdigest.aliases | diffdigest.sitelinks ])
-            tags_not_there_yet = [tag for tag in tags if tag.id not in batch.tag_ids]
-            # We could call this method just once for all batches but it would add some delay,
-            # as inspection takes a while.
-            Tag.add_tags_to_batches({batch.id: [tag.id for tag in tags_not_there_yet]})
+            self.add_missing_tags(batch)
+

@@ -23,9 +23,12 @@ if __name__ == '__main__':
     print('Listening to Wikidata edits...')
     s = WikidataEditStream()
     utcnow = datetime.utcnow()
-    latest_edit_seen = Edit.objects.order_by('-timestamp')[0].timestamp
-    fetch_from = latest_edit_seen - LOOKBEHIND_OFFSET
-    print('Starting from offset %s' % fetch_from.isoformat())
+    try:
+        latest_edit_seen = Edit.objects.order_by('-timestamp')[0].timestamp
+        fetch_from = latest_edit_seen - LOOKBEHIND_OFFSET
+    except IndexError:
+        fetch_from = None
+    print('Starting from offset %s' % fetch_from.isoformat() if fetch_from else 'now')
 
     for i, batch in enumerate(grouper(s.stream(fetch_from), 50)):
        if i % 50 == 0:
