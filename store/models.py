@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.db import transaction
 from django.db.utils import IntegrityError
@@ -16,7 +17,6 @@ from datetime import datetime
 from .utils import grouper
 
 MAX_CHARFIELD_LENGTH = 190
-EDITS_KEPT_AFTER_ARCHIVAL = 10
 
 class Tool(CachingMixin, models.Model):
     """
@@ -244,11 +244,23 @@ class Batch(models.Model):
         batch_inspector.add_missing_tags(self)
 
         # Then, archive the batch
-        if self.nb_edits > EDITS_KEPT_AFTER_ARCHIVAL:
+        if self.nb_edits > settings.EDITS_KEPT_AFTER_ARCHIVAL:
             self.archived = True
             self.save()
-            first_revid = self.edits.order_by('-newrevid')[EDITS_KEPT_AFTER_ARCHIVAL-1].newrevid
+            first_revid = self.edits.order_by('-newrevid')[settings.EDITS_KEPT_AFTER_ARCHIVAL-1].newrevid
             self.edits.filter(newrevid__lt=first_revid).delete()
+
+    @classmethod
+    def archive_old_batches(cls, batch_inspector):
+        """
+        Archive all batches which have not been modified for a long time
+        and contain more edits than our archival threshold.
+
+        This method is meant to be run periodically.
+        """
+        cutoff_date = datetime.utcnow().replace(tzinfo=UTC) - settings.BATCH_ARCHIVAL_DELAY
+        for batch in cls.objects.filter(nb_edits__gt=settings.EDITS_KEPT_AFTER_ARCHIVAL, archived=False, ended__lt=cutoff_date):
+            batch.archive(batch_inspector)
 
 from tagging.models import Tag
 

@@ -4,6 +4,7 @@ import unittest
 from pytz import UTC
 import html5lib
 
+from django.conf import settings
 from django.test import TestCase
 from django.test import Client
 from django.urls import reverse
@@ -13,7 +14,6 @@ from caching import invalidation
 from .models import Tool
 from .models import Edit
 from .models import Batch
-from .models import EDITS_KEPT_AFTER_ARCHIVAL
 from .stream import WikidataEditStream
 from tagging.utils import FileBasedDiffInspector
 from tagging.utils import BatchInspectorStub
@@ -194,7 +194,7 @@ class EditTest(TestCase):
         self.assertFalse(batch.can_be_reverted)
 
         # Most edits were deleted
-        self.assertEquals(EDITS_KEPT_AFTER_ARCHIVAL, batch.edits.count())
+        self.assertEquals(settings.EDITS_KEPT_AFTER_ARCHIVAL, batch.edits.count())
 
         # If we attempt to archive again, the statistics will not be recomputed
         batch.archive(self.batch_inspector)
@@ -208,6 +208,16 @@ class EditTest(TestCase):
         batch.archive(self.batch_inspector)
         self.assertFalse(batch.archived)
         self.assertTrue(batch.can_be_reverted)
+
+    def test_archive_old_batches(self):
+        """
+        Old batches get archived periodically
+        """
+        Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
+
+        Batch.archive_old_batches(self.batch_inspector)
+        batch = Batch.objects.get()
+        self.assertTrue(batch.archived)
 
     def test_wrong_namespace(self):
         """
