@@ -206,11 +206,20 @@ CELERY_IMPORTS = ['revert.tasks', 'tagging.tasks' ]
 BATCH_INSPECTION_LOOKBEHIND = timedelta(minutes=30)
 BATCH_INSPECTION_DELAY = timedelta(minutes=10)
 
+# Batch archival
+BATCH_ARCHIVAL_DELAY = timedelta(days=365) # Batches older than that are archived
+EDITS_KEPT_AFTER_ARCHIVAL = 10 # Only that many edits will be kept in archived batches
+BATCH_ARCHIVAL_PERIODICITY = timedelta(days=1)
+
 CELERYBEAT_SCHEDULE = {
     'inspect_batches': {
         'task': 'inspect_batches',
         'schedule': BATCH_INSPECTION_DELAY,
     },
+    'archive_batches': {
+        'task': 'archive_batches',
+        'schedule': BATCH_ARCHIVAL_PERIODICITY,
+    }
 }
 
 

@@ -26,6 +26,7 @@ just use the `instructions for tool developers <https://www.wikidata.org/wiki/Wi
    install
    api
    tagging
+   archival
    reverting
    other_wiki
    testing
