@@ -21,3 +21,10 @@ is configurable using the following settings:
 - ``BATCH_ARCHIVAL_PERIODICITY``: how often should we check for old batches and archive them (daily by default).
 
 Once a batch is archived, it can no longer be undone.
+
+Disabling archival
+------------------
+
+If EditGroups is running on a small Wikibase instance, or if storing most edits from Wikibase
+in EditGroups' database is not a concern, you can disable archival by removing the ``archive_batches``
+task from the CeleryBeat schedule in ``editgroups/settings/common.py``.
