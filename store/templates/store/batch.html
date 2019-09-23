@@ -142,7 +142,7 @@
             <li>
                 {% include "store/editline.html" %}
             </li>
-        {% else %}
+        {% elif not archived %}
             <a href="{% url "batch-edits" tool.shortid uid %}">See all</a>
         {% endif %}
         {% endfor %}
