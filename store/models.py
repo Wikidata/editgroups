@@ -270,7 +270,7 @@ class Edit(models.Model):
     """
     id = models.IntegerField(unique=True, primary_key=True)
     oldrevid = models.IntegerField(null=True)
-    newrevid = models.IntegerField(db_index=True)
+    newrevid = models.IntegerField()
     oldlength = models.IntegerField()
     newlength = models.IntegerField()
     timestamp = models.DateTimeField(db_index=True)
@@ -288,6 +288,11 @@ class Edit(models.Model):
     # Inferred by us
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name='edits')
     reverted = models.BooleanField(default=False)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['batch', 'newrevid'])
+        ]
 
     reverted_re = re.compile(r'^/\* undo:0\|\|(\d+)\|')
 
