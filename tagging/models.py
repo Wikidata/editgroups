@@ -7,6 +7,8 @@ from collections import defaultdict
 
 import re
 
+# These tags can be extracted from the lib/i18n/en.json file in Wikibase,
+# and other files from extensions (such as lexeme)
 tag_to_readable_name = {
 	"wbsetitem": _("new items"),
 	"wbcreate-new": _("new entities"),
@@ -66,6 +68,8 @@ tag_to_readable_name = {
 	"wbeditentity-create-item": _("new items"),
 	"wbeditentity-create-property": _("new properties"),
 	"wbeditentity-override": _("clears items"),
+        "wbeditentity-update-languages": _("updates terms"),
+        "wbeditentity-update-languages-and-other": _("updates terms and statements"),
 	"wblinktitles-create": _("clears items"),
 	"wblinktitles-connect": _("new sitelinks"),
 	"wbcreate-new": _("new items"),

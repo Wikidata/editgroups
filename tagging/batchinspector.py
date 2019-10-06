@@ -18,6 +18,8 @@ class BatchInspector(object):
 
     tags_for_diff_inspection = {
         'wbeditentity-update',
+        'wbeditentity-update-languages',
+        'wbeditentity-update-languages-and-other',
         'wbcreateclaim', # for qualifiers
         # 'wbsetclaim-update', # could add qualifiers, but currently only used by OR to add refs
     }
