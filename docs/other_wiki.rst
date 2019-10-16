@@ -11,7 +11,7 @@ Changes required
 
 * Making mentions of Wikidata and its API depend on configuration parameters that can be changed in the settings;
 * Allowing the ingestion of edits by polling the RecentChanges feed instead of using the Wikimedia EventStream;
-* Making the user groups required to undo configurable.
+* Making the user groups required to undo are configurable.
 
 Configuration of the tools
 --------------------------
