@@ -396,8 +396,8 @@ class Edit(models.Model):
                 batch, created = Batch.objects.get_or_create(
                     tool=tool, uid=match.uid,
                     defaults={
-                        'user': match.user,
-                        'summary': match.summary,
+                        'user': match.user[:MAX_CHARFIELD_LENGTH],
+                        'summary': match.summary[:MAX_CHARFIELD_LENGTH],
                         'started': timestamp,
                         'ended': timestamp,
                         'nb_edits': 0,
