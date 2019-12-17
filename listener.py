@@ -9,7 +9,7 @@ Amount of time to look back  when restarting
 the listener. This helps make sure that we don't
 lose any edit when the listener is restarted.
 """
-LOOKBEHIND_OFFSET = timedelta(hours=1)
+LOOKBEHIND_OFFSET = timedelta(minutes=5)
 
 if __name__ == '__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "editgroups.settings")
