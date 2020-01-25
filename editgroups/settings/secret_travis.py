@@ -7,11 +7,13 @@ SECRET_KEY = '20oj&tj8uaruseitlrise,tries,uirsetur36746209etus7e'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'editgroups',
-        'USER': 'travis',
+        'ENGINE':   'django.db.backends.postgresql_psycopg2',
+        'NAME':     'editgroups',
+        'USER':     'postgres',
         'PASSWORD': '',
-        'HOST': 'localhost',
+        'HOST':     'localhost',
+        'PORT':     '',
+        'DISABLE_SERVER_SIDE_CURSORS': False,
     }
 }
 

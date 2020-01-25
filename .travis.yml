@@ -1,20 +1,19 @@
 
 language: python
-dist: trusty
 
 python:
   - 3.5
   - 3.6
+  - 3.7
+  - 3.8
 
 sudo: false
 
 addons:
-    apt:
-       packages:
-       - libmysqlclient-dev
+  postgresql: "9.4"
  
 services:
-  - mysql
+  - postgresql
   - redis
 
 virtualenv:
@@ -29,12 +28,12 @@ before_install:
 install:
   - pip install setuptools --upgrade
   - pip install -r requirements.txt --upgrade
-  - pip install coveralls
+  - pip install psycopg2-binary coveralls
   - pip freeze
 
 before_script:
-  - mysql --version
-  - mysql -u travis -e 'CREATE DATABASE editgroups;'
+  - psql --version
+  - psql -c "CREATE DATABASE editgroups;" -U postgres
 
 script:
   - coverage run --source=editgroups,store,revert,tagging --omit=*/migrations/*,editgroups/settings/* manage.py test -v 2
