@@ -378,6 +378,11 @@ class PagesTest(TestCase):
         response = self.client.get('/b/ST/3849384/')
         self.assertEqual(404, response.status_code)
 
+    def test_batch_redirect(self):
+        response = self.client.get('/b/OR/')
+        self.assertEqual(301, response.status_code)
+        self.assertEqual(reverse('list-batches')+'?tool=OR', response.url)
+
     @classmethod
     def tearDownClass(cls):
         Batch.objects.all().delete()
