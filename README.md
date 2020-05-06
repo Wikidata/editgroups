@@ -11,6 +11,6 @@ Documentation:
 * for users: https://www.wikidata.org/wiki/Wikidata:Edit_groups
 * for developers: https://editgroups.readthedocs.io/en/latest/
 
-Any feedback, suggestions of changes in any form will be gratefully received.
+Any [feedback](https://github.com/Wikidata/editgroups/isues), suggestions of changes in any form will be gratefully received.
 
 Released under the MIT license.
