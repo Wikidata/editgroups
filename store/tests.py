@@ -15,6 +15,7 @@ from .models import Tool
 from .models import Edit
 from .models import Batch
 from .stream import WikidataEditStream
+from .stream import RecentChangesStream
 from tagging.utils import FileBasedDiffInspector
 from tagging.utils import BatchInspectorStub
 from revert.models import RevertTask
@@ -341,6 +342,131 @@ class WikidataEditStreamTest(unittest.TestCase):
             if idx > 10:
                 break
             self.assertEquals('wikidatawiki', edit['wiki'])
+
+
+class RecentChangesStreamTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.stream = RecentChangesStream()
+
+    def test_live(self):
+        for idx, edit in enumerate(self.stream.stream()):
+            if idx > 10:
+                break
+
+    def test_translate(self):
+        # Delete event
+        eventstream = self.stream.translate_to_eventstream_json(
+            {
+                "type": "log",
+                "ns": 0,
+                "title": "Q65133577",
+                "pageid": 64773771,
+                "revid": 0,
+                "old_revid": 0,
+                "rcid": 1213466409,
+                "user": "HakanIST",
+                "oldlen": 0,
+                "newlen": 0,
+                "timestamp": "2020-05-06T06:19:26Z",
+                "comment": "Empty item",
+                "parsedcomment": "Empty item",
+                "logid": 663320792,
+                "logtype": "delete",
+                "logaction": "delete",
+                "logparams": { }
+            }
+        )
+        self.assertEquals(eventstream,
+           {
+              'type': 'log',
+              'bot': False,
+              'comment': 'Empty item',
+              'id': 64773771,
+              'length': {'new': 0, 'old': 0},
+              'log_action': 'delete',
+              'meta': {'uri': 'https://www.wikidata.org/entity/Q65133577'},
+              'minor': False,
+              'namespace': 0,
+              'parsedcomment': 'Empty item',
+              'revision': {'new': 0, 'old': 0},
+              'timestamp': 1588745966,
+              'title': 'Q65133577',
+              'user': 'HakanIST'
+           }
+        )
+
+        # Simple edit
+        eventstream = self.stream.translate_to_eventstream_json(
+            {
+                "type": "edit",
+                "ns": 0,
+                "title": "Q2349542",
+                "pageid": 2269945,
+                "revid": 1174994291,
+                "old_revid": 1037245488,
+                "rcid": 1213544214,
+                "user": "SuccuBot",
+                "oldlen": 14935,
+                "newlen": 15006,
+                "timestamp": "2020-05-06T07:58:32Z",
+                "comment": "/* wbsetlabel-add:1|pt */ Efate raptor",
+                "parsedcomment": '<span dir="auto"><span class="autocomment">Added [pt] label: </span></span> Efate raptor'
+            })
+        self.assertEquals(eventstream,
+            {
+                'type': 'edit',
+                'comment': '/* wbsetlabel-add:1|pt */ Efate raptor',
+                'id': 2269945,
+                'length': {'new': 15006, 'old': 14935},
+                'log_action': None,
+                'meta': {'uri': 'https://www.wikidata.org/entity/Q2349542'},
+                'minor': False,
+                'namespace': 0,
+                'bot': False,
+                'parsedcomment': '<span dir="auto"><span class="autocomment">Added [pt] label: </span></span> Efate raptor',
+                'revision': {'new': 1174994291, 'old': 1037245488},
+                'timestamp': 1588751912,
+                'title': 'Q2349542',
+                'user': 'SuccuBot'
+            }
+        )
+        # Item creation
+        eventstream = self.stream.translate_to_eventstream_json(
+            {
+                "type": "new",
+                "ns": 0,
+                "title": "Q93422955",
+                "pageid": 92529989,
+                "revid": 1174999530,
+                "old_revid": 0,
+                "rcid": 1213549575,
+                "user": "Ghuron",
+                "oldlen": 0,
+                "newlen": 22996,
+                "timestamp": "2020-05-06T08:06:25Z",
+                "comment": '/* wbeditentity-create-item:0| */ batch import from [[Q654724|SIMBAD]] for object "TYC 3740-948-1"',
+                "parsedcomment": '<span dir="auto"><span class="autocomment">Created a new Item: </span></span> batch import from <a href="/wiki/Q654724" title="Q654724">SIMBAD</a> for object &quot;TYC 3740-948-1&quot;'
+            }
+        )
+        self.assertEquals(eventstream,
+            {
+            "type": "new",
+            "meta": { "uri": "https://www.wikidata.org/entity/Q93422955" },
+            "namespace": 0,
+            "title": "Q93422955",
+            "id": 92529989,
+            "revision": { "old": 0, "new": 1174999530 },
+            "user": "Ghuron",
+            "bot": False,
+            "minor": False,
+            "length": { "old": 0, "new": 22996 },
+            "comment": "/* wbeditentity-create-item:0| */ batch import from [[Q654724|SIMBAD]] for object \"TYC 3740-948-1\"",
+            "parsedcomment": "<span dir=\"auto\"><span class=\"autocomment\">Created a new Item: </span></span> batch import from <a href=\"/wiki/Q654724\" title=\"Q654724\">SIMBAD</a> for object &quot;TYC 3740-948-1&quot;",
+            "timestamp": 1588752385,
+            "log_action": None
+            }
+        )
 
 class PagesTest(TestCase):
 
