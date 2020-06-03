@@ -1,7 +1,7 @@
 from .common import *
 
 DEBUG = False
-ALLOWED_HOSTS = ['tools.wmflabs.org']
+ALLOWED_HOSTS = ['editgroups.toolforge.org']
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
