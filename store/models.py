@@ -77,6 +77,14 @@ class Tool(CachingMixin, models.Model):
 
         return self.Match(uid=uid, user=realuser, summary=summary)
 
+    @cached_property
+    def nb_batches(self):
+        return self.batch_set.count()
+
+    @cached_property
+    def nb_unique_users(self):
+        return self.batch_set.values('user').distinct().count()
+
 class BatchManager(BulkUpdateManager):
     """
     This makes Batch methods available in migrations.

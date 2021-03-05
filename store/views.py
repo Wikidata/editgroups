@@ -10,7 +10,7 @@ from rest_framework.renderers import BrowsableAPIRenderer
 from .models import Tool
 from .models import Edit
 from .models import Batch
-from .serializers import BatchSimpleSerializer, BatchDetailSerializer, EditSerializer, ToolSerializer
+from .serializers import BatchSimpleSerializer, BatchDetailSerializer, EditSerializer, ToolSerializer, ToolStatsSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from tagging.filters import TaggingFilterBackend
 
@@ -78,3 +78,10 @@ class APIBatchEditsView(BatchEditsView):
     Lists the edits in a particular batch
     """
     renderer_classes = (JSONRenderer,BrowsableAPIRenderer)
+
+class ToolsView(generics.ListAPIView):
+    serializer_class = ToolStatsSerializer
+    queryset = Tool.objects.all().order_by('id')
+    template_name = 'store/tools.html'
+
+

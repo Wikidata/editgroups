@@ -1,0 +1,39 @@
+{% extends "editgroups/common.html" %}
+
+{% load parsetime %}
+{% load diffsize %}
+{% load secondsduration %}
+
+{% block title %}
+Tools
+{% endblock %}
+
+{% block mainBody %}
+<div class="page-header">
+<h3>Tool statistics</h3>
+</div>
+        <table>
+        <thead>
+        <tr>
+                <th>Tool</th>
+                <th>Batch count</th>
+                <th>Unique users</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for tool in results %}
+        <tr>
+                <td>
+                {% if tool.url %}
+                     <a href="{{ tool.url }}">{{ tool.name }}</a>
+                {% else %}
+                     {{ tool.name }}
+                {% endif %}
+                </td>
+                <td>{{ tool.nb_batches }}</td>
+                <td>{{ tool.nb_unique_users }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+{% endblock %}

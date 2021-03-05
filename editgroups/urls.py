@@ -47,6 +47,7 @@ urlpatterns = [
     path('b/<tool>/<uid>/undo/', initiate_revert_view, name='initiate-revert'),
     path('b/<tool>/<uid>/undo/start/', RevertTaskView.as_view(), name='submit-revert'),
     path('b/<tool>/<uid>/undo/stop/', StopRevertTaskView.as_view(), name='stop-revert'),
+    path('tools/', views.ToolsView.as_view(), name='tools'),
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('oauth/', include('social_django.urls', namespace='social')),

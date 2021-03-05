@@ -62,6 +62,15 @@ class ToolTest(TestCase):
         self.assertEquals(('c367abf', 'Pintoch', 'deleting gibberish items'),
             tool.match("Pintoch", "deleting gibberish items ([[:toollabs:editgroups/b/EG/c367abf|details]])"))
 
+    def test_nb_batches(self):
+        tool = Tool.objects.get(shortid='OR')
+        self.assertEquals(tool.nb_batches, 0)
+
+    def test_nb_unique_users(self):
+        tool = Tool.objects.get(shortid='OR')
+        self.assertEquals(tool.nb_unique_users, 0)
+
+
 
 class EditTest(TestCase):
     def setUp(self):
@@ -382,6 +391,10 @@ class PagesTest(TestCase):
         response = self.client.get('/b/OR/')
         self.assertEqual(301, response.status_code)
         self.assertEqual(reverse('list-batches')+'?tool=OR', response.url)
+
+    def test_tools_list(self):
+        response = self.get_page('tools')
+        self.check_html(response)
 
     @classmethod
     def tearDownClass(cls):

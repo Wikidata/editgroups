@@ -12,6 +12,14 @@ class ToolSerializer(serializers.ModelSerializer):
         model = Tool
         fields = ('name', 'shortid', 'url')
 
+class ToolStatsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tool
+        fields = ('name', 'shortid', 'url', 'nb_batches', 'nb_unique_users')
+
+    nb_batches = serializers.IntegerField()
+    nb_unique_users = serializers.IntegerField()
+
 class EditSerializer(serializers.ModelSerializer):
     url = serializers.CharField()
     revert_url = serializers.CharField()
