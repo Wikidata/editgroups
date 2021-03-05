@@ -12,11 +12,11 @@ Tools
 <div class="page-header">
 <h3>Tool statistics</h3>
 </div>
-        <table>
+        <table class="table">
         <thead>
         <tr>
                 <th>Tool</th>
-                <th>Batch count</th>
+                <th>Number of batches</th>
                 <th>Unique users</th>
         </tr>
         </thead>
@@ -30,7 +30,7 @@ Tools
                      {{ tool.name }}
                 {% endif %}
                 </td>
-                <td>{{ tool.nb_batches }}</td>
+                <td><a href="{% url "list-tool-batches-redirect" tool.shortid %}">{{ tool.nb_batches }}</a></td>
                 <td>{{ tool.nb_unique_users }}</td>
         </tr>
         {% endfor %}
