@@ -10,9 +10,9 @@ DATABASES = {
         'ENGINE':   'django.db.backends.postgresql_psycopg2',
         'NAME':     'editgroups',
         'USER':     'postgres',
-        'PASSWORD': '',
+        'PASSWORD': 'postgres',
         'HOST':     'localhost',
-        'PORT':     '',
+        'PORT':     'POSTGRES_PORT',
         'DISABLE_SERVER_SIDE_CURSORS': False,
     }
 }
@@ -26,7 +26,7 @@ SOCIAL_AUTH_MEDIAWIKI_CALLBACK = 'https://tools.wmflabs.org/editgroups/oauth/com
 
 # Redis (if you use it)
 REDIS_HOST = 'localhost'
-REDIS_PORT = 6379
+REDIS_PORT = REDIS_REAL_PORT
 REDIS_DB = 0
 REDIS_PASSWORD = ''
 
