@@ -49,4 +49,4 @@ jobs:
       run: |
         coverage run --source=editgroups,store,revert,tagging --omit=*/migrations/*,edtigroups/settings/* manage.py test -v 2
       env:
-      - DJANGO_SETTINGS_MODULE: editgroups.settings
+        DJANGO_SETTINGS_MODULE: editgroups.settings
