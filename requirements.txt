@@ -11,7 +11,7 @@ social-auth-app-django==5.0.0
 mysqlclient==2.0.3
 html5lib==1.1
 cached-property==1.5.2
-requests-oauthlib==1.3.°
+requests-oauthlib==1.3.0
 celery==5.1.2
 requests-mock==1.9.3
 lxml==4.6.3
