@@ -1,10 +1,11 @@
 import json
 from sseclient import SSEClient as EventSource
+from django.conf import settings
 
 class WikidataEditStream(object):
     def __init__(self):
         self.url = 'https://stream.wikimedia.org/v2/stream/recentchange'
-        self.wiki = 'wikidatawiki'
+        self.wiki = settings.WIKI_CODENAME
 
     def stream(self, from_time=None):
         url = self.url

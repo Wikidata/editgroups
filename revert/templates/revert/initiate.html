@@ -8,7 +8,7 @@ Undoing "{{ batch.summary }}"
 
 {% block mainBody %}
 <div class="page-header">
-<h3>Undoing edit group by <a href="https://www.wikidata.org/wiki/User:{{ batch.user }}">{{ batch.user }}</a>: {{ batch.summary }} ({{ batch.uid }})</h3>
+<h3>Undoing edit group by <a href="{{ USER_BASE_URL }}{{ batch.user }}">{{ batch.user }}</a>: {{ batch.summary }} ({{ batch.uid }})</h3>
 </div>
 <div class="revert-dialog">
     <p>You are about to undo {{ batch.nb_revertable_edits }} edits{% if batch.nb_undeleted_new_pages %}, which will delete or restore {{ batch.nb_undeleted_new_pages }} items{% endif %}.</p>

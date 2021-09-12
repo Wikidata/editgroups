@@ -274,7 +274,7 @@ from tagging.models import Tag
 
 class Edit(models.Model):
     """
-    A wikidata edit as returned by the Event Stream API
+    A MediaWiki edit as returned by the Event Stream API
     """
     id = models.IntegerField(unique=True, primary_key=True)
     oldrevid = models.IntegerField(null=True)
@@ -306,16 +306,16 @@ class Edit(models.Model):
 
     @property
     def url(self):
-        return 'https://www.wikidata.org/wiki/index.php?diff={}&oldid={}'.format(self.newrevid,self.oldrevid)
+        return '{}?diff={}&oldid={}'.format(settings.MEDIAWIKI_INDEX_ENDPOINT, self.newrevid, self.oldrevid)
 
     @property
     def revert_url(self):
         if self.oldrevid:
-            return 'https://www.wikidata.org/w/index.php?title={}&action=edit&undoafter={}&undo={}'.format(self.title, self.oldrevid, self.newrevid)
+            return '{}?title={}&action=edit&undoafter={}&undo={}'.format(settings.MEDIAWIKI_INDEX_ENDPOINT, self.title, self.oldrevid, self.newrevid)
         elif self.changetype == 'delete':
-            return 'https://www.wikidata.org/wiki/Special:Undelete/{}'.format(self.title)
+            return '{}Special:Undelete/{}'.format(settings.MEDIAWIKI_BASE_URL, self.title)
         else:
-            return 'https://www.wikidata.org/w/index.php?title={}&action=delete'.format(self.title)
+            return '{}?title={}&action=delete'.format(settings.MEDIAWIKI_INDEX_ENDPOINT, self.title)
 
     def __str__(self):
         return '<Edit {} >'.format(self.url)
@@ -366,7 +366,7 @@ class Edit(models.Model):
         tools = Tool.objects.all()
 
         for edit_json in json_batch:
-            if not edit_json or edit_json.get('namespace') not in [0,120]:
+            if not edit_json or edit_json.get('namespace') not in settings.WATCHED_NAMESPACES:
                 continue
             timestamp = datetime.fromtimestamp(edit_json['timestamp'], tz=UTC)
 

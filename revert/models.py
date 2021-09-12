@@ -32,7 +32,7 @@ class RevertTask(models.Model):
 
     def comment_with_stamp(self):
         return (self.comment +
-                ' ([[:toollabs:editgroups/b/EG/{}|details]])'.format(self.uid))
+                settings.REVERT_COMMENT_STAMP.format(self.uid))
 
     def undo_summary(self, edit):
         prefix = '/* undo:0||{}|{} */ '.format(edit.newrevid, edit.user)
@@ -63,13 +63,11 @@ class RevertTask(models.Model):
             self.oauth_tokens['oauth_token_secret'])
 
         # Get token
-        r = requests.get('https://www.wikidata.org/w/api.php', params={
+        r = requests.get(settings.MEDIAWIKI_API_ENDPOINT, params={
             'action':'query',
             'meta':'tokens',
             'format': 'json',
         }, auth=auth)
-        print('#### GET TOKEN')
-        print(r.text)
         r.raise_for_status()
         token = r.json()['query']['tokens']['csrftoken']
 
@@ -105,11 +103,9 @@ class RevertTask(models.Model):
                 'watchlist': 'nochange',
             }
 
-        r = requests.post('https://www.wikidata.org/w/api.php',
+        r = requests.post(settings.MEDIAWIKI_API_ENDPOINT,
                 data=data, auth=auth)
 
-        print('#### UNDO EDIT')
-        print(r.text)
         #r.raise_for_status()
 
 

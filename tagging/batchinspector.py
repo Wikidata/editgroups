@@ -32,9 +32,9 @@ class BatchInspector(object):
 
     requests_delay = 0.5
 
-    def __init__(self, new_entity_inspector=None, diff_inspector=None):
-        self.new_entity_inspector = new_entity_inspector or NewEntityInspector()
-        self.diff_inspector = diff_inspector or DiffInspector()
+    def __init__(self, new_entity_inspector=None, diff_inspector=None, endpoint='https://www.wikidata.org/w/api.php'):
+        self.new_entity_inspector = new_entity_inspector or NewEntityInspector(endpoint=endpoint)
+        self.diff_inspector = diff_inspector or DiffInspector(endpoint=endpoint)
 
     def inspect(self, batch):
         """
