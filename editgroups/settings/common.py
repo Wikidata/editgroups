@@ -185,7 +185,7 @@ SOCIAL_AUTH_EMAIL_LENGTH = 190
 
 MEDIAWIKI_API_ENDPOINT = 'https://www.wikidata.org/w/api.php'
 MEDIAWIKI_BASE_URL = 'https://www.wikidata.org/wiki/'
-MEDIAWIKI_INDEX_ENDPOINT = MEDIAWIKI_BASE_URL + 'index.php'
+MEDIAWIKI_INDEX_ENDPOINT = 'https://www.wikidata.org/w/index.php'
 PROPERTY_BASE_URL = MEDIAWIKI_BASE_URL + 'Property:'
 USER_BASE_URL = MEDIAWIKI_BASE_URL + 'User:'
 USER_TALK_BASE_URL = MEDIAWIKI_BASE_URL + 'User_talk:'

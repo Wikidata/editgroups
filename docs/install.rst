@@ -69,55 +69,69 @@ to fill in the following fields:
 Once you validate this form, the edits listener will pick up the new tool (after a few minutes) and start ingesting its edits. If you 
 need to ingest past edits again, you can use the listener script with a date in the past to retrieve the previous edits.
 
-Deploying on WMF Toollabs
--------------------------
+Deploying on WMF Toolforge
+--------------------------
 
 In what follows we assume that the tool is deployed as the ``editgroups`` project.
 
 -  ``become editgroups``
 -  ``mkdir -p www/python/src``
 
+Put the following contents in ``manifest.template`` in the home directory of the tool::
+
+  backend: kubernetes
+  type: python3.7
+
 Install the dependencies in the virtualenv::
 
+  webservice shell
   cd www/python
-  virtualenv venv --python /usr/bin/python3
+  python3 -m venv venv
   source venv/bin/activate
+  pip install --upgrade pip
   git clone https://github.com/Wikidata/editgroups.git src
   pip install -r src/requirements.txt
 
 Configure static files::
 
   mkdir -p src/static
-  ln -s src/static
+  ln -s src/static .
 
-Put the following content in ``~/www/uwsgi.ini``::
-
-  [uwsgi]
-  check-static = /data/project/editgroups/www/python
-
-and run ``./manage.py collectstatic``.
-
-Create the SQL database:
+Create the SQL database (outside of the ``webservice shell``):
 
 - ``sql tools`` 
-- ``CREATE DATABASE s1234__editgroups;`` where ``s1234`` is the SQL username of the tool
+- ``CREATE DATABASE s1234__editgroups;`` where ``s1234`` is the SQL username of the tool (can be found in ``~/replica.my.cnf``)
 - ``\q``
 
 Configure database access and other settings::
 
   cd ~/www/python/src/editgroups/settings/
   echo "from .prod import *" > __init__.py
-  cp secret_wmflabs.py secret.py
+  cp secret_toolforge.py secret.py
 
 Edit ``secret.py`` with the user
 and password of the table (they can be found in ``~/replica.my.cnf``).
 The name of the table is the one you used at creation above
 (``s1234__editgroups`` where ``s1234`` is replaced by the username of
-the tool).
+the tool). Also, pick a secret key to store in ``SECRET_KEY``.
+
+In the ``editgroups/settings/__init__.py`` you can also copy over
+settings line from ``editgroups/settings/common.py`` and adapt them to
+the wiki that you are running EditGroups for (for instance ``MEDIAWIKI_API_ENDPOINT`` and the following lines).
+You should also adapt the allowed hostname (taken from ``editgroups/settings/prod.py``). It's easier
+to add those to the ``__init__.py`` file to avoid editing files tracked by Git.
+
+Put the following content in ``~/www/python/uwsgi.ini``::
+
+  [uwsgi]
+  static-map = /static=/data/project/editgroups/www/python/src/static
+
+and run ``./manage.py collectstatic`` in the ``~/www/python/src`` directory.
+
 
 Configure OAuth login:
 
-- Request an OAuth client id at https://meta.wikimedia.org/wiki/Special:OAuthConsumerRegistration/propose. Beyond the normal editing scopes, you will also need to perform administrative actions (delete, restore) on behalf of users, so make sure you request these scopes too.
+- Request an OAuth client id at https://meta.wikimedia.org/wiki/Special:OAuthConsumerRegistration/propose. As OAuth protocol version, use "OAuth 1.0a". As callback URL, use the domain of the tool and tick the box to treat it as a prefix. Beyond the normal editing scopes, you will also need to perform administrative actions (delete, restore) on behalf of users, so make sure you request these scopes too.
 - Put the tokens in ``~/www/python/src/editgroups/settings/secret.py``
 
 Migrate the database:
@@ -126,9 +140,20 @@ Migrate the database:
 
 Run the webserver:
 
-- ``webservice --backend kubernetes python start``
+- ``webservice start``
 
-Launch the listener and Celery in Kubernetes:
+Go to the webservice, login with OAuth to the application. This will create a ``User`` object that you can then mark as staff in the Django shell, as follows::
+
+   $ webservice shell
+   source ~/www/python/venv/bin/activate
+   cd www/python/src
+   ./manage.py shell
+   from django.contrib.auth.models import User
+   user = User.objects.get()
+   user.is_staff = True
+   user.save()
+
+Launch the listener and Celery in Kubernetes. These deployment files may need to be adapted if you are not deploying the tool as the ``editgroups`` toolforge tool but another tool id:
 
 - ``kubectl create -f deployment/listener.yaml``
 - ``kubectl create -f deployment/celery.yaml``
