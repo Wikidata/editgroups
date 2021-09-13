@@ -149,6 +149,11 @@ class DiffInspectorTest(unittest.TestCase):
                     statements={'P2093'},
                     qualifiers={'P1545'}
                     ),
+            self.get_test_diff('federated_properties.html'):
+                DiffDigest(
+                    statements={'P2093'},
+                    qualifiers={'P1545'}
+                    ),
             self.get_test_diff('sitelink.html'):
                 DiffDigest(
                     sitelinks={'enwiki'}
