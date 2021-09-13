@@ -14,7 +14,7 @@ from caching import invalidation
 from .models import Tool
 from .models import Edit
 from .models import Batch
-from .stream import WikidataEditStream
+from .stream import WikiEditStream
 from tagging.utils import FileBasedDiffInspector
 from tagging.utils import BatchInspectorStub
 from revert.models import RevertTask
@@ -308,7 +308,7 @@ class EditTest(TestCase):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
 
         edit = Edit.objects.all().order_by('timestamp')[0]
-        self.assertEquals('https://www.wikidata.org/wiki/index.php?diff={newrevid}&oldid={oldrevid}'.format(
+        self.assertEquals('https://www.wikidata.org/w/index.php?diff={newrevid}&oldid={oldrevid}'.format(
                 newrevid=edit.newrevid, oldrevid=edit.oldrevid), edit.url)
         self.assertEquals('<Edit {url} >'.format(url=edit.url), str(edit))
 
@@ -343,9 +343,9 @@ class BatchEditsViewTest(APITestCase):
     def tearDownClass(cls):
         Batch.objects.all().delete()
 
-class WikidataEditStreamTest(unittest.TestCase):
+class WikiEditStreamTest(unittest.TestCase):
     def test_stream(self):
-        s = WikidataEditStream()
+        s = WikiEditStream()
         for idx, edit in enumerate(s.stream()):
             if idx > 10:
                 break

@@ -16,12 +16,12 @@ if __name__ == '__main__':
     import django
     django.setup()
 
-    from store.stream import WikidataEditStream
+    from store.stream import WikiEditStream
     from store.utils import grouper
     from store.models import Edit
 
-    print('Listening to Wikidata edits...')
-    s = WikidataEditStream()
+    print('Listening to edits...')
+    s = WikiEditStream()
     utcnow = datetime.utcnow()
     try:
         latest_edit_seen = Edit.objects.order_by('-timestamp')[0].timestamp
