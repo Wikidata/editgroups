@@ -64,6 +64,8 @@ class Tool(CachingMixin, models.Model):
             return
 
         uid = idmatch.group(self.idgroupid)
+        if not uid:
+            return
         summary = ''
         if summarymatch:
             summary = summarymatch.group(self.summarygroupid)
@@ -72,7 +74,7 @@ class Tool(CachingMixin, models.Model):
         if self.userregex:
             userre = re.compile(self.userregex)
             usermatch = userre.match(comment)
-            if usermatch:
+            if usermatch and usermatch.group(self.usergroupid):
                 realuser = usermatch.group(self.usergroupid)
 
         return self.Match(uid=uid, user=realuser, summary=summary)
@@ -98,8 +100,8 @@ class Batch(models.Model):
     objects = BatchManager()
 
     tool = models.ForeignKey(Tool, on_delete=models.CASCADE)
-    user = models.CharField(max_length=MAX_CHARFIELD_LENGTH, db_index=True)
-    uid = models.CharField(max_length=MAX_CHARFIELD_LENGTH, db_index=True)
+    user = models.CharField(max_length=MAX_CHARFIELD_LENGTH, db_index=True, blank=False)
+    uid = models.CharField(max_length=MAX_CHARFIELD_LENGTH, db_index=True, blank=False)
 
     summary = models.CharField(max_length=MAX_CHARFIELD_LENGTH)
     started = models.DateTimeField()
