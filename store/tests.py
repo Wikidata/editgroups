@@ -38,6 +38,13 @@ class ToolTest(TestCase):
             tool.match("Pintoch",
                 "/* wbeditentity-update:0| */ ([[Wikidata:Edit groups/OR/ca7d7cc|discuss]])"))
 
+    def test_match_empty_id(self):
+        tool = Tool.objects.get(shortid='OR')
+
+        self.assertEquals(None,
+            tool.match("Pintoch",
+                "/* wbeditentity-update:0| */ ([[Wikidata:Edit groups/OR/|discuss]])"))
+
     def test_or_setclaim(self):
         tool = Tool.objects.get(shortid='OR')
         self.assertEquals(('3990c0d', 'Pintoch', 'add EIN ids from Charity Navigator'),
@@ -51,6 +58,13 @@ class ToolTest(TestCase):
         self.assertEquals(('2120', 'Pintoch', '#quickstatements'),
             tool.match("QuickStatementsBot",
                 "/* wbcreateclaim-create:1| */ [[Property:P3896]]: Data:Neighbourhoods/New York City.map, #quickstatements; [[:toollabs:quickstatements/#mode=batch&batch=2120|batch #2120]] by [[User:Pintoch|]]"))
+
+    def test_empty_user(self):
+        tool = Tool.objects.get(shortid='QSv2')
+
+        self.assertEquals(('2120', 'QuickStatementsBot', '#quickstatements'),
+            tool.match("QuickStatementsBot",
+                "/* wbcreateclaim-create:1| */ [[Property:P3896]]: Data:Neighbourhoods/New York City.map, #quickstatements; [[:toollabs:quickstatements/#mode=batch&batch=2120|batch #2120]] by [[User:|]]"))
 
     def test_eg(self):
         tool = Tool.objects.get(shortid='EG')
