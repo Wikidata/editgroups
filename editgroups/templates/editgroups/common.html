@@ -37,7 +37,7 @@
                             <button type="submit" class="btn btn-default">Submit</button>
                         </form> -->
                         <ul class="nav navbar-nav navbar-right">
-                            <li><a href="https://www.wikidata.org/wiki/Wikidata:Edit_groups">About</a></li>
+                            <li><a href="{{ USER_DOCS_HOMEPAGE }}">About</a></li>
                             {% if not user.is_authenticated %}
                             <li><a href="{% url "social:begin" 'mediawiki' %}">Login</a></li>
                             {% else %}

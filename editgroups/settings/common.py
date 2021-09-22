@@ -95,6 +95,7 @@ TEMPLATES = [
                     "social_django.context_processors.backends",
                     "social_django.context_processors.login_redirect",
                     "tagging.filters.context_processor",
+                    "editgroups.context_processors.mediawiki_site_settings",
                 ),
                 'debug': True
             }
@@ -183,6 +184,23 @@ SOCIAL_AUTH_ASSOCIATION_HANDLE_LENGTH = 190
 SOCIAL_AUTH_EMAIL_LENGTH = 190
 
 MEDIAWIKI_API_ENDPOINT = 'https://www.wikidata.org/w/api.php'
+MEDIAWIKI_BASE_URL = 'https://www.wikidata.org/wiki/'
+MEDIAWIKI_INDEX_ENDPOINT = 'https://www.wikidata.org/w/index.php'
+PROPERTY_BASE_URL = MEDIAWIKI_BASE_URL + 'Property:'
+USER_BASE_URL = MEDIAWIKI_BASE_URL + 'User:'
+USER_TALK_BASE_URL = MEDIAWIKI_BASE_URL + 'User_talk:'
+CONTRIBUTIONS_BASE_URL = MEDIAWIKI_BASE_URL + 'Special:Contributions/'
+WIKI_CODENAME = 'wikidatawiki'
+USER_DOCS_HOMEPAGE = 'https://www.wikidata.org/wiki/Wikidata:Edit_groups'
+MEDIAWIKI_NAME = 'Wikidata'
+DISCUSS_PAGE_PREFIX = 'Wikidata:Edit_groups/'
+DISCUSS_PAGE_PRELOAD = 'Wikidata:Edit_groups/Preload'
+REVERT_PAGE = 'Wikidata:Requests_for_deletions'
+REVERT_PRELOAD = 'Wikidata:Edit_groups/Revert'
+WATCHED_NAMESPACES = [0, 120]
+
+WIKILINK_BATCH_PREFIX = ':toollabs:editgroups/b/'
+REVERT_COMMENT_STAMP = ' ([[:toollabs:editgroups/b/EG/{}|details]])'
 
 ### Celery config ###
 # Celery runs asynchronous tasks such as metadata harvesting or

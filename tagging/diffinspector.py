@@ -3,8 +3,11 @@ import requests
 import lxml.html
 import json
 from lxml import etree
+import re
 from collections import namedtuple
 from .diffdigest import DiffDigest
+
+property_re = re.compile('.*(Property:|Special:EntityPage/)(P\d+)')
 
 class DiffInspector(object):
     """
@@ -103,6 +106,7 @@ class DiffInspector(object):
         Given an <a> element, return the PID.
         """
         title = link.get('title')
-        if title.startswith('Property:'):
-            return title[len('Property:'):]
+        match = property_re.match(title)
+        if match:
+            return match.group(2)
 

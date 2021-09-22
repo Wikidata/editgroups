@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: migrator
-          image: docker-registry.tools.wmflabs.org/toollabs-python37-base:latest
+          image: docker-registry.tools.wmflabs.org/toolforge-python37-sssd-base:latest
           command: [ "/data/project/editgroups/www/python/src/migrator.sh" ]
           workingDir: /data/project/editgroups/www/python/src
           env:
