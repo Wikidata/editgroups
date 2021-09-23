@@ -28,10 +28,4 @@ spec:
             - name: HOME
               value: /data/project/editgroups
           imagePullPolicy: Always
-          volumeMounts:
-            - name: home
-              mountPath: /data/project/editgroups/
-      volumes:
-        - name: home
-          hostPath:
-            path: /data/project/editgroups/
+
