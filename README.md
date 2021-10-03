@@ -3,9 +3,11 @@ EditGroups
 
 [![Documentation Status](https://readthedocs.org/projects/editgroups/badge/?version=latest)](https://editgroups.readthedocs.io/en/latest/?badge=latest) [![.github/workflows/ci.yml](https://github.com/Wikidata/editgroups/actions/workflows/ci.yml/badge.svg)](https://github.com/Wikidata/editgroups/actions/workflows/ci.yml) [![Coverage Status](https://coveralls.io/repos/github/Wikidata/editgroups/badge.svg?branch=master)](https://coveralls.io/github/Wikidata/editgroups?branch=master)
 
-Simple tool to track edit groups on Wikidata and revert them.
+Simple tool to track edit groups on MediaWiki instances and revert them.
 
-Use it at https://editgroups.toolforge.org/.
+Use it at:
+- https://editgroups.toolforge.org/ for Wikidata
+- https://editgroups-commons.toolforge.org/ for Wikimedia Commons
 
 Documentation:
 * for users: https://www.wikidata.org/wiki/Wikidata:Edit_groups
