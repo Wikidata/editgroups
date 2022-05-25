@@ -100,6 +100,7 @@ tag_to_readable_name = {
         "set-sense-glosses": _("changes glosses"),
         "remove-sense-glosses": _("removes glosses"),
         "update-sense-elements": _("changes glosses"),
+    "upload": _("uploads files"),
 
 }
 
