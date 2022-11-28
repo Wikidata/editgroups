@@ -198,7 +198,7 @@ DISCUSS_PAGE_PREFIX = 'Wikidata:Edit_groups/'
 DISCUSS_PAGE_PRELOAD = 'Wikidata:Edit_groups/Preload'
 REVERT_PAGE = 'Wikidata:Requests_for_deletions'
 REVERT_PRELOAD = 'Wikidata:Edit_groups/Revert'
-WATCHED_NAMESPACES = [0, 120]
+WATCHED_NAMESPACES = [0, 120, 122, 146, 640, 6]
 
 WIKILINK_BATCH_PREFIX = ':toollabs:editgroups/b/'
 REVERT_COMMENT_STAMP = ' ([[:toollabs:editgroups/b/EG/{}|details]])'
