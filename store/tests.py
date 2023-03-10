@@ -353,11 +353,6 @@ class BatchEditsViewTest(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.batch.edit_set.count(), response.data['count'])
 
-    def test_csv(self):
-        response = self.client.get(reverse('csv-batch-edits', args=[self.batch.tool.shortid, self.self.batch.uid]))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, 'some response')
-
     @classmethod
     def tearDownClass(cls):
         Batch.objects.all().delete()
@@ -391,6 +386,11 @@ class PagesTest(TestCase):
         response = self.get_page('list-batches')
         self.check_html(response)
 
+    def test_csv_batches_lists(self):
+        response = self.get_page('csv-list-batches')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, 'some response')
+
     def test_batches_list_filtered(self):
         response = self.client.get(reverse('list-batches')+'?tool=OR')
         self.check_html(response)
@@ -401,6 +401,11 @@ class PagesTest(TestCase):
     def test_batch(self):
         response = self.client.get(self.batch.url)
         self.check_html(response)
+
+    def test_csv_batch(self):
+        response = self.client.get(self.batch.csv_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, 'some response')
 
     def test_batch_404(self):
         response = self.client.get('/b/ST/3849384/')

@@ -196,6 +196,10 @@ class Batch(models.Model):
     def url(self):
         return reverse('batch-view', args=[self.tool.shortid, self.uid])
 
+    @property
+    def csv_url(self):
+        return reverse('csv-batch-edits', args=[self.tool.shortid, self.uid])
+
     @cached_property
     def tag_ids(self):
         return self.sorted_tags.values_list('id', flat=True)
