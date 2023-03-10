@@ -354,7 +354,7 @@ class BatchEditsViewTest(APITestCase):
         self.assertEqual(self.batch.edit_set.count(), response.data['count'])
 
     def test_csv(self):
-        response = self.client.get(reverse('csv-batch-edits', args=[self.batch.id]))
+        response = self.client.get(reverse('csv-batch-edits', args=[self.batch.tool.shortid, self.self.batch.uid]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, 'some response')
 
