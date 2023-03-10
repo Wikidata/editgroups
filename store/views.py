@@ -62,6 +62,7 @@ class CSVBatchesView(BatchesView):
     Lists the latest batches, by inverse date of last edit, rendered in CSV format.
     """
     renderer_classes = (csv_renderers.CSVRenderer,)
+    pagination_class = None
 
 class BatchEditsView(generics.ListAPIView):
     serializer_class = EditSerializer
@@ -91,6 +92,7 @@ class CSVBatchEditsView(BatchEditsView):
     Lists the edits in a particular batch
     """
     renderer_classes = (csv_renderers.CSVRenderer,)
+    pagination_class = None
 
 class ToolsView(generics.ListAPIView):
     serializer_class = ToolStatsSerializer
