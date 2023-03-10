@@ -6,6 +6,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.renderers import BrowsableAPIRenderer
+from rest_framework_csv import renderers as csv_renderers
 
 from .models import Tool
 from .models import Edit
@@ -56,6 +57,12 @@ class APIBatchesView(BatchesView):
     """
     renderer_classes = (JSONRenderer,BrowsableAPIRenderer)
 
+class CSVBatchesView(BatchesView):
+    """
+    Lists the latest batches, by inverse date of last edit, rendered in CSV format.
+    """
+    renderer_classes = (csv_renderers.CSVRenderer,)
+
 class BatchEditsView(generics.ListAPIView):
     serializer_class = EditSerializer
     model = Edit
@@ -78,6 +85,12 @@ class APIBatchEditsView(BatchEditsView):
     Lists the edits in a particular batch
     """
     renderer_classes = (JSONRenderer,BrowsableAPIRenderer)
+
+class CSVBatchEditsView(BatchEditsView):
+    """
+    Lists the edits in a particular batch
+    """
+    renderer_classes = (csv_renderers.CSVRenderer,)
 
 class ToolsView(generics.ListAPIView):
     serializer_class = ToolStatsSerializer
