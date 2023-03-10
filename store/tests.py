@@ -353,6 +353,11 @@ class BatchEditsViewTest(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.batch.edit_set.count(), response.data['count'])
 
+    def test_csv(self):
+        response = self.client.get(reverse('csv-batch-edits', args=[self.batch.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, 'some response')
+
     @classmethod
     def tearDownClass(cls):
         Batch.objects.all().delete()
