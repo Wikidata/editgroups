@@ -147,4 +147,8 @@
         {% endif %}
         {% endfor %}
         </ul>
+
+        {% if not archived %}
+            <a href="{% url "csv-batch-edits" tool.shortid uid %}" class="btn btn-default" rel="nofollow">Export edits to CSV</a>
+        {% endif %}
 {% endblock %}
