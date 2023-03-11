@@ -389,7 +389,7 @@ class PagesTest(TestCase):
     def test_csv_batches_lists(self):
         response = self.get_page('csv-list-batches')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, 'some response')
+        self.assertEqual(response.content, 'some response')
 
     def test_batches_list_filtered(self):
         response = self.client.get(reverse('list-batches')+'?tool=OR')
@@ -405,7 +405,7 @@ class PagesTest(TestCase):
     def test_csv_batch(self):
         response = self.client.get(self.batch.csv_url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, 'some response')
+        self.assertEqual(response.content, 'some response')
 
     def test_batch_404(self):
         response = self.client.get('/b/ST/3849384/')
