@@ -134,7 +134,7 @@ class BatchCSVSerializer(serializers.ModelSerializer):
         """
         Overridden to return a single value (joined) for the CSV format
         """
-        return '|'.join([ tag.id for tag in obj.tags ])
+        return '|'.join([ tag.id for tag in obj.tags.all() ])
 
     class Meta:
         model = Batch
