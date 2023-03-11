@@ -386,6 +386,12 @@ class PagesTest(TestCase):
         response = self.get_page('list-batches')
         self.check_html(response)
 
+    def test_csv_batches_lists(self):
+        response = self.get_page('csv-list-batches')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.content.startswith(
+b'archived,author,avg_diffsize,duration,editing_speed,ended,entities_speed,full_uid,id,last_modified,nb_distinct_pages,nb_edits,nb_existing_pages,nb_new_pages,nb_pages,nb_reverted,nb_reverted_edits,started,summary,tags,tool.name,tool.shortid,tool.url,total_diffsize,uid,url\r\n'))
+
     def test_batches_list_filtered(self):
         response = self.client.get(reverse('list-batches')+'?tool=OR')
         self.check_html(response)
@@ -396,6 +402,11 @@ class PagesTest(TestCase):
     def test_batch(self):
         response = self.client.get(self.batch.url)
         self.check_html(response)
+
+    def test_csv_batch(self):
+        response = self.client.get(self.batch.csv_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.content.startswith(b'batch,bot,changetype,comment,id,minor,namespace,newlength,newrevid,oldlength,oldrevid,parsedcomment,patrolled,revert_url,reverted,timestamp,title,uri,url,user\r\n'))
 
     def test_batch_404(self):
         response = self.client.get('/b/ST/3849384/')
