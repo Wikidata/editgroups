@@ -389,6 +389,8 @@ class PagesTest(TestCase):
     def test_csv_batches_lists(self):
         response = self.get_page('csv-list-batches')
         self.assertEqual(response.status_code, 200)
+        print(b'batch,bot,changetype,comment,id,minor,namespace,newlength,newrevid,oldlength,oldrevid,parsedcomment,patrolled,revert_url,reverted,timestamp,title,uri,url,user\r\n')
+        print(response.content)
         self.assertTrue(response.content.startswith(b'batch,bot,changetype,comment,id,minor,namespace,newlength,newrevid,oldlength,oldrevid,parsedcomment,patrolled,revert_url,reverted,timestamp,title,uri,url,user\r\n'))
 
     def test_batches_list_filtered(self):
@@ -405,6 +407,10 @@ class PagesTest(TestCase):
     def test_csv_batch(self):
         response = self.client.get(self.batch.csv_url)
         self.assertEqual(response.status_code, 200)
+        print(response.content)
+        print(b'archived,author,avg_diffsize,duration,editing_speed,ended,entities_speed,full_uid,id,last_modified,nb_distinct_pages,nb_edits,nb_existing_pages,nb_new_pages,nb_pages,nb_reverted,nb_reverted_edits,started,summary,tags,tool.name,tool.shortid,tool.url,total_diffsize,uid,url\r\n' +
+b'False,Pintoch,355,2,120.0,2018-03-07T16:20:14Z,30.0,QSv2/2120,25,2023-03-11T05:48:00.198775Z,1,4,1,0,1,0,0,2018-03-07T16:20:12Z,#quickstatements,wbcreateclaim-create|prop-P3896|prop-P2534|prop-P18|prop-P856,QuickStatements,QSv2,https://tools.wmflabs.org/quickstatements/,1423,2120,/b/QSv2/2120/\r\nFalse,Pintoch,2566,93,32.9,2018-03-06T16:41:10Z,32.9,OR/ca7d7cc,24,2023-03-11T05:47:59.717431Z,51,51,51,0,51,0,0,2018-03-06T16:39:37Z,import Charity Navigator,wbeditentity-update,OpenRefine,OR,https://www.wikidata.org/wiki/Wikidata:OpenRefine,130901,ca7d7cc,/b/OR/ca7d7cc/\r\n')
+
         self.assertEqual(response.content,
 b'archived,author,avg_diffsize,duration,editing_speed,ended,entities_speed,full_uid,id,last_modified,nb_distinct_pages,nb_edits,nb_existing_pages,nb_new_pages,nb_pages,nb_reverted,nb_reverted_edits,started,summary,tags,tool.name,tool.shortid,tool.url,total_diffsize,uid,url\r\n' +
 b'False,Pintoch,355,2,120.0,2018-03-07T16:20:14Z,30.0,QSv2/2120,25,2023-03-11T05:48:00.198775Z,1,4,1,0,1,0,0,2018-03-07T16:20:12Z,#quickstatements,wbcreateclaim-create|prop-P3896|prop-P2534|prop-P18|prop-P856,QuickStatements,QSv2,https://tools.wmflabs.org/quickstatements/,1423,2120,/b/QSv2/2120/\r\nFalse,Pintoch,2566,93,32.9,2018-03-06T16:41:10Z,32.9,OR/ca7d7cc,24,2023-03-11T05:47:59.717431Z,51,51,51,0,51,0,0,2018-03-06T16:39:37Z,import Charity Navigator,wbeditentity-update,OpenRefine,OR,https://www.wikidata.org/wiki/Wikidata:OpenRefine,130901,ca7d7cc,/b/OR/ca7d7cc/\r\n')
