@@ -120,7 +120,6 @@ class BatchCSVSerializer(serializers.ModelSerializer):
     entities_speed = serializers.CharField()
 
     full_uid = serializers.CharField()
-    sorted_tags = TagSerializer(many=True)
 
     nb_pages = serializers.IntegerField()
     nb_new_pages = serializers.IntegerField()
@@ -129,8 +128,9 @@ class BatchCSVSerializer(serializers.ModelSerializer):
     avg_diffsize = serializers.IntegerField()
 
     duration = serializers.IntegerField()
+    tags = serializers.SerializerMethodField()
 
-    def get_sorted_tags(self, obj):
+    def get_tags(self, obj):
         """
         Overridden to return a single value (joined) for the CSV format
         """
