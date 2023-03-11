@@ -130,7 +130,7 @@ class BatchCSVSerializer(serializers.ModelSerializer):
 
     duration = serializers.IntegerField()
 
-    def get_tags(self, obj):
+    def get_sorted_tags(self, obj):
         """
         Overridden to return a single value (joined) for the CSV format
         """
