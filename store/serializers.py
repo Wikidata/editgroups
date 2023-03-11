@@ -111,4 +111,34 @@ class BatchDetailSerializer(serializers.ModelSerializer):
         exclude = ('user',) # translated as 'author'
         depth = 1
 
+class BatchCSVSerializer(serializers.ModelSerializer):
+    tool = ToolSerializer()
+    url = serializers.CharField()
+    author = serializers.CharField(source='user')
+
+    editing_speed = serializers.CharField()
+    entities_speed = serializers.CharField()
+
+    full_uid = serializers.CharField()
+    sorted_tags = TagSerializer(many=True)
+
+    nb_pages = serializers.IntegerField()
+    nb_new_pages = serializers.IntegerField()
+    nb_existing_pages = serializers.IntegerField()
+    nb_reverted = serializers.IntegerField()
+    avg_diffsize = serializers.IntegerField()
+
+    duration = serializers.IntegerField()
+
+    def get_tags(self, obj):
+        """
+        Overridden to return a single value (joined) for the CSV format
+        """
+        return '|'.join([ tag.id for tag in obj.tags ])
+
+    class Meta:
+        model = Batch
+        exclude = ('user',) # translated as 'author'
+        depth = 1
+
 

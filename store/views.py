@@ -11,7 +11,7 @@ from rest_framework_csv import renderers as csv_renderers
 from .models import Tool
 from .models import Edit
 from .models import Batch
-from .serializers import BatchSimpleSerializer, BatchDetailSerializer, EditSerializer, ToolSerializer, ToolStatsSerializer
+from .serializers import BatchSimpleSerializer, BatchDetailSerializer, BatchCSVSerializer, EditSerializer, ToolSerializer, ToolStatsSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from tagging.filters import TaggingFilterBackend
 
@@ -62,6 +62,7 @@ class CSVBatchesView(BatchesView):
     Lists the latest batches, by inverse date of last edit, rendered in CSV format.
     """
     renderer_classes = (csv_renderers.CSVRenderer,)
+    serializer_class = BatchCSVSerializer
     pagination_class = None
 
 class BatchEditsView(generics.ListAPIView):
