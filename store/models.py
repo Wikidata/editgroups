@@ -282,9 +282,9 @@ class Edit(models.Model):
     """
     A MediaWiki edit as returned by the Event Stream API
     """
-    id = models.IntegerField(unique=True, primary_key=True)
-    oldrevid = models.IntegerField(null=True)
-    newrevid = models.IntegerField()
+    id = models.BigIntegerField(unique=True, primary_key=True)
+    oldrevid = models.BigIntegerField(null=True)
+    newrevid = models.BigIntegerField()
     oldlength = models.IntegerField()
     newlength = models.IntegerField()
     timestamp = models.DateTimeField(db_index=True)
