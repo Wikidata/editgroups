@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('store', '0021_nonempty_user_and_uid'),
+        ('store', '0022_recreate_newrevid_index'),
     ]
 
     operations = [
