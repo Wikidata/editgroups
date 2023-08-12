@@ -1,7 +1,7 @@
 from django.db import models
 
 from caching.base import CachingManager, CachingMixin
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from store.models import Batch
 from collections import defaultdict
 
