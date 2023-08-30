@@ -2,7 +2,7 @@
 
 set -e
 
-VENV_DIR=/data/project/editgroups/listener_venv
+VENV_DIR=/data/project/editgroups/venv
 
 if [[ -f ${VENV_DIR}/bin/activate ]]; then
       source ${VENV_DIR}/bin/activate
