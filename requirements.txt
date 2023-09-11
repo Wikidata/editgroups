@@ -1,5 +1,5 @@
 sseclient
-django==4.2.4
+django==4.2.5
 django-bulk-update==2.2.0
 django-redis-cache==3.0.1
 django-cache-machine==1.2.0
