@@ -17,6 +17,7 @@ from datetime import datetime
 from .utils import grouper
 
 MAX_CHARFIELD_LENGTH = 190
+NEW_PAGE_CHANGETYPES = ['new', 'upload', 'restore']
 
 class Tool(CachingMixin, models.Model):
     """
@@ -240,7 +241,7 @@ class Batch(models.Model):
         self.nb_edits = self.edits.count()
         self.nb_distinct_pages = self.edits.all().values('title').distinct().count()
         self.nb_reverted_edits = self.edits.all().filter(reverted=True).count()
-        self.nb_new_pages = self.edits.all().filter(changetype='new').count()
+        self.nb_new_pages = self.edits.all().filter(changetype__in=NEW_PAGE_CHANGETYPES).count()
         self.total_diffsize = self.edits.all().aggregate(total_diff=models.Sum('newlength')-models.Sum('oldlength')).get('total_diff')
 
     def archive(self, batch_inspector):
@@ -455,10 +456,10 @@ class Edit(models.Model):
         # (this is a notion that we introduce ourselves) so if a deletion and the corresponding revert happen
         # in the same batch we need to inspect the order in which they happened.
         if deleted_pages:
-            cls.mark_as_reverted(Edit.objects.filter(title__in=deleted_pages.keys(), changetype__in=['new','restore']))
+            cls.mark_as_reverted(Edit.objects.filter(title__in=deleted_pages.keys(), changetype__in=NEW_PAGE_CHANGETYPES))
             for edit in model_edits:
                 if (edit.title in deleted_pages
-                    and edit.changetype in ['new','restore']
+                    and edit.changetype in NEW_PAGE_CHANGETYPES
                     and edit.timestamp < deleted_pages.get(edit.title)):
                     edit.reverted = True
                     edit.batch.nb_reverted_edits += 1
@@ -498,7 +499,7 @@ class Edit(models.Model):
                         if batch:
                             batch.nb_edits -= 1
                             batch.total_diffsize -= edit.newlength - edit.oldlength
-                            if edit.changetype == 'new':
+                            if edit.changetype in NEW_PAGE_CHANGETYPES:
                                 batch.nb_new_pages -= 1
                             if edit.reverted:
                                 batch.nb_reverted_edits -= 1
