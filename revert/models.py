@@ -7,6 +7,7 @@ import requests
 from requests_oauthlib import OAuth1
 from cached_property import cached_property
 
+from store.models import NEW_PAGE_CHANGETYPES
 from store.models import Batch
 from store.models import Edit
 
@@ -82,7 +83,7 @@ class RevertTask(models.Model):
                 'token': token,
                 'watchlist': 'nochange',
             }
-        elif edit.changetype in ['new','restore']:
+        elif edit.changetype in NEW_PAGE_CHANGETYPES:
             # Delete the page
             data = {
                 'action': 'delete',
