@@ -180,7 +180,7 @@ class Batch(models.Model):
 
     @cached_property
     def nb_undeleted_new_pages(self):
-        return self.revertable_edits.filter(changetype__in=['new','restore','delete']).count()
+        return self.revertable_edits.filter(changetype__in=['new','restore','delete','upload']).count()
 
     @property
     def nb_existing_pages(self):
