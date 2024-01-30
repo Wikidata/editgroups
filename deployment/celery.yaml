@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: celery
-          image: docker-registry.tools.wmflabs.org/toolforge-python39-sssd-base:latest
+          image: docker-registry.tools.wmflabs.org/toolforge-python311-sssd-base:latest
           command: [ "/data/project/editgroups/www/python/src/tasks.sh" ]
           workingDir: /data/project/editgroups/www/python/src
           env:

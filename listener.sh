@@ -2,7 +2,7 @@
 
 set -e
 
-VENV_DIR=/data/project/editgroups/venv
+VENV_DIR=/data/project/editgroups/www/python/venv
 
 if [[ -f ${VENV_DIR}/bin/activate ]]; then
       source ${VENV_DIR}/bin/activate
