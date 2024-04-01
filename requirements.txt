@@ -10,7 +10,7 @@ python-dateutil==2.9.0.post0
 social-auth-app-django==5.4.0
 html5lib==1.1
 cached-property==1.5.2
-requests-oauthlib==1.4.0
+requests-oauthlib==2.0.0
 celery==5.3.6
 requests-mock==1.12.1
 lxml==5.1.0
