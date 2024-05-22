@@ -29,5 +29,6 @@ REDIS_HOST = 'localhost'
 REDIS_PORT = REDIS_REAL_PORT
 REDIS_DB = 0
 REDIS_PASSWORD = ''
+REDIS_KEY_PREFIX = 'editgroups_'
 
 

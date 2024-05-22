@@ -20,6 +20,7 @@ try:
     from .secret import REDIS_HOST
     from .secret import REDIS_PASSWORD
     from .secret import REDIS_PORT
+    from .secret import REDIS_KEY_PREFIX
     from .secret import SECRET_KEY
     from .secret import SOCIAL_AUTH_MEDIAWIKI_KEY
     from .secret import SOCIAL_AUTH_MEDIAWIKI_SECRET
@@ -216,6 +217,7 @@ REDIS_URL = ':%s@%s:%s/%d' % (
         REDIS_PORT,
         REDIS_DB)
 BROKER_URL = 'redis://'+REDIS_URL
+BROKER_TRANSPORT_OPTIONS = {'global_keyprefix': REDIS_KEY_PREFIX}
 # We also use Redis as result backend.
 CELERY_RESULT_BACKEND = BROKER_URL
 
