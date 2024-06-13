@@ -274,7 +274,7 @@ class Batch(models.Model):
         This method is meant to be run periodically.
         """
         cutoff_date = datetime.utcnow().replace(tzinfo=UTC) - settings.BATCH_ARCHIVAL_DELAY
-        for batch in cls.objects.filter(nb_edits__gt=settings.EDITS_KEPT_AFTER_ARCHIVAL, archived=False, ended__lt=cutoff_date):
+        for batch in cls.objects.filter(nb_edits__gt=settings.EDITS_KEPT_AFTER_ARCHIVAL, archived=False, ended__lt=cutoff_date).iterator():
             batch.archive(batch_inspector)
 
 from tagging.models import Tag
