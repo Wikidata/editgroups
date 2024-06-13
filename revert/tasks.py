@@ -9,7 +9,7 @@ from store.utils import grouper
 def revert_batch(task_pk):
     try:
         task = RevertTask.objects.get(pk=task_pk)
-        edits = task.batch.edits.filter(reverted=False).order_by('-timestamp')
+        edits = task.batch.edits.filter(reverted=False).order_by('-timestamp').iterator()
         for idx, edit in enumerate(edits):
             if idx % 10 == 0:
                 task = RevertTask.objects.get(pk=task_pk)
