@@ -26,7 +26,7 @@ SOCIAL_AUTH_MEDIAWIKI_URL = 'https://www.wikidata.org/w/index.php'
 SOCIAL_AUTH_MEDIAWIKI_CALLBACK = 'https://editgroups.toolforge.org/oauth/complete/mediawiki/'
 
 # Redis (if you use it)
-REDIS_HOST = 'tools-redis'
+REDIS_HOST = 'editgroups-redis'
 REDIS_PORT = 6379
 REDIS_DB = 3
 REDIS_PASSWORD = ''

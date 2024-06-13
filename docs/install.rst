@@ -77,10 +77,10 @@ In what follows we assume that the tool is deployed as the ``editgroups`` projec
 -  ``become editgroups``
 -  ``mkdir -p www/python/src``
 
-Put the following contents in ``manifest.template`` in the home directory of the tool::
+Put the following contents in ``service.template`` in the home directory of the tool::
 
   backend: kubernetes
-  type: python3.7
+  type: python3.11
 
 Install the dependencies in the virtualenv::
 
@@ -120,6 +120,9 @@ settings line from ``editgroups/settings/common.py`` and adapt them to
 the wiki that you are running EditGroups for (for instance ``MEDIAWIKI_API_ENDPOINT`` and the following lines).
 You should also adapt the allowed hostname (taken from ``editgroups/settings/prod.py``). It's easier
 to add those to the ``__init__.py`` file to avoid editing files tracked by Git.
+
+Set up a redis container for the service, following instructions at https://wikitech.wikimedia.org/wiki/Tool:Containers#Redis_container.
+The password and host name of the redis container need to be inserted in `editgroups/settings/secret.py` as `REDIS_PASSWORD` and `REDIS_HOST` respectively.
 
 Put the following content in ``~/www/python/uwsgi.ini``::
 
