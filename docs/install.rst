@@ -58,7 +58,7 @@ To add a tool, go to ``http://localhost:8000/admin/store/tool/`` and click **Add
 to fill in the following fields:
 
 - **Name**: the name of the tool, displayed in the interface
-- **Shortid**: a short identifier for the tool, used in the URLs for its batches. For instance, ``OR`` is the short id for OpenRefine in the Wikidata instance, which can be seen in URLs such as ``https://tools.wmflabs.org/editgroups/b/OR/28d99182/``;
+- **Shortid**: a short identifier for the tool, used in the URLs for its batches. For instance, ``OR`` is the short id for OpenRefine in the Wikidata instance, which can be seen in URLs such as ``https://editgroups.toolforge.org/b/OR/28d99182/``;
 - **Idregex**: a Python regular expression which captures the batch identifier in the edit summary. The batch identifier must be captured by a group. For instance you could use ``.*editgroups/b/OR/([a-f0-9]{4,32})\|details\]\]\).*`` for OpenRefine.
 - **Idgroupid**: the numerical identifier of the group to extract from the regex above to obtain the batch identifier (1 in the example above)
 - **Summaryregex**: a Python regular expression which captures the batch summary from the edit summary. Again a group must capture the relevant part to extract.

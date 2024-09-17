@@ -18,7 +18,7 @@ Configuration of the tools
 
 The regular expressions used to detect batch identifiers and tools in edits are considered user data
 and are therefore stored in their own SQL table. They can be configured from EditGroups' admin interface
-(which uses Django's standard admin functionality), available on the canonical instance at https://tools.wmflabs.org/editgroups/admin/.
+(which uses Django's standard admin functionality), available on the canonical instance at https://editgroups.toolforge.org/admin/.
 
 To access this interface, you need to create an administrator account in EditGroups using the ``python manage.py createsuperuser`` command. Being an administrator on the target wiki does not automatically grant you rights to administer EditGroups.
 
