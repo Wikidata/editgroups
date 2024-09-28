@@ -80,6 +80,6 @@ class BatchInspector(object):
         batches modified since the given time.
         """
         queryset = Batch.objects.filter(Q(tags__id__in = self.tags_for_diff_inspection) | Q(nb_new_pages__gt = 0), last_modified__gt=since_time, archived=False).order_by('ended').distinct()
-        for batch in queryset:
+        for batch in queryset.iterator():
             self.add_missing_tags(batch)
 
