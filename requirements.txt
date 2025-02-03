@@ -7,7 +7,7 @@ djangorestframework==3.15.2
 django-filter==24.3
 django-extensions==3.2.3
 python-dateutil==2.9.0.post0
-pytz==2024.2
+pytz==2025.1
 git+https://github.com/python-social-auth/social-app-django.git@1225f4fadb5e88f54711cc111931054d5de985c7
 html5lib==1.1
 cached-property==2.0.1
