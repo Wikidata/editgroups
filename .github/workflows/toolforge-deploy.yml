@@ -30,7 +30,7 @@ jobs:
           request_pty: true
           script: |
             set -xe
-            become ${{ matrix.tool }} git -C '$HOME/www/python' pull
+            become ${{ matrix.tool }} git -C '$HOME/www/python/src' pull
             become ${{ matrix.tool }} webservice python3.11 shell -- webservice-python-bootstrap
             become ${{ matrix.tool }} webservice python3.11 shell -- '$HOME/www/python/venv/bin/python' '$HOME/www/python/src/manage.py' migrate
             become ${{ matrix.tool }} webservice python3.11 shell -- '$HOME/www/python/venv/bin/python' '$HOME/www/python/src/manage.py' collectstatic --noinput
