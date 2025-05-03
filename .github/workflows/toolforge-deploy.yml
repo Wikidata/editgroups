@@ -11,7 +11,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        tool: ["editgroups", "editgroups-commons"]
+        tool: ["editgroups"]
 
     steps:
       - name: Configure SSH key
