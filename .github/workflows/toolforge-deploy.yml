@@ -1,0 +1,40 @@
+name: Toolforge Deploy
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  deploy:
+    name: Deploy to Toolforge
+    runs-on: ubuntu-latest
+
+    strategy:
+      max-parallel: 4
+      matrix:
+        tool: ["editgroups", "editgroups-commons"]
+
+    steps:
+      - name: Configure SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Run deployment commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          request_pty: true
+          script: |
+            set -xe
+            become ${{ matrix.tool }} git -C '$HOME/www/python' pull
+            become ${{ matrix.tool }} webservice python3.11 shell -- webservice-python-bootstrap
+            become ${{ matrix.tool }} webservice python3.11 shell -- '$HOME/www/python/venv/bin/python' '$HOME/www/python/src/manage.py' migrate
+            become ${{ matrix.tool }} webservice python3.11 shell -- '$HOME/www/python/venv/bin/python' '$HOME/www/python/src/manage.py' collectstatic --noinput
+            become ${{ matrix.tool }} webservice python3.11 restart
+            become ${{ matrix.tool }} webservice python3.11 status
+            become ${{ matrix.tool }} ./www/python/src/restart_listener.sh
+            become ${{ matrix.tool }} ./www/python/src/restart_celery.sh
