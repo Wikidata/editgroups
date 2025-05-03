@@ -220,7 +220,6 @@ BROKER_URL = 'redis://'+REDIS_URL
 CELERY_BROKER_URL = BROKER_URL
 # We also use Redis as result backend.
 CELERY_RESULT_BACKEND = BROKER_URL
-CELERY_BROKER_TRANSPORT_OPTIONS = {'global_keyprefix': REDIS_KEY_PREFIX}
 
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 CELERY_IMPORTS = ['revert.tasks', 'tagging.tasks' ]
