@@ -15,7 +15,7 @@ else
 fi;
 echo "Starting celery"
 export C_FORCE_ROOT=True
-/data/project/editgroups/www/python/venv/bin/python3 /data/project/editgroups/www/python/venv/bin/celery --app=editgroups.celery:app worker -l INFO -B
+/data/project/editgroups/www/python/venv/bin/python3 /data/project/editgroups/www/python/venv/bin/celery --app=editgroups.celery:app worker -l INFO -B  --concurrency=3 --max-memory-per-child=50000
 echo $?
 echo "Celery done"
 
