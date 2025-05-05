@@ -5,7 +5,7 @@ django-redis-cache==3.0.1
 django-cache-machine==1.2.0
 djangorestframework==3.15.2
 django-filter==25.1
-django-extensions==3.2.3
+django-extensions==4.1
 python-dateutil==2.9.0.post0
 pytz==2025.2
 git+https://github.com/python-social-auth/social-app-django.git@1225f4fadb5e88f54711cc111931054d5de985c7
