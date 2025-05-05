@@ -12,7 +12,7 @@ git+https://github.com/python-social-auth/social-app-django.git@1225f4fadb5e88f5
 html5lib==1.1
 cached-property==2.0.1
 requests-oauthlib==2.0.0
-celery==5.4.0
+celery==5.5.2
 requests-mock==1.12.1
 lxml==5.4.0
 djangorestframework-csv==3.0.2
