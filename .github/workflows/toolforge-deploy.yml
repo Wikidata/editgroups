@@ -23,10 +23,10 @@ jobs:
       - name: Run deployment commands
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
+          host: ${{ vars.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.PORT }}
+          port: ${{ vars.SSH_PORT }}
           request_pty: true
           script: |
             set -xe
