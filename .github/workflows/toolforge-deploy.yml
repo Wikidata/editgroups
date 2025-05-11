@@ -36,5 +36,4 @@ jobs:
             become ${{ matrix.tool }} webservice python3.11 shell -- '$HOME/www/python/venv/bin/python' '$HOME/www/python/src/manage.py' collectstatic --noinput
             become ${{ matrix.tool }} webservice python3.11 restart
             become ${{ matrix.tool }} webservice python3.11 status
-            become ${{ matrix.tool }} ./www/python/src/restart_listener.sh
             become ${{ matrix.tool }} ./www/python/src/restart_celery.sh

@@ -37,7 +37,7 @@ This process can be invoked directly as a script::
 
    python listener.py
 
-Or it can be run as a Kubernetes pod using the ``deployment/listener.yaml`` configuration provided.
+It can be run as an `attached daemon to uwsgi <https://uwsgi-docs.readthedocs.io/en/latest/AttachingDaemons.html>`_.
 
 In the interest of running EditGroups on other Wikibase instances which do not have an associated EventStream
 endpoint, it would be great to add the possibility on ingesting edits by polling the recent changes too.

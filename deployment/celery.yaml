@@ -1,4 +1,4 @@
-# Run the EventStream listener on kubernetes
+# Run Celery on kubernetes
 apiVersion: apps/v1
 kind: Deployment
 metadata:
