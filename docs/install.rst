@@ -33,7 +33,7 @@ start a local web server, you can then access your EditGroups instance at ``http
 By default, there will not be much to see as the database will be empty. To get some data in, you need
 to run the listener script, which reads the Wikidata event stream and populates the database::
 
-    python listener.py
+   python3 manage.py listener
 
 You will also need to run Celery, which will periodically annotate edits which need inspection,
 as well as providing the undo functionality (if you have set up OAuth, see below)::
@@ -130,7 +130,7 @@ Put the following content in ``~/www/python/uwsgi.ini``::
   static-map = /static=/data/project/editgroups/www/python/src/static
 
   master = true
-  attach-daemon = /data/project/editgroups/www/python/venv/bin/python3 /data/project/editgroups/www/python/src/listener.py
+  attach-daemon = /data/project/editgroups/www/python/venv/bin/python3 /data/project/editgroups/www/python/src/manage.py listener
 
 and run ``./manage.py collectstatic`` in the ``~/www/python/src`` directory. The listener will be an attached dameon, restarting with webservice restart.
 
