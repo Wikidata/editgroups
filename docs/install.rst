@@ -129,7 +129,10 @@ Put the following content in ``~/www/python/uwsgi.ini``::
   [uwsgi]
   static-map = /static=/data/project/editgroups/www/python/src/static
 
-and run ``./manage.py collectstatic`` in the ``~/www/python/src`` directory.
+  master = true
+  attach-daemon = /data/project/editgroups/www/python/venv/bin/python3 /data/project/editgroups/www/python/src/listener.py
+
+and run ``./manage.py collectstatic`` in the ``~/www/python/src`` directory. The listener will be an attached dameon, restarting with webservice restart.
 
 
 Configure OAuth login:
@@ -156,9 +159,8 @@ Go to the webservice, login with OAuth to the application. This will create a ``
    user.is_staff = True
    user.save()
 
-Launch the listener and Celery in Kubernetes. These deployment files may need to be adapted if you are not deploying the tool as the ``editgroups`` toolforge tool but another tool id:
+Launch Celery in Kubernetes. These deployment files may need to be adapted if you are not deploying the tool as the ``editgroups`` toolforge tool but another tool id:
 
-- ``kubectl create -f deployment/listener.yaml``
 - ``kubectl create -f deployment/celery.yaml``
 
 Backup the database regularly with:
