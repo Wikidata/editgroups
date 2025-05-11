@@ -33,9 +33,9 @@ This is a fairly reliable endpoint which also lets us resume the stream from a r
 ingestion stopped for some reason. By default, the listener tries to resume listening from the 
 date of the latest edit it has ingested.
 
-This process can be invoked directly as a script::
+This process can be invoked directly as a Django management command::
 
-   python listener.py
+   python3 manage.py listener
 
 It can be run as an `attached daemon to uwsgi <https://uwsgi-docs.readthedocs.io/en/latest/AttachingDaemons.html>`_.
 
