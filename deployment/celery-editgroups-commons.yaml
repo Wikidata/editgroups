@@ -1,0 +1,35 @@
+# Run Celery on kubernetes
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: editgroups-commons.celery.sh
+  namespace: tool-editgroups-commons
+  labels:
+    name: editgroups-commons.celery.sh
+    toolforge: tool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: editgroups-commons.celery.sh
+      toolforge: tool
+  template:
+    metadata:
+      labels:
+        name: editgroups-commons.celery.sh
+        toolforge: tool
+    spec:
+      containers:
+        - name: celery
+          image: docker-registry.tools.wmflabs.org/toolforge-python311-sssd-base:latest
+          command: [ "/data/project/editgroups-commons/www/python/src/tasks-commons.sh" ]
+          workingDir: /data/project/editgroups-commons/www/python/src
+          env:
+            - name: HOME
+              value: /data/project/editgroups-commons
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "512Mi"
+            limits:
+              memory: "1024Mi"
