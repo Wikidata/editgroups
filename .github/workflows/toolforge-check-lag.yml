@@ -1,0 +1,38 @@
+name: Toolforge Check Lag
+on:
+  schedule:
+    - cron: "42 * * * *"
+  workflow_dispatch:
+
+jobs:
+  check_lag:
+    name: Check Lag
+    runs-on: ubuntu-latest
+
+    strategy:
+      max-parallel: 4
+      matrix:
+        tool: ["editgroups"]
+
+    steps:
+      - name: Configure SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Run deployment commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ vars.SSH_PORT }}
+          request_pty: true
+          script: |
+            set -xe
+            become ${{ matrix.tool }} webservice python3.11 shell -- webservice-python-bootstrap
+            become ${{ matrix.tool }} webservice python3.11 shell -- ./www/python/venv/bin/python ./www/python/src/manage.py check_lag
+            if (( $? != 0 )); then
+              become ${{ matrix.tool }} webservice python3.11 restart
+            fi
