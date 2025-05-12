@@ -1,7 +1,7 @@
 name: Toolforge Check Lag
 on:
   schedule:
-    - cron: "42 * * * *"
+    - cron: "42 15 * * *"
   workflow_dispatch:
 
 jobs:
