@@ -14,7 +14,7 @@ class WikiEditStream(object):
         url = self.url
         if from_time is not None:
              url += '?since='+from_time.isoformat().replace('+00:00', 'Z')
-        for event in EventSource(url, timeout=30):
+        for event in EventSource(url, timeout=30, headers=self.headers):
             if event.event == 'message':
                 try:
                     change = json.loads(event.data)
