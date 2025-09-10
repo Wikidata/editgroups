@@ -6,6 +6,9 @@ class WikiEditStream(object):
     def __init__(self):
         self.url = 'https://stream.wikimedia.org/v2/stream/recentchange'
         self.wiki = settings.WIKI_CODENAME
+        self.headers = {
+            "User-Agent": settings.USER_AGENT
+        }
 
     def stream(self, from_time=None):
         url = self.url

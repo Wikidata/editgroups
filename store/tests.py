@@ -364,6 +364,7 @@ class WikiEditStreamTest(unittest.TestCase):
             if idx > 10:
                 break
             self.assertEquals('wikidatawiki', edit['wiki'])
+        self.assertEqual(s.headers["User-Agent"], "EditGroups (https://www.wikidata.org/wiki/Wikidata:Edit_groups)")
 
 class PagesTest(TestCase):
 

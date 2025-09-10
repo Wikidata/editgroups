@@ -244,4 +244,4 @@ CELERYBEAT_SCHEDULE = {
     }
 }
 
-
+USER_AGENT = "EditGroups (https://www.wikidata.org/wiki/Wikidata:Edit_groups)"
