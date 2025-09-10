@@ -6,12 +6,15 @@ class WikiEditStream(object):
     def __init__(self):
         self.url = 'https://stream.wikimedia.org/v2/stream/recentchange'
         self.wiki = settings.WIKI_CODENAME
+        self.headers = {
+            "User-Agent": settings.USER_AGENT
+        }
 
     def stream(self, from_time=None):
         url = self.url
         if from_time is not None:
              url += '?since='+from_time.isoformat().replace('+00:00', 'Z')
-        for event in EventSource(url, timeout=30):
+        for event in EventSource(url, timeout=30, headers=self.headers):
             if event.event == 'message':
                 try:
                     change = json.loads(event.data)
