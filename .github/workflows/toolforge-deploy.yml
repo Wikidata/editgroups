@@ -31,9 +31,9 @@ jobs:
           script: |
             set -xe
             become ${{ matrix.tool }} git -C ./www/python/src pull origin master
-            become ${{ matrix.tool }} webservice python3.11 shell -- webservice-python-bootstrap
-            become ${{ matrix.tool }} webservice python3.11 shell -- ./www/python/venv/bin/python ./www/python/src/manage.py migrate
-            become ${{ matrix.tool }} webservice python3.11 shell -- ./www/python/venv/bin/python ./www/python/src/manage.py collectstatic --noinput
-            become ${{ matrix.tool }} webservice python3.11 restart --cpu 2 --mem 3Gi
+            become ${{ matrix.tool }} webservice --mem 512Mi python3.11 shell -- webservice-python-bootstrap
+            become ${{ matrix.tool }} webservice --mem 512Mi python3.11 shell -- ./www/python/venv/bin/python ./www/python/src/manage.py migrate
+            become ${{ matrix.tool }} webservice --mem 512Mi python3.11 shell -- ./www/python/venv/bin/python ./www/python/src/manage.py collectstatic --noinput
+            become ${{ matrix.tool }} webservice python3.11 restart --cpu 1 --mem 3Gi
             become ${{ matrix.tool }} webservice python3.11 status
             become ${{ matrix.tool }} ./www/python/src/restart_celery.sh
