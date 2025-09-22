@@ -34,5 +34,6 @@ jobs:
             become ${{ matrix.tool }} webservice --mem 512Mi python3.11 shell -- webservice-python-bootstrap
             become ${{ matrix.tool }} webservice --mem 512Mi python3.11 shell -- ./www/python/venv/bin/python ./www/python/src/manage.py check_lag
             if (( $? != 0 )); then
-              become ${{ matrix.tool }} webservice python3.11 restart --cpu 1 --mem 3Gi
+              become ${{ matrix.tool }} webservice python3.11 stop
+              become ${{ matrix.tool }} webservice python3.11 start --cpu 1 --mem 3Gi
             fi
