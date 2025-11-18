@@ -36,6 +36,7 @@ services:
       - "8000:8000"
     environment:
       - DJANGO_SETTINGS_MODULE=editgroups.settings.docker
+      - RUN_MIGRATIONS=true
     depends_on:
       db:
         condition: service_healthy
@@ -49,6 +50,7 @@ services:
       - .:/app
     environment:
       - DJANGO_SETTINGS_MODULE=editgroups.settings.docker
+      - C_FORCE_ROOT=true
     depends_on:
       - db
       - redis
