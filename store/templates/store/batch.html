@@ -11,7 +11,7 @@
 
 {% block mainBody %}
 <div class="page-header">
-<h3>Edit group by <a href="{{ USER_BASE_URL }}{{ author }}">{{ author }}</a>: {% if summary %}{{ summary }}{% else %}(no summary){% endif %} ({{ uid }})</h3>
+<h3>Edit group by <a href="{{ USER_BASE_URL }}{{ author }}">{{ author }}</a> <a href="{% url 'list-batches' %}{% querystring user=author %}">[edits]</a>: {% if summary %}{{ summary }}{% else %}(no summary){% endif %} ({{ uid }})</h3>
 </div>
 {% if reverted_batch %}
 <div class="alert alert-primary reverted-batch" role="alert">
