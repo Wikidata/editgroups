@@ -175,6 +175,11 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 # Taken from https://gist.github.com/DamianZaremba/e6d65a200f7c451db80939e7e9e4f2c8
 # Shrink specific columns down, so the key combination for the constraints
 # aren't larger than the max legnth, when not using innodb_large_prefix.
