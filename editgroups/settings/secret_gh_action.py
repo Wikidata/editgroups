@@ -3,17 +3,18 @@
 SECRET_KEY = '20oj&tj8uaruseitlrise,tries,uirsetur36746209etus7e'
 
 # Database
-# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE':   'django.db.backends.postgresql_psycopg2',
-        'NAME':     'editgroups',
-        'USER':     'postgres',
-        'PASSWORD': 'postgres',
-        'HOST':     'localhost',
-        'PORT':     'POSTGRES_PORT',
-        'DISABLE_SERVER_SIDE_CURSORS': False,
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': '127.0.0.1',
+        'PORT': 'MARIADB_PORT',
+        'NAME': 'editgroups',
+        'USER': 'root',
+        'PASSWORD': 'editgroups',
+        'OPTIONS': {
+           'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+           'charset': 'utf8mb4',
+        },
     }
 }
 

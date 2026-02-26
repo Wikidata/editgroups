@@ -43,13 +43,13 @@ class RevertTaskTest(TestCase):
         response = self.client.post(
             reverse('submit-revert', args=[self.batch.tool.shortid, self.batch.uid]),
             data={'comment':'testing reverts'})
-        self.assertEquals(401, response.status_code)
+        self.assertEqual(401, response.status_code)
 
     def test_revert_invalid_batch(self):
         response = self.client.post(
             reverse('submit-revert', args=['NOTATOOL', 'uster']),
             data={'comment':'testing reverts'})
-        self.assertEquals(404, response.status_code)
+        self.assertEqual(404, response.status_code)
 
     def test_revert_batch_already_reverted(self):
         Edit.objects.all().update(reverted=True)
@@ -59,7 +59,7 @@ class RevertTaskTest(TestCase):
         response = self.client.post(
             reverse('submit-revert', args=[self.batch.tool.shortid, self.batch.uid]),
             data={'comment':'testing reverts'})
-        self.assertEquals(400, response.status_code)
+        self.assertEqual(400, response.status_code)
 
     def test_revert_batch_archived(self):
         b = Batch.objects.get()
@@ -68,38 +68,38 @@ class RevertTaskTest(TestCase):
         response = self.client.post(
             reverse('submit-revert', args=[self.batch.tool.shortid, self.batch.uid]),
             data={'comment':'testing reverts'})
-        self.assertEquals(400, response.status_code)
+        self.assertEqual(400, response.status_code)
 
     def test_revert_batch_already_being_reverted(self):
         task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
         task.save()
 
         batch = Batch.objects.get(id=self.batch.id)
-        self.assertEquals(task, batch.active_revert_task)
+        self.assertEqual(task, batch.active_revert_task)
 
         response = self.client.post(
             reverse('submit-revert', args=[self.batch.tool.shortid, self.batch.uid]),
             data={'comment':'testing reverts'})
-        self.assertEquals(400, response.status_code)
+        self.assertEqual(400, response.status_code)
 
     def test_revert_batch_no_summary(self):
         response = self.client.post(
             reverse('submit-revert', args=[self.batch.tool.shortid, self.batch.uid]),
             data={})
-        self.assertEquals(400, response.status_code)
+        self.assertEqual(400, response.status_code)
 
     @patch.object(RevertTask, 'revert_edit', fake_revert)
     def test_revert_batch_fine(self):
         response = self.client.post(
             reverse('submit-revert', args=[self.batch.tool.shortid, self.batch.uid]),
             data={'comment':'testing reverts'})
-        self.assertEquals(302, response.status_code)
+        self.assertEqual(302, response.status_code)
 
     def test_initiate_revert_fine(self):
         response = self.client.get(
             reverse('initiate-revert', args=[self.batch.tool.shortid,
                 self.batch.uid]))
-        self.assertEquals(200, response.status_code)
+        self.assertEqual(200, response.status_code)
 
     @patch.object(RevertTask, 'revert_edit', fake_revert)
     def test_revert_batch_previous_canceled(self):
@@ -109,8 +109,8 @@ class RevertTaskTest(TestCase):
         response = self.client.post(
             reverse('submit-revert', args=[self.batch.tool.shortid, self.batch.uid]),
             data={'comment':'testing reverts'})
-        self.assertEquals(302, response.status_code)
-        self.assertEquals(2, RevertTask.objects.count())
+        self.assertEqual(302, response.status_code)
+        self.assertEqual(2, RevertTask.objects.count())
 
     def test_stop_not_logged_in(self):
         self.client.logout()
@@ -118,19 +118,19 @@ class RevertTaskTest(TestCase):
         task.save()
         response = self.client.post(
             reverse('stop-revert', args=[self.batch.tool.shortid, self.batch.uid]))
-        self.assertEquals(401, response.status_code)
+        self.assertEqual(401, response.status_code)
 
     def test_stop_no_task(self):
         response = self.client.post(
             reverse('stop-revert', args=[self.batch.tool.shortid, self.batch.uid]))
-        self.assertEquals(404, response.status_code)
+        self.assertEqual(404, response.status_code)
 
     def test_stop_different_user(self):
         task = RevertTask(batch=self.batch, user=self.john, comment="Already reverting")
         task.save()
         response = self.client.post(
             reverse('stop-revert', args=[self.batch.tool.shortid, self.batch.uid]))
-        self.assertEquals(403, response.status_code)
+        self.assertEqual(403, response.status_code)
 
     def test_stop_task_already_complete(self):
         task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
@@ -138,27 +138,27 @@ class RevertTaskTest(TestCase):
         task.save()
         response = self.client.post(
             reverse('stop-revert', args=[self.batch.tool.shortid, self.batch.uid]))
-        self.assertEquals(404, response.status_code)
+        self.assertEqual(404, response.status_code)
 
     def test_stop_fine(self):
         task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
         task.save()
         response = self.client.post(
             reverse('stop-revert', args=[self.batch.tool.shortid, self.batch.uid]))
-        self.assertEquals(302, response.status_code)
+        self.assertEqual(302, response.status_code)
         task = RevertTask.objects.get(id=task.id)
         self.assertTrue(task.cancel)
 
     def test_oauth_tokens(self):
         task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
-        self.assertEquals({'oauth_token':'12345','oauth_token_secret':'67890'},
+        self.assertEqual({'oauth_token':'12345','oauth_token_secret':'67890'},
             task.oauth_tokens)
 
     def test_oauth_tokens_canceled(self):
         task = RevertTask(batch=self.batch, user=self.mary, comment="Already reverting")
         task.cancel = True
         with self.assertRaises(ValueError):
-            self.assertEquals({'oauth_token':'12345','oauth_token_secret':'67890'},
+            self.assertEqual({'oauth_token':'12345','oauth_token_secret':'67890'},
                 task.oauth_tokens)
 
     def test_summary(self):
