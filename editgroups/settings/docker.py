@@ -1,34 +1,26 @@
 import os
-import sys
-from types import ModuleType
 
-secret = ModuleType('editgroups.settings.secret')
-secret.SECRET_KEY = '20oj&tj8uaruseitlrise,tries,uirsetur36746209etus7e'
-secret.DATABASES = {
+SECRET_KEY = 'django-insecure-0ldt)=t=w(%l)7b28n=x!#9ciei^yuox3204(#(r!-fh^59+a-'
+DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'editgroups',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',
-        'PORT': '5432',
-        'DISABLE_SERVER_SIDE_CURSORS': False,
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'mariadb',
+        'NAME': os.getenv("DB_NAME"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'OPTIONS': {
+           'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+           'charset': 'utf8mb4',
+        },
     }
 }
-secret.SOCIAL_AUTH_MEDIAWIKI_KEY = 'your_mediawiki_key'
-secret.SOCIAL_AUTH_MEDIAWIKI_SECRET = 'your_mediawiki_secret'
-secret.SOCIAL_AUTH_MEDIAWIKI_URL = 'https://www.wikidata.org/w/index.php'
-secret.SOCIAL_AUTH_MEDIAWIKI_CALLBACK = 'http://localhost:8000/oauth/complete/mediawiki/'
-secret.REDIS_HOST = 'redis'
-secret.REDIS_PORT = 6379
-secret.REDIS_DB = 0
-secret.REDIS_PASSWORD = ''
-secret.REDIS_KEY_PREFIX = 'editgroups_'
 
-sys.modules['editgroups.settings.secret'] = secret
+SOCIAL_AUTH_MEDIAWIKI_KEY = 'your_mediawiki_key'
+SOCIAL_AUTH_MEDIAWIKI_SECRET = 'your_mediawiki_secret'
+SOCIAL_AUTH_MEDIAWIKI_URL = 'https://www.wikidata.org/w/index.php'
+SOCIAL_AUTH_MEDIAWIKI_CALLBACK = 'http://localhost:8000/oauth/complete/mediawiki/'
 
-from .common import *
-
-DEBUG = True
-ALLOWED_HOSTS = ['*']
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+REDIS_HOST = 'redis'
+REDIS_PORT = 6379
+REDIS_DB = 0
+REDIS_PASSWORD = ''
+REDIS_KEY_PREFIX = 'editgroups_'

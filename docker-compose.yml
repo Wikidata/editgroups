@@ -1,72 +1,77 @@
-version: '3.8'
-
 services:
-  db:
-    image: postgres:15
+  mariadb:
+    image: mariadb:11.7.2
     environment:
-      POSTGRES_DB: editgroups
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      MARIADB_DATABASE: ${DB_NAME:-editgroups}
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD:-editgroups}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - mariadb:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
+      test: healthcheck.sh --connect --innodb_initialized
+      start_period: 10s
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 3
+    expose:
+      - 3306
 
   redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    image: redis:7.4
+    expose:
+      - 6379
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
 
-  web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/app
+  app:
     ports:
-      - "8000:8000"
-    environment:
-      - DJANGO_SETTINGS_MODULE=editgroups.settings.docker
-      - RUN_MIGRATIONS=true
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+      - 8000:8000
+    healthcheck:
+      test: curl --fail http://localhost:8000/ || exit 1
+      start_period: 10s
+      interval: 10s
+    command: >
+      /bin/bash -c "
+        django-admin collectstatic --no-input &&
+        django-admin migrate &&
+        django-admin runserver 0.0.0.0:8000
+      "
+    <<: &app
+      build:
+        context: .
+        dockerfile: Dockerfile
+      depends_on:
+        mariadb:
+          condition: service_healthy
+        redis:
+          condition: service_healthy
+      environment:
+        - SECRET_KEY=${DJANGO_SECRET_KEY:-}
+        - DB_NAME=${DB_NAME:-editgroups}
+        - DB_PASSWORD=${DB_NAME:-editgroups}
 
   celery:
-    build: .
-    command: celery -A editgroups worker -l info
-    volumes:
-      - .:/app
-    environment:
-      - DJANGO_SETTINGS_MODULE=editgroups.settings.docker
-      - C_FORCE_ROOT=true
+    <<: *app
+    command: >
+      /bin/bash -c "
+        source ../venv/bin/activate
+        C_FORCE_ROOT=1 python3 ../venv/bin/celery --app=editgroups.celery:app worker -l INFO -B --concurrency=3 --max-memory-per-child=50000
+      "
     depends_on:
-      - db
-      - redis
-      - web
-
-  celery-beat:
-    build: .
-    command: celery -A editgroups beat -l info
-    volumes:
-      - .:/app
-    environment:
-      - DJANGO_SETTINGS_MODULE=editgroups.settings.docker
+      app:
+        condition: service_healthy
+  listener:
+    <<: *app
+    command: >
+      /bin/bash -c "
+        source ../venv/bin/activate
+        django-admin listener
+      "
     depends_on:
-      - db
-      - redis
-      - web
+      app:
+        condition: service_healthy
 
 volumes:
-  postgres_data:
+  mariadb:
