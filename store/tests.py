@@ -27,27 +27,27 @@ class ToolTest(TestCase):
     def test_or(self):
         tool = Tool.objects.get(shortid='OR')
 
-        self.assertEquals(('ca7d7cc', 'Pintoch', 'import Charity Navigator'),
+        self.assertEqual(('ca7d7cc', 'Pintoch', 'import Charity Navigator'),
             tool.match("Pintoch",
                 "/* wbeditentity-update:0| */ import Charity Navigator ([[Wikidata:Edit groups/OR/ca7d7cc|discuss]])"))
 
     def test_match_without_summary(self):
         tool = Tool.objects.get(shortid='OR')
 
-        self.assertEquals(('ca7d7cc', 'Pintoch', ''),
+        self.assertEqual(('ca7d7cc', 'Pintoch', ''),
             tool.match("Pintoch",
                 "/* wbeditentity-update:0| */ ([[Wikidata:Edit groups/OR/ca7d7cc|discuss]])"))
 
     def test_match_empty_id(self):
         tool = Tool.objects.get(shortid='OR')
 
-        self.assertEquals(None,
+        self.assertEqual(None,
             tool.match("Pintoch",
                 "/* wbeditentity-update:0| */ ([[Wikidata:Edit groups/OR/|discuss]])"))
 
     def test_or_setclaim(self):
         tool = Tool.objects.get(shortid='OR')
-        self.assertEquals(('3990c0d', 'Pintoch', 'add EIN ids from Charity Navigator'),
+        self.assertEqual(('3990c0d', 'Pintoch', 'add EIN ids from Charity Navigator'),
              tool.match("Pintoch",
                 "/* wbsetclaim-create:2||1 */ [[Property:P1297]]: 88-0302673, add EIN ids from Charity Navigator ([[:toollabs:editgroups/b/OR/3990c0d|details]])"))
 
@@ -55,34 +55,34 @@ class ToolTest(TestCase):
     def test_qs(self):
         tool = Tool.objects.get(shortid='QSv2')
 
-        self.assertEquals(('2120', 'Pintoch', '#quickstatements'),
+        self.assertEqual(('2120', 'Pintoch', '#quickstatements'),
             tool.match("QuickStatementsBot",
                 "/* wbcreateclaim-create:1| */ [[Property:P3896]]: Data:Neighbourhoods/New York City.map, #quickstatements; [[:toollabs:quickstatements/#mode=batch&batch=2120|batch #2120]] by [[User:Pintoch|]]"))
 
     def test_empty_user(self):
         tool = Tool.objects.get(shortid='QSv2')
 
-        self.assertEquals(('2120', 'QuickStatementsBot', '#quickstatements'),
+        self.assertEqual(('2120', 'QuickStatementsBot', '#quickstatements'),
             tool.match("QuickStatementsBot",
                 "/* wbcreateclaim-create:1| */ [[Property:P3896]]: Data:Neighbourhoods/New York City.map, #quickstatements; [[:toollabs:quickstatements/#mode=batch&batch=2120|batch #2120]] by [[User:|]]"))
 
     def test_eg(self):
         tool = Tool.objects.get(shortid='EG')
 
-        self.assertEquals(('c367abf', 'Pintoch', 'this was just dumb'),
+        self.assertEqual(('c367abf', 'Pintoch', 'this was just dumb'),
             tool.match("Pintoch", "/* undo:0||1234|Rageux */ this was just dumb ([[:toollabs:editgroups/b/EG/c367abf|details]])"))
 
         # for deletions, undeletions
-        self.assertEquals(('c367abf', 'Pintoch', 'deleting gibberish items'),
+        self.assertEqual(('c367abf', 'Pintoch', 'deleting gibberish items'),
             tool.match("Pintoch", "deleting gibberish items ([[:toollabs:editgroups/b/EG/c367abf|details]])"))
 
     def test_nb_batches(self):
         tool = Tool.objects.get(shortid='OR')
-        self.assertEquals(tool.nb_batches, 0)
+        self.assertEqual(tool.nb_batches, 0)
 
     def test_nb_unique_users(self):
         tool = Tool.objects.get(shortid='OR')
-        self.assertEquals(tool.nb_unique_users, 0)
+        self.assertEqual(tool.nb_unique_users, 0)
 
 
 
@@ -95,22 +95,22 @@ class EditTest(TestCase):
     def test_ingest_jsonlines_or(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
 
-        self.assertEquals(1, Batch.objects.count())
+        self.assertEqual(1, Batch.objects.count())
         batch = Batch.objects.get()
-        self.assertEquals('OR', batch.tool.shortid)
-        self.assertEquals('Pintoch', batch.user)
-        self.assertEquals('ca7d7cc', batch.uid)
-        self.assertEquals(datetime(2018, 3, 6, 16, 39, 37, tzinfo=UTC), batch.started)
-        self.assertEquals(datetime(2018, 3, 6, 16, 41, 10, tzinfo=UTC), batch.ended)
-        self.assertEquals(51, batch.nb_edits)
-        self.assertEquals(0, batch.nb_reverted_edits)
-        self.assertEquals(0, batch.nb_new_pages)
-        self.assertEquals('32.9', batch.editing_speed)
+        self.assertEqual('OR', batch.tool.shortid)
+        self.assertEqual('Pintoch', batch.user)
+        self.assertEqual('ca7d7cc', batch.uid)
+        self.assertEqual(datetime(2018, 3, 6, 16, 39, 37, tzinfo=UTC), batch.started)
+        self.assertEqual(datetime(2018, 3, 6, 16, 41, 10, tzinfo=UTC), batch.ended)
+        self.assertEqual(51, batch.nb_edits)
+        self.assertEqual(0, batch.nb_reverted_edits)
+        self.assertEqual(0, batch.nb_new_pages)
+        self.assertEqual('32.9', batch.editing_speed)
 
     def test_recompute_stats(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
 
-        self.assertEquals(1, Batch.objects.count())
+        self.assertEqual(1, Batch.objects.count())
         # Mess around with the editing statistics
         batch = Batch.objects.get()
         batch.nb_edits = 0
@@ -132,46 +132,46 @@ class EditTest(TestCase):
             started=datetime(2018, 3, 3, 16, 39, 37, tzinfo=UTC),
             ended=datetime(2018, 3, 6, 16, 39, 37, tzinfo=UTC),
             nb_edits=4)
-        self.assertEquals(b.duration, 3*24*3600)
+        self.assertEqual(b.duration, 3*24*3600)
 
     def test_ingest_eg(self):
         Edit.ingest_jsonlines('store/testdata/eg_revert.json')
-        self.assertEquals(1, Batch.objects.count())
+        self.assertEqual(1, Batch.objects.count())
         batch = Batch.objects.get()
-        self.assertEquals('EG', batch.tool.shortid)
-        self.assertEquals(0, batch.nb_reverted_edits)
-        self.assertEquals(0, batch.nb_new_pages)
+        self.assertEqual('EG', batch.tool.shortid)
+        self.assertEqual(0, batch.nb_reverted_edits)
+        self.assertEqual(0, batch.nb_new_pages)
 
     def test_ingest_twice(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
 
-        self.assertEquals(1, Batch.objects.count())
+        self.assertEqual(1, Batch.objects.count())
         batch = Batch.objects.get()
-        self.assertEquals(51, batch.nb_edits)
-        self.assertEquals(0, batch.nb_reverted_edits)
-        self.assertEquals(0, batch.nb_new_pages)
+        self.assertEqual(51, batch.nb_edits)
+        self.assertEqual(0, batch.nb_reverted_edits)
+        self.assertEqual(0, batch.nb_new_pages)
 
     def test_ingest_new_items(self):
         Edit.ingest_jsonlines('store/testdata/qs_batch_with_new_items.json')
-        self.assertEquals(1, Batch.objects.count())
+        self.assertEqual(1, Batch.objects.count())
         batch = Batch.objects.get()
-        self.assertEquals(82, batch.nb_edits)
-        self.assertEquals(9, batch.nb_new_pages)
-        self.assertEquals(9, batch.nb_pages)
-        self.assertEquals(0, batch.nb_existing_pages)
-        self.assertEquals(0, batch.nb_reverted_edits)
+        self.assertEqual(82, batch.nb_edits)
+        self.assertEqual(9, batch.nb_new_pages)
+        self.assertEqual(9, batch.nb_pages)
+        self.assertEqual(0, batch.nb_existing_pages)
+        self.assertEqual(0, batch.nb_reverted_edits)
 
     def test_ingest_new_items_twice(self):
         Edit.ingest_jsonlines('store/testdata/qs_batch_with_new_items.json')
         Edit.ingest_jsonlines('store/testdata/qs_batch_with_new_items.json')
-        self.assertEquals(1, Batch.objects.count())
+        self.assertEqual(1, Batch.objects.count())
         batch = Batch.objects.get()
-        self.assertEquals(82, batch.nb_edits)
-        self.assertEquals(9, batch.nb_new_pages)
-        self.assertEquals(9, batch.nb_pages)
-        self.assertEquals(0, batch.nb_existing_pages)
-        self.assertEquals(0, batch.nb_reverted_edits)
+        self.assertEqual(82, batch.nb_edits)
+        self.assertEqual(9, batch.nb_new_pages)
+        self.assertEqual(9, batch.nb_pages)
+        self.assertEqual(0, batch.nb_existing_pages)
+        self.assertEqual(0, batch.nb_reverted_edits)
 
     def test_hijack(self):
         """
@@ -181,20 +181,20 @@ class EditTest(TestCase):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
         Edit.ingest_jsonlines('store/testdata/hijack.json')
 
-        self.assertEquals(1, Batch.objects.count())
+        self.assertEqual(1, Batch.objects.count())
         batch = Batch.objects.get()
-        self.assertEquals(51, batch.nb_edits)
+        self.assertEqual(51, batch.nb_edits)
 
     def test_archive(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
 
         batch = Batch.objects.get()
-        self.assertEquals(51, batch.nb_edits)
-        self.assertEquals(0, batch.nb_new_pages)
-        self.assertEquals(130901, batch.total_diffsize)
-        self.assertEquals(datetime(2018, 3, 6, 16, 39, 37, tzinfo=UTC), batch.started)
-        self.assertEquals(datetime(2018, 3, 6, 16, 41, 10, tzinfo=UTC), batch.ended)
-        self.assertEquals(51, batch.edits.count())
+        self.assertEqual(51, batch.nb_edits)
+        self.assertEqual(0, batch.nb_new_pages)
+        self.assertEqual(130901, batch.total_diffsize)
+        self.assertEqual(datetime(2018, 3, 6, 16, 39, 37, tzinfo=UTC), batch.started)
+        self.assertEqual(datetime(2018, 3, 6, 16, 41, 10, tzinfo=UTC), batch.ended)
+        self.assertEqual(51, batch.edits.count())
         self.assertFalse(batch.archived)
         self.assertTrue(batch.can_be_reverted)
 
@@ -208,21 +208,21 @@ class EditTest(TestCase):
         batch = Batch.objects.get()
 
         # The correct statistics have been recomputed
-        self.assertEquals(51, batch.nb_edits)
-        self.assertEquals(0, batch.nb_new_pages)
-        self.assertEquals(130901, batch.total_diffsize)
-        self.assertEquals(datetime(2018, 3, 6, 16, 39, 37, tzinfo=UTC), batch.started)
-        self.assertEquals(datetime(2018, 3, 6, 16, 41, 10, tzinfo=UTC), batch.ended)
+        self.assertEqual(51, batch.nb_edits)
+        self.assertEqual(0, batch.nb_new_pages)
+        self.assertEqual(130901, batch.total_diffsize)
+        self.assertEqual(datetime(2018, 3, 6, 16, 39, 37, tzinfo=UTC), batch.started)
+        self.assertEqual(datetime(2018, 3, 6, 16, 41, 10, tzinfo=UTC), batch.ended)
         self.assertTrue(batch.archived)
         self.assertFalse(batch.can_be_reverted)
 
         # Most edits were deleted
-        self.assertEquals(settings.EDITS_KEPT_AFTER_ARCHIVAL, batch.edits.count())
+        self.assertEqual(settings.EDITS_KEPT_AFTER_ARCHIVAL, batch.edits.count())
 
         # If we attempt to archive again, the statistics will not be recomputed
         batch.archive(self.batch_inspector)
         self.assertTrue(batch.archived)
-        self.assertEquals(51, batch.nb_edits)
+        self.assertEqual(51, batch.nb_edits)
 
     def test_archive_small_batch(self):
         # There is no point in archiving small batches
@@ -247,60 +247,60 @@ class EditTest(TestCase):
         Only edits in the item and property namespaces are considered
         """
         Edit.ingest_jsonlines('store/testdata/wrong_namespace.json')
-        self.assertEquals(0, Batch.objects.count())
+        self.assertEqual(0, Batch.objects.count())
 
     def test_ingest_jsonlines_qs(self):
         Edit.ingest_jsonlines('store/testdata/one_qs_batch.json')
 
-        self.assertEquals(1, Batch.objects.count())
+        self.assertEqual(1, Batch.objects.count())
         batch = Batch.objects.get()
-        self.assertEquals('QSv2', batch.tool.shortid)
-        self.assertEquals('Pintoch', batch.user)
-        self.assertEquals('2120', batch.uid)
-        self.assertEquals(datetime(2018, 3, 7, 16, 20, 12, tzinfo=UTC), batch.started)
-        self.assertEquals(datetime(2018, 3, 7, 16, 20, 14, tzinfo=UTC), batch.ended)
-        self.assertEquals(4, batch.nb_edits)
-        self.assertEquals(1, batch.nb_pages)
+        self.assertEqual('QSv2', batch.tool.shortid)
+        self.assertEqual('Pintoch', batch.user)
+        self.assertEqual('2120', batch.uid)
+        self.assertEqual(datetime(2018, 3, 7, 16, 20, 12, tzinfo=UTC), batch.started)
+        self.assertEqual(datetime(2018, 3, 7, 16, 20, 14, tzinfo=UTC), batch.ended)
+        self.assertEqual(4, batch.nb_edits)
+        self.assertEqual(1, batch.nb_pages)
 
     def test_reverts(self):
         Edit.ingest_jsonlines('store/testdata/qs_batch_with_reverts.json')
 
-        self.assertEquals(1, Batch.objects.count())
+        self.assertEqual(1, Batch.objects.count())
         batch = Batch.objects.get()
-        self.assertEquals(5, batch.nb_edits)
-        self.assertEquals(2, batch.nb_reverted)
-        self.assertEquals(1, batch.nb_pages)
+        self.assertEqual(5, batch.nb_edits)
+        self.assertEqual(2, batch.nb_reverted)
+        self.assertEqual(1, batch.nb_pages)
 
     def test_deletions(self):
         Edit.ingest_jsonlines('store/testdata/new_items_deleted.json')
-        self.assertEquals(1, Batch.objects.count())
+        self.assertEqual(1, Batch.objects.count())
         batch = Batch.objects.get()
-        self.assertEquals(1, batch.nb_new_pages)
+        self.assertEqual(1, batch.nb_new_pages)
         self.assertEqual(1, batch.nb_reverted)
-        self.assertEquals(1, batch.nb_pages)
+        self.assertEqual(1, batch.nb_pages)
 
     def test_deletion_batch(self):
         Edit.ingest_jsonlines('store/testdata/deletion_edit.json')
-        self.assertEquals(1, Batch.objects.count())
+        self.assertEqual(1, Batch.objects.count())
         batch = Batch.objects.get()
-        self.assertEquals(0, batch.nb_new_pages)
+        self.assertEqual(0, batch.nb_new_pages)
         self.assertEqual(0, batch.nb_reverted)
 
     def test_deletion_restore(self):
         Edit.ingest_jsonlines('store/testdata/deletion_restore.json')
-        self.assertEquals(2, Batch.objects.count())
+        self.assertEqual(2, Batch.objects.count())
         delete_batch = Edit.objects.get(changetype='delete').batch
         restore_batch = Edit.objects.get(changetype='restore').batch
-        self.assertEquals(1, delete_batch.nb_reverted)
+        self.assertEqual(1, delete_batch.nb_reverted)
         self.assertEqual(0, restore_batch.nb_reverted)
         self.assertEqual(1, restore_batch.nb_undeleted_new_pages)
 
     def test_new_deletion_restore_deletion(self):
         Edit.ingest_jsonlines('store/testdata/new_deletion_restore_deletion.json')
-        self.assertEquals(4, Batch.objects.count())
+        self.assertEqual(4, Batch.objects.count())
         new_batch = Edit.objects.get(changetype='new').batch
         restore_batch = Edit.objects.get(changetype='restore').batch
-        self.assertEquals(1, new_batch.nb_reverted)
+        self.assertEqual(1, new_batch.nb_reverted)
         self.assertEqual(1, restore_batch.nb_reverted)
         self.assertEqual(Edit.objects.filter(reverted=False).count(), 1)
 
@@ -322,9 +322,9 @@ class EditTest(TestCase):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
 
         edit = Edit.objects.all().order_by('timestamp')[0]
-        self.assertEquals('https://www.wikidata.org/w/index.php?diff={newrevid}&oldid={oldrevid}'.format(
+        self.assertEqual('https://www.wikidata.org/w/index.php?diff={newrevid}&oldid={oldrevid}'.format(
                 newrevid=edit.newrevid, oldrevid=edit.oldrevid), edit.url)
-        self.assertEquals('<Edit {url} >'.format(url=edit.url), str(edit))
+        self.assertEqual('<Edit {url} >'.format(url=edit.url), str(edit))
 
     def test_current_lag(self):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
@@ -342,7 +342,7 @@ class BatchEditsViewTest(APITestCase):
         cls.batch = Batch.objects.get()
 
     def test_nbpages(self):
-        self.assertEquals(51, self.batch.nb_pages)
+        self.assertEqual(51, self.batch.nb_pages)
 
     def test_avg_diffsize(self):
         self.assertTrue(2500 < self.batch.avg_diffsize)
@@ -363,7 +363,7 @@ class WikiEditStreamTest(unittest.TestCase):
         for idx, edit in enumerate(s.stream()):
             if idx > 10:
                 break
-            self.assertEquals('wikidatawiki', edit['wiki'])
+            self.assertEqual('wikidatawiki', edit['wiki'])
         self.assertEqual(s.headers["User-Agent"], "EditGroups (https://www.wikidata.org/wiki/Wikidata:Edit_groups)")
 
 class PagesTest(TestCase):
