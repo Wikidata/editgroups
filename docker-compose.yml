@@ -1,0 +1,77 @@
+services:
+  mariadb:
+    image: mariadb:11.7.2
+    environment:
+      MARIADB_DATABASE: ${DB_NAME:-editgroups}
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD:-editgroups}
+    volumes:
+      - mariadb:/var/lib/mysql
+    healthcheck:
+      test: healthcheck.sh --connect --innodb_initialized
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    expose:
+      - 3306
+
+  redis:
+    image: redis:7.4
+    expose:
+      - 6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  app:
+    ports:
+      - 8000:8000
+    healthcheck:
+      test: curl --fail http://localhost:8000/ || exit 1
+      start_period: 10s
+      interval: 10s
+    command: >
+      /bin/bash -c "
+        django-admin collectstatic --no-input &&
+        django-admin migrate &&
+        django-admin runserver 0.0.0.0:8000
+      "
+    <<: &app
+      build:
+        context: .
+        dockerfile: Dockerfile
+      depends_on:
+        mariadb:
+          condition: service_healthy
+        redis:
+          condition: service_healthy
+      environment:
+        - SECRET_KEY=${DJANGO_SECRET_KEY:-}
+        - DB_NAME=${DB_NAME:-editgroups}
+        - DB_PASSWORD=${DB_NAME:-editgroups}
+
+  celery:
+    <<: *app
+    command: >
+      /bin/bash -c "
+        source ../venv/bin/activate
+        C_FORCE_ROOT=1 python3 ../venv/bin/celery --app=editgroups.celery:app worker -l INFO -B --concurrency=3 --max-memory-per-child=50000
+      "
+    depends_on:
+      app:
+        condition: service_healthy
+  listener:
+    <<: *app
+    command: >
+      /bin/bash -c "
+        source ../venv/bin/activate
+        django-admin listener
+      "
+    depends_on:
+      app:
+        condition: service_healthy
+
+volumes:
+  mariadb:
