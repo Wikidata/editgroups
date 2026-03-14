@@ -207,7 +207,8 @@ class Batch(models.Model):
 
     @cached_property
     def sorted_tags(self):
-        return self.tags.order_by('-priority', 'id')
+        # tags will come sorted through view queryset
+        return self.tags.all()
 
     @cached_property
     def reverting_batches(self):
