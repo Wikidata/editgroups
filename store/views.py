@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.db.models import Prefetch
 from django.http import Http404
 
 from rest_framework import viewsets
@@ -51,12 +50,7 @@ class BatchesView(generics.ListAPIView):
     queryset = (
         Batch.objects
         .select_related('tool')
-        .prefetch_related(
-            Prefetch(
-                'tags',
-                queryset=Tag.objects.order_by('-priority', 'id'),
-            )
-        )
+        .prefetch_related('tags')
         .order_by('-ended')
     )
     template_name = 'store/batches.html'

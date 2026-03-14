@@ -207,7 +207,7 @@ class Batch(models.Model):
 
     @cached_property
     def sorted_tags(self):
-        # tags will come sorted through view queryset
+        # tags come sorted through its Meta ordering
         return self.tags.all()
 
     @cached_property
