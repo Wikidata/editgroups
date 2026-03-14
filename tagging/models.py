@@ -130,6 +130,9 @@ class Tag(CachingMixin, models.Model):
     #: Color for the tag (HTML coded, including hash)
     color = models.CharField(max_length=32, default='#939393')
 
+    class Meta:
+        ordering = ['-priority', 'id']
+
     @property
     def display_name(self):
         """
