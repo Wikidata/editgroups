@@ -14,7 +14,6 @@ from .models import Batch
 from .serializers import BatchSimpleSerializer, BatchDetailSerializer, BatchCSVSerializer, EditSerializer, ToolSerializer, ToolStatsSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from tagging.filters import TaggingFilterBackend
-from tagging.models import Tag
 
 class BatchView(generics.RetrieveAPIView):
     serializer_class = BatchDetailSerializer
@@ -47,12 +46,7 @@ class APIBatchView(BatchView):
 
 class BatchesView(generics.ListAPIView):
     serializer_class = BatchSimpleSerializer
-    queryset = (
-        Batch.objects
-        .select_related('tool')
-        .prefetch_related('tags')
-        .order_by('-ended')
-    )
+    queryset = Batch.objects.all().order_by('-ended')
     template_name = 'store/batches.html'
     filter_fields = ('user',)
     filter_backends = (TaggingFilterBackend,)
