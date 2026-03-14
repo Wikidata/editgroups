@@ -46,7 +46,11 @@ class APIBatchView(BatchView):
 
 class BatchesView(generics.ListAPIView):
     serializer_class = BatchSimpleSerializer
-    queryset = Batch.objects.all().order_by('-ended')
+    queryset = (
+        Batch.objects
+        .prefetch_related('tags', 'tool')
+        .order_by('-ended')
+    )
     template_name = 'store/batches.html'
     filter_fields = ('user',)
     filter_backends = (TaggingFilterBackend,)
