@@ -35,6 +35,6 @@ jobs:
             become ${{ matrix.tool }} webservice --mem 512Mi python3.11 shell -- ./www/python/venv/bin/python ./www/python/src/manage.py migrate
             become ${{ matrix.tool }} webservice --mem 512Mi python3.11 shell -- ./www/python/venv/bin/python ./www/python/src/manage.py collectstatic --noinput
             become ${{ matrix.tool }} webservice python3.11 stop
-            become ${{ matrix.tool }} webservice python3.11 start --cpu 1 --mem 3Gi
+            become ${{ matrix.tool }} webservice python3.11 start --cpu 2 --mem 3Gi
             become ${{ matrix.tool }} webservice python3.11 status
             become ${{ matrix.tool }} ./www/python/src/restart_celery.sh
