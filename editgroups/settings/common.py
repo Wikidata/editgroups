@@ -110,7 +110,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
      ),
     'DEFAULT_PAGINATION_CLASS': 'store.pagination.PaginationWithoutCounts',
-    'PAGE_SIZE': 50,
+    'PAGE_SIZE': 15,
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
