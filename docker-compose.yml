@@ -27,7 +27,7 @@ services:
 
   app:
     ports:
-      - 8000:8000
+      - ${EDITGROUPS_PORT:-8000}:8000
     healthcheck:
       test: curl --fail http://localhost:8000/ || exit 1
       start_period: 10s
