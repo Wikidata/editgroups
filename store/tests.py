@@ -375,6 +375,7 @@ class PagesTest(TestCase):
         Edit.ingest_jsonlines('store/testdata/one_or_batch.json')
         cls.batch = Batch.objects.get()
         Edit.ingest_jsonlines('store/testdata/one_qs_batch.json')
+        cls.user = User.objects.create(username="x")
 
     def get_page(self, url_name, **kwargs):
         return self.client.get(reverse(url_name, kwargs or None))
@@ -384,6 +385,7 @@ class PagesTest(TestCase):
         self.parser.parse(response.content)
 
     def test_batches_list(self):
+        self.client.force_login(self.user)
         response = self.get_page('list-batches')
         self.check_html(response)
 
@@ -394,6 +396,7 @@ class PagesTest(TestCase):
 b'archived,author,avg_diffsize,duration,editing_speed,ended,entities_speed,full_uid,id,last_modified,nb_distinct_pages,nb_edits,nb_existing_pages,nb_new_pages,nb_pages,nb_reverted,nb_reverted_edits,started,summary,tags,tool.name,tool.shortid,tool.url,total_diffsize,uid,url\r\n'))
 
     def test_batches_list_filtered(self):
+        self.client.force_login(self.user)
         response = self.client.get(reverse('list-batches')+'?tool=OR')
         self.check_html(response)
         tag = self.batch.tags.all()[0]
