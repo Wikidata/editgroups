@@ -18,6 +18,7 @@ from django.shortcuts import redirect, reverse
 from django.contrib.auth import logout
 from django.urls import path, include
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 from urllib.parse import urlencode
 from rest_framework import routers
 from store import views
@@ -40,7 +41,8 @@ def list_tool_batches_redirect(request, tool):
 
 urlpatterns = [
     path('api/', include(api)),
-    path('', views.BatchesView.as_view(), name='list-batches'),
+    # 2026-05-19: well I guess we need this for now to stop these weird requests
+    path('', login_required(views.BatchesView.as_view()), name='list-batches'),
     path('b/<tool>/', list_tool_batches_redirect, name='list-tool-batches-redirect'),
     path('b/<tool>/<uid>/', views.BatchView.as_view(), name='batch-view'),
     path('b/<tool>/<uid>/edits/', views.BatchEditsView.as_view(), name='batch-edits'),
