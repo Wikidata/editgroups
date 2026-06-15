@@ -28,23 +28,23 @@ EditGroups
                 <td><a href="{{ batch.url }}">{{ batch.uid }}</a></td>
                 <td>
                     {% if batch.author == request.GET.user %}
-                    <a href="{% set_get_param "user" None %}" class="selected-user">{{ batch.author }}</a>
+                    <a href="{% set_get_param "user" None %}" class="selected-user" rel="nofollow">{{ batch.author }}</a>
                     {% else %}
-                    <a href="{% set_get_param "user" batch.author %}">{{ batch.author }}</a>
+                    <a href="{% set_get_param "user" batch.author %}" rel="nofollow">{{ batch.author }}</a>
                     {% endif %}
                 </td>
                 <td><a href="{{ batch.url }}">{% if batch.summary %}{{ batch.summary }}{% else %}(no summary){% endif %}</a></td>
                 <td class="numeric-column">{% for tag in batch.sorted_tags %}
-                        {% if tag.display_name %}<a href="{% tagbutton tag %}" class="label {% if tag.id in tagging_form.tags %}selected-tag{% endif %}" style="background-color: {{ tag.color }}">{{ tag.display_name }}</a>{% endif %}
+                        {% if tag.display_name %}<a href="{% tagbutton tag %}" class="label {% if tag.id in tagging_form.tags %}selected-tag{% endif %}" style="background-color: {{ tag.color }}" rel="nofollow">{{ tag.display_name }}</a>{% endif %}
                 {% endfor %}</td>
                 <td class="numeric-column">{{ batch.avg_diffsize|diffsize }}</td>
                 <td class="numeric-column">{{ batch.nb_edits }}&nbsp;&nbsp;</td>
                 <td>{{ batch.ended|parsetime|ago }}</td>
                 <td>
                     {% if batch.tool.shortid == request.GET.tool %}
-                    <a href="{% set_get_param "tool" None %}" class="selected-user">{{ batch.tool.name }}</a>
+                    <a href="{% set_get_param "tool" None %}" class="selected-user" rel="nofollow">{{ batch.tool.name }}</a>
                     {% else %}
-                    <a href="{% set_get_param "tool" batch.tool.shortid %}">{{ batch.tool.name }}</a>
+                    <a href="{% set_get_param "tool" batch.tool.shortid %}" rel="nofollow">{{ batch.tool.name }}</a>
                     {% endif %}
                 </td>
         </tr>
