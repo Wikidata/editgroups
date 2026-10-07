@@ -307,7 +307,8 @@ class Edit(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['batch', 'newrevid'])
+            models.Index(fields=['batch', 'newrevid']),
+            models.Index(fields=['batch', 'timestamp'], name='idx_batch_ts') # introduced by https://phabricator.wikimedia.org/T438504
         ]
 
     reverted_re = re.compile(r'^/\* undo:0\|\|(\d+)\|')
